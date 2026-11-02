@@ -1,0 +1,35 @@
+---
+title: "Reported emissions and removals from Canada's managed forest with disaggregation of natural disturbances"
+format:
+  docx:
+    reference-doc: ../04.references/style-formal.docx
+---
+
+## Author
+
+Seamus Murphy, ORCID 0000-0002-1792-0351.
+
+## Affiliation
+
+## Corresponding author
+
+Seamus Murphy, seamusrobertmurphy@gmail.com.
+
+## Author contributions
+
+Seamus Murphy conceived the study, assembled the data, wrote the code, ran the analysis and wrote the manuscript.
+
+## Funding
+
+No funding was received for conducting this study.
+
+## Competing interests
+
+The author has no competing interests to declare that are relevant to the content of this article.
+
+## Data availability
+
+The manuscript is one Quarto document whose code reproduces every number, table and figure from the inputs it names. The code, the derived data and the manifest of every input are in the public repository at https://github.com/seamusrobertmurphy/ipcc-uncertainties.
+
+## Acknowledgements
+

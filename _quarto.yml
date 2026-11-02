@@ -3,6 +3,8 @@ project:
   execute-dir: project
   render:
     - "01.manuscript/Manuscript.qmd"
+    - "01.manuscript/Title-page.qmd"
+    - "01.manuscript/Cover-letter.qmd"
   pre-render:
     - "python3 01.manuscript/_tools/clean-appledouble.py"
     - "python3 01.manuscript/_tools/check-manuscript-code.py"

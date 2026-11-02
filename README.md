@@ -53,6 +53,14 @@ quarto render
 
 The Word copy for submission is rendered with the code hidden, `quarto render --to docx -M echo:false`, while the HTML keeps every chunk visible. The README block below is built from the HTML, so render that format after a change to the prose or captions.
 
+The submission to Climatic Change, which reviews double blind, is four files. The same render also produces `Title-page.docx` from `Title-page.qmd`, which carries the author, affiliation, contributions, funding, competing interests, repository address and acknowledgements, and `Cover-letter.docx` from `Cover-letter.qmd`. The anonymised manuscript is a second render of the same source followed by the anonymiser, which removes the author block and the file properties and refuses to finish if any identifying string remains.
+
+```bash
+quarto render 01.manuscript/Manuscript.qmd --to docx -M echo:false --output Manuscript-anonymised.docx
+mv Manuscript-anonymised.docx 01.manuscript/
+python3 01.manuscript/_tools/anonymise-docx.py 01.manuscript/Manuscript-anonymised.docx
+```
+
 Quarto runs the steps in this order.
 
 1. `clean-appledouble.py` deletes the `._` files the exFAT drive writes beside every file.
