@@ -12,16 +12,14 @@ Dear Editors,
 
 I submit "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances" as an Original Research Article.
 
-The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. Canada has reported that way since 2017, and ART TREES, the crediting standard of the Architecture for REDD+ Transactions, accepts the disaggregated account. Whether the disaggregation decides the credit a country can claim had not been tested. The manuscript runs Canada's 2026 inventory through the ART TREES rules for the crediting years 2017 to 2024, with and without the disaggregation and under Australia's natural disturbance rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size. The manuscript also recovers the fuel loads and emission factors behind the fire emissions the Food and Agriculture Organization publishes for Canada, which governments use as an independent check.
+The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. Canada has reported that way since 2017, and ART TREES, the crediting standard of the Architecture for REDD+ Transactions, accepts the disaggregated account. Whether the disaggregation decides the credit a country can claim had not been tested. The manuscript runs Canada's 2026 inventory through the ART TREES rules for the crediting years 2017 to 2024, with and without the disaggregation and under Australia's natural disturbance rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. A deduction on the period's summed reductions left nothing either. The manuscript also recovers the fuel loads and emission factors behind the fire emissions the Food and Agriculture Organization publishes for Canada. Propagated from the IPCC tables' own standard errors, that estimate is uncertain by 175 per cent or more.
 
-The work sits where inventory method, crediting policy and fire ecology meet, which is why it belongs in Climatic Change. The analysis is one Quarto document whose code, data and input manifest are in a public repository.
+The work sits where inventory method, crediting policy and fire ecology meet, which is why it belongs in Climatic Change.
 
 The manuscript is within the 10,000 word limit, with two figures and four tables. It is original, is not published or under consideration elsewhere, and is not a preprint. I am the sole author, have no competing interests and received no funding. An anonymised manuscript and a separate title page are submitted for double-blind review.
 
 Yours sincerely,
 
-Seamus Murphy
-
-Independent researcher, Vancouver, Canada
+Seamus Murphy, independent researcher, Vancouver, Canada
 
 ORCID 0000-0002-1792-0351, seamusrobertmurphy@gmail.com
