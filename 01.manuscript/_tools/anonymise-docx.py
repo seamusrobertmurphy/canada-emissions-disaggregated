@@ -21,7 +21,7 @@ import pathlib
 import zipfile
 from lxml import etree
 
-IDENTIFYING = ["Murphy", "Seamus", "seamusrobert", "0000-0002-1792-0351", "github.com/seamusrobertmurphy"]
+IDENTIFYING = ["Murphy", "Seamus", "seamusrobert", "0000-0002-1792-0351", "github.com/seamusrobertmurphy", "canada-emissions-disaggregated"]
 STYLES = {"Author", "Affiliation", "Date"}
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"

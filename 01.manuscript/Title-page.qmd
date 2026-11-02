@@ -31,7 +31,7 @@ The author has no competing interests to declare that are relevant to the conten
 
 ## Data availability
 
-The manuscript is one Quarto document whose code reproduces every number, table and figure from the inputs it names. The code, the derived data and the manifest of every input are in the public repository at https://github.com/seamusrobertmurphy/ipcc-uncertainties.
+The manuscript is one Quarto document whose code reproduces every number, table and figure from the inputs it names. The code, the derived data and the manifest of every input are in the public repository at https://github.com/seamusrobertmurphy/canada-emissions-disaggregated.
 
 ## Acknowledgements
 
