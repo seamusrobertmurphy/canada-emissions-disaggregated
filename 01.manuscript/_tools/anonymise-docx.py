@@ -23,6 +23,9 @@ from lxml import etree
 
 IDENTIFYING = ["Murphy", "Seamus", "seamusrobert", "0000-0002-1792-0351", "github.com/seamusrobertmurphy", "canada-emissions-disaggregated"]
 STYLES = {"Author", "Affiliation", "Date"}
+# text replaced in place rather than removed, so the data availability statement survives
+REPLACE = {"at https://github.com/seamusrobertmurphy/canada-emissions-disaggregated":
+           "in a public repository whose address is withheld during review and given on the title page"}
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 w = lambda tag: f"{{{W}}}{tag}"
@@ -37,8 +40,21 @@ def anonymise(path):
     root = etree.fromstring(parts["word/document.xml"])
     removed = 0
     for p in list(root.iter(w("p"))):
-        style = p.find(f"{w('pPr')}/{w('pStyle')}")
         text = "".join(t.text or "" for t in p.iter(w("t")))
+        if any(old in text for old in REPLACE):
+            for old, new in REPLACE.items():
+                text = text.replace(old, new)
+            runs = p.findall(w("r"))
+            rPr = runs[0].find(w("rPr")) if runs else None
+            for r in runs:
+                p.remove(r)
+            r = etree.SubElement(p, w("r"))
+            if rPr is not None:
+                r.append(rPr)
+            t = etree.SubElement(r, w("t"))
+            t.text = text
+            t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+        style = p.find(f"{w('pPr')}/{w('pStyle')}")
         if (style is not None and style.get(w("val")) in STYLES) or any(s in text for s in IDENTIFYING):
             p.getparent().remove(p)
             removed += 1

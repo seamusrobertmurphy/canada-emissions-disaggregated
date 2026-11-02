@@ -663,7 +663,7 @@ The author has no competing interests to declare that are relevant to the conten
 
 ## Data availability {.unnumbered}
 
-The manuscript is one Quarto document whose code reproduces every number, table and figure. Its code, derived data and input manifest are in a public repository, whose address is withheld during review and given on the title page.
+The manuscript is one Quarto document whose code reproduces every number, table and figure. Its code, derived data and input manifest are at https://github.com/seamusrobertmurphy/canada-emissions-disaggregated.
 
 # References {.unnumbered}
 
