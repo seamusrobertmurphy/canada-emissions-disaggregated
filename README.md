@@ -96,7 +96,7 @@ A bracketed citation placed directly after a cross-reference is swallowed and ne
 
 ## Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances
 
-
+*Uncertainty deductions under the ART TREES standard and the IPCC Tier 1 forest fire emissions estimate*
 
 Everything from here to the end marker is generated from the render by `01.manuscript/_tools/build-readme.py`. Do not edit it by hand.
 
