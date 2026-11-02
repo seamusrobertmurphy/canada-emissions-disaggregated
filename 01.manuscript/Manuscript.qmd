@@ -2,9 +2,9 @@
 title: "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances"
 keywords:
   - natural disturbance
+  - disaggregation
+  - managed forest
   - greenhouse gas inventory
-  - managed land proxy
-  - forest carbon
   - wildfire
   - carbon crediting
 author:
