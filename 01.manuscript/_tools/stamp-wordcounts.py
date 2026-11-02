@@ -10,9 +10,10 @@ WC_PROSE is running text without tables, captions, code or references. WC_TOTAL 
 tables, captions and references. WC_ABSTRACT is the Abstract section alone, found by
 position between its heading and the next heading, and is in neither total.
 
-No target journal has been chosen, so no limit is compared. When one is, read its
-current guide for authors, record the page, the date and the verbatim wording beside the
-limit in LIMITS, and the script will report any excess on every render.
+The target journal is Climatic Change, chosen by Seamus on 1 November 2026. Its limit is
+recorded in LIMITS with the page, the date it was read and its verbatim wording, and the
+script computes the count the journal's own rule gives, WC_JOURNAL, and reports any excess
+on every render. Read the guide again before submission, because publishers change it.
 
 Run:  python3 01.manuscript/_tools/stamp-wordcounts.py <file.docx>
 Wired into _quarto.yml as a post-render step, after format-tables.py.
@@ -25,8 +26,22 @@ import pathlib
 import zipfile
 from lxml import etree
 
-# stem of the rendered file: (prose limit, abstract limit), each with its verified source
-LIMITS = {}
+# stem of the rendered file: the journal's limit, with its verified source
+LIMITS = {
+    "Manuscript": dict(
+        journal="Climatic Change",
+        total=10000,            # all text, references, figures and tables, by the rule below
+        free_floats=3,          # figures and tables count 300 words each from the fourth
+        float_words=300,
+        abstract=250,           # 150 to 250 words, up to 450 for an original research article if needed
+        abstract_max=450,
+        source="https://link.springer.com/journal/10584/submission-guidelines, read 1 November 2026",
+        wording=("Climatic Change will publish papers with up to 10,000 words, inclusive of all "
+                 "text, references, figures and tables. Figures and tables are counted as 300 words "
+                 "each against the total, beginning with the fourth figure or table. Submissions "
+                 "exceeding the limit will be returned to the authors before review."),
+    ),
+}
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 w = lambda tag: f"{{{W}}}{tag}"
@@ -46,12 +61,20 @@ def style_of(p):
     return s.get(w("val")) if s is not None else ""
 
 
-def measure(root):
-    counts = dict(prose=0, captions=0, tables=0, refs=0, abstract=0)
+def measure(root, limit=None):
+    counts = dict(prose=0, captions=0, tables=0, refs=0, abstract=0, floats=0)
     in_abstract = False
     for child in root.find(w("body")):
         if child.tag == w("tbl"):
-            counts["tables"] += words(" ".join(n.text or "" for n in child.iter(w("t"))))
+            # Quarto wraps each figure or table with its caption in a one-cell table, so the
+            # caption is found inside it; everything else inside is table text
+            for p in child.iter(w("p")):
+                st, txt = style_of(p), para_text(p)
+                if "aption" in st:
+                    counts["captions"] += words(txt)
+                    counts["floats"] += 1
+                else:
+                    counts["tables"] += words(txt)
             continue
         if child.tag != w("p"):
             continue
@@ -67,13 +90,21 @@ def measure(root):
             counts["abstract"] += words(txt)
         elif "aption" in st:
             counts["captions"] += words(txt)
+            counts["floats"] += 1
         else:
             counts["prose"] += words(txt)
-    return {
+    out = {
         "WC_PROSE": counts["prose"],
         "WC_TOTAL": counts["prose"] + counts["captions"] + counts["tables"] + counts["refs"],
         "WC_ABSTRACT": counts["abstract"],
+        "WC_REFS": counts["refs"],
+        "WC_CAPTIONS": counts["captions"],
+        "WC_FLOATS": counts["floats"],
     }
+    if limit:
+        charged = max(0, counts["floats"] - limit["free_floats"]) * limit["float_words"]
+        out["WC_JOURNAL"] = counts["prose"] + counts["abstract"] + counts["captions"] + counts["refs"] + charged
+    return out
 
 
 def process(path):
@@ -85,14 +116,19 @@ def process(path):
     parts = {n: zin.read(n) for n in zin.namelist()}
     zin.close()
     root = etree.fromstring(parts["word/document.xml"])
-    counts = measure(root)
+    limit = LIMITS.get(path.stem)
+    counts = measure(root, limit)
 
     print(f"  {path.name}: prose {counts['WC_PROSE']:,}, total with tables, captions and "
           f"references {counts['WC_TOTAL']:,}, abstract {counts['WC_ABSTRACT']:,}")
-    if path.stem in LIMITS:
-        prose_max, abstract_max = LIMITS[path.stem]
-        over = [f"prose over by {counts['WC_PROSE'] - prose_max:,}"] * (counts["WC_PROSE"] > prose_max)
-        over += [f"abstract over by {counts['WC_ABSTRACT'] - abstract_max:,}"] * (counts["WC_ABSTRACT"] > abstract_max)
+    if limit:
+        print(f"  {limit['journal']} count {counts['WC_JOURNAL']:,} of {limit['total']:,} "
+              f"(prose {counts['WC_PROSE']:,}, abstract {counts['WC_ABSTRACT']:,}, captions "
+              f"{counts['WC_CAPTIONS']:,}, references {counts['WC_REFS']:,}, "
+              f"{counts['WC_FLOATS']} figures and tables charged "
+              f"{max(0, counts['WC_FLOATS'] - limit['free_floats']) * limit['float_words']:,})")
+        over = [f"{limit['journal']} count over by {counts['WC_JOURNAL'] - limit['total']:,}"] * (counts["WC_JOURNAL"] > limit["total"])
+        over += [f"abstract over the {limit['abstract_max']} word ceiling by {counts['WC_ABSTRACT'] - limit['abstract_max']:,}"] * (counts["WC_ABSTRACT"] > limit["abstract_max"])
         if over:
             print(f"\n{'!' * 74}\n  OVER THE LIMIT: {'; '.join(over)}.\n{'!' * 74}\n")
     else:
