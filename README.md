@@ -108,8 +108,8 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 
 The render holds 2 figures and 4 tables, listed here in document order with the section each sits in.
 
-- Figure 1, in section 2.3 Canadian inventory. Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory.
-- Figure 2, in section 3.1 Reported national emissions. Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts.
+- Fig. 1, in section 2.3 Canadian inventory. Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory.
+- Fig. 2, in section 3.1 Reported national emissions. Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts.
 - Table 1, in section 3.3 Crediting Canada. Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period.
 - Table 2, in section 3.4 Crediting British Columbia. Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory.
 - Table 3, in section 3.5 Account uncertainty. Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws.
@@ -119,15 +119,15 @@ The render holds 2 figures and 4 tables, listed here in document order with the 
 
 Every figure and table below is reproduced from the current render, in the order it appears in the manuscript.
 
-#### Figure 1
+#### Fig. 1
 
-![Figure 1](03.outputs/PNG/fig-inventory.png)
+![Fig. 1](03.outputs/PNG/fig-inventory.png)
 
 *Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory. The lower panel is the natural disturbance line the table shows beside the total but leaves out of it.*
 
-#### Figure 2
+#### Fig. 2
 
-![Figure 2](03.outputs/PNG/fig-accounts.png)
+![Fig. 2](03.outputs/PNG/fig-accounts.png)
 
 *Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.*
 

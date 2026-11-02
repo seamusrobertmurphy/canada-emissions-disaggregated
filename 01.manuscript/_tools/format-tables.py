@@ -392,6 +392,35 @@ def own_landscape_pages(body, base, wrappers):
                 base.remove(ref)
 
 
+def journal_caption(p):
+    """Set a caption to Climatic Change's form, read from its guide on 1 November 2026:
+    the label "Fig. 1" or "Table 1" in bold, no punctuation after the number and none at
+    the end of the caption. Quarto writes the caption as one run, so it is split in two."""
+    text = "".join(t.text or "" for t in p.iter(w("t")))
+    m = re.match(r"^((?:Fig\.|Figure|Table)[\s ]\d+):?\s*(.*?)\s*[.]?\s*$", text, re.S)
+    runs = p.findall(w("r"))
+    if not m or not runs:
+        return False
+    label, body = m.group(1).replace(" ", " "), m.group(2)
+    rPr = runs[0].find(w("rPr"))
+    for r in runs:
+        p.remove(r)
+    for part, bold in ((label, True), (" " + body, False)):
+        r = etree.SubElement(p, w("r"))
+        if rPr is not None:
+            r.append(copy.deepcopy(rPr))
+        if bold:
+            pr = r.find(w("rPr"))
+            if pr is None:
+                pr = etree.SubElement(r, w("rPr"))
+            if pr.find(w("b")) is None:
+                pr.insert(0, etree.Element(w("b")))
+        t = etree.SubElement(r, w("t"))
+        t.text = part
+        t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+    return True
+
+
 def process(path):
     path = pathlib.Path(path)
     if not path.exists():
@@ -441,6 +470,9 @@ def process(path):
             print(f"    {caption[:40] or 'a table'}: landscape page, {landscape_width * 2.54 / 1440:.1f} cm wide")
         n += 1
     own_landscape_pages(body, base, wide)
+    captions = sum(journal_caption(p) for p in root.iter(w("p"))
+                   if (s := p.find(f"{w('pPr')}/{w('pStyle')}")) is not None and "aption" in s.get(w("val")))
+    print(f"    {captions} captions set to the journal's form, bold label, no end punctuation")
     parts["word/document.xml"] = etree.tostring(root, xml_declaration=True,
                                                 encoding="UTF-8", standalone=True)
 

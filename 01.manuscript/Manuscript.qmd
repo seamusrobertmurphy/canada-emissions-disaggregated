@@ -75,6 +75,11 @@ format:
       - ../04.references/style.scss
       - cosmo
 
+crossref:
+  fig-title: "Fig."
+  fig-prefix: "Fig."
+  title-delim: ""
+
 execute:
   eval: true
   echo: true

@@ -197,11 +197,12 @@ def main() -> None:
         cap = ""
         for c in re.findall(r"<figcaption[^>]*>(.*?)</figcaption>", chunk, re.S):
             c = clean(c)
-            if re.match(r"^(Table|Figure) \d+:", c):
+            if re.match(r"^(Table|Fig\.|Figure)\s\d+", c):
                 cap = c
                 break
-        label, _, text = cap.partition(":")
-        label, text = label.strip(), text.strip()
+        # "Fig. 1 text" in the journal's form, or "Figure 1: text" before it was adopted
+        m = re.match(r"^((?:Table|Fig\.|Figure)\s\d+):?\s*(.*)$", cap, re.S)
+        label, text = (m.group(1).strip(), m.group(2).strip()) if m else ("", cap)
         first = re.split(r"(?<=[.?!])\s+(?=[A-Z])", text)[0].rstrip(".")
 
         if slug.startswith("fig-"):
