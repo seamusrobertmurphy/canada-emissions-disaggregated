@@ -1,4 +1,4 @@
-# ipcc-uncertainties
+# canada-emissions-disaggregated
 
 This repository holds a manuscript in development on disaggregating natural disturbance from human activity in Canada's forest carbon inventory, as the 2019 Refinement to the IPCC guidelines allows, and on what that disaggregation does to the credit a country or province can claim under ART TREES. It compares the account Canada reports with the same land undisaggregated and with a third account built under Australia's natural disturbance rule, and it checks whether the FAOSTAT fire emissions for Canada can be rebuilt from FAOSTAT's own method. The whole analysis is one Quarto document, `01.manuscript/Manuscript.qmd`, and rendering it with R reproduces every number, table and figure the paper reports.
 
