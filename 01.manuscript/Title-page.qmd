@@ -1,5 +1,5 @@
 ---
-title: "Reported emissions and removals from Canada's managed forest with disaggregation of natural disturbances"
+title: "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances"
 format:
   docx:
     reference-doc: ../04.references/style-letter.docx
