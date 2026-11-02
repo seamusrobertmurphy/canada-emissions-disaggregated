@@ -581,21 +581,13 @@ Disaggregating natural disturbance cut the standard deviation of Canada's annual
 
 ## Natural fire years
 
-```{r}
-#| label: tbl-baselines
-#| tbl-cap: "The natural disturbance threshold applied to Canadian forest fire emissions under three baseline lengths. The threshold is the baseline mean plus two standard deviations, and the years listed are those the rule classifies as natural."
-
-readr::write_csv(baselines, "03.outputs/TBL/tbl-baselines.csv")
-fmt_tbl(baselines)
-```
-
-The baseline length moved the threshold but not the classification. Lengthening the baseline from 13 to 20 years raised the threshold from `r format(baselines[["Threshold (kt)"]][1], big.mark = ",")` to `r format(baselines[["Threshold (kt)"]][2], big.mark = ",")` kilotonnes of carbon dioxide, a rise of `r round(100 * (baselines[["Threshold (kt)"]][2] / baselines[["Threshold (kt)"]][1] - 1))` per cent. Both lengths classed the same `r length(strsplit(baselines[["Years classified natural"]][1], ", ")[[1]])` years as natural, `r baselines[["Years classified natural"]][1]` (@tbl-baselines). A 30 year baseline could not be run, because the FAOSTAT series covered only `r nrow(forest_co2)` years derived from observations, 2001 to 2024. The earlier years were filled rather than measured.
+The baseline length moved the threshold but not the classification. Lengthening the baseline from 13 to 20 years raised the threshold from `r format(baselines[["Threshold (kt)"]][1], big.mark = ",")` to `r format(baselines[["Threshold (kt)"]][2], big.mark = ",")` kilotonnes of carbon dioxide, a rise of `r round(100 * (baselines[["Threshold (kt)"]][2] / baselines[["Threshold (kt)"]][1] - 1))` per cent. Both lengths classed the same `r length(strsplit(baselines[["Years classified natural"]][1], ", ")[[1]])` years as natural, `r baselines[["Years classified natural"]][1]`. A 30 year baseline could not be run, because the FAOSTAT series covered only `r nrow(forest_co2)` years derived from observations, 2001 to 2024. The earlier years were filled rather than measured.
 
 ## Crediting Canada
 
 ```{r}
 #| label: tbl-credits
-#| tbl-cap: "Emissions and reductions for Canada's managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line. The Australian rule account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural (@tbl-baselines). A negative reduction is emissions above the crediting level, which ART TREES treats as a reversal."
+#| tbl-cap: "Emissions and reductions for Canada's managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line. The Australian rule account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural. A negative reduction is emissions above the crediting level, which ART TREES treats as a reversal."
 
 readr::write_csv(credits, "03.outputs/TBL/tbl-credits.csv")
 fmt_tbl(credits)
@@ -642,14 +634,6 @@ The two deductions were linear in the reported uncertainty, so the uncertainty a
 ## Canadian fire emissions
 
 ```{r}
-#| label: tbl-canada-forest
-#| tbl-cap: "Carbon dioxide from forest fires in Canada as FAOSTAT computes it at Tier 1, with the burned area it was derived from. The series begins in 2001 because that is the first year of the MODIS burned area input."
-
-readr::write_csv(forest, "03.outputs/TBL/tbl-canada-forest.csv")
-fmt_tbl(forest)
-```
-
-```{r}
 #| label: fig-canada-forest
 #| fig-cap: "Carbon dioxide from forest fires in Canada, 2001 to 2024, as computed by FAOSTAT at Tier 1 from MODIS burned area."
 
@@ -659,17 +643,9 @@ ggplot2::ggplot(forest, ggplot2::aes(Year, `CO2 (kt)` / 1000)) +
   th
 ```
 
-Forest fires in Canada released `r format(round(forest[["CO2 (kt)"]][forest$Year == 2023] / 1000), big.mark = ",")` Mt of carbon dioxide in 2023 on the FAOSTAT Tier 1 estimate (@tbl-canada-forest, @fig-canada-forest). That was `r round(forest[["CO2 (kt)"]][forest$Year == 2023] / mean(forest[["CO2 (kt)"]][forest$Year < 2023]), 1)` times the mean of the earlier years and `r round(forest[["CO2 (kt)"]][forest$Year == 2023] / forest[["CO2 (kt)"]][forest$Year == 2020], 0)` times the quietest year, 2020, at `r format(round(forest[["CO2 (kt)"]][forest$Year == 2020] / 1000, 1), nsmall = 1)` Mt.
+Forest fires in Canada released `r format(round(forest[["CO2 (kt)"]][forest$Year == 2023] / 1000), big.mark = ",")` Mt of carbon dioxide in 2023 on the FAOSTAT Tier 1 estimate (@fig-canada-forest). That was `r round(forest[["CO2 (kt)"]][forest$Year == 2023] / mean(forest[["CO2 (kt)"]][forest$Year < 2023]), 1)` times the mean of the earlier years and `r round(forest[["CO2 (kt)"]][forest$Year == 2023] / forest[["CO2 (kt)"]][forest$Year == 2020], 0)` times the quietest year, 2020, at `r format(round(forest[["CO2 (kt)"]][forest$Year == 2020] / 1000, 1), nsmall = 1)` Mt.
 
-```{r}
-#| label: tbl-source-gap
-#| tbl-cap: "Carbon dioxide from fires in other forest in Canada, as FAOSTAT computes it at Tier 1 and as Canada reported it to the UNFCCC, for the years both are available. FAOSTAT carries the reported series inside the same domain."
-
-readr::write_csv(gap, "03.outputs/TBL/tbl-source-gap.csv")
-fmt_tbl(gap)
-```
-
-Across the `r nrow(gap)` years both sources reported, the FAOSTAT Tier 1 estimate was a median of `r round(median(gap$Ratio), 1)` times the value Canada submitted (@tbl-source-gap). The ratio ran from `r min(gap$Ratio)` times in `r gap$Year[which.min(gap$Ratio)]` to `r max(gap$Ratio)` times in `r gap$Year[which.max(gap$Ratio)]`.
+Across the `r nrow(gap)` years both sources reported, the FAOSTAT Tier 1 estimate was a median of `r round(median(gap$Ratio), 1)` times the value Canada submitted. The ratio ran from `r min(gap$Ratio)` times in `r gap$Year[which.min(gap$Ratio)]` to `r max(gap$Ratio)` times in `r gap$Year[which.max(gap$Ratio)]`.
 
 ## FAOSTAT's coefficients
 
@@ -686,14 +662,6 @@ FAOSTAT's published values for Canada showed which coefficients it had applied (
 ## Organic soil fires
 
 ```{r}
-#| label: tbl-canada-peat
-#| tbl-cap: "Burned area and emissions from fires in organic soils in Canada, as FAO computed them and then set them to zero in the published Emissions from Fires domain. Values for 1990 to 1995 are the average of the reconstructed series rather than observations, which is why they do not vary."
-
-readr::write_csv(canada, "03.outputs/TBL/tbl-canada-peat.csv")
-fmt_tbl(canada)
-```
-
-```{r}
 #| label: fig-canada-peat
 #| fig-cap: "Burned area of fires in organic soils in Canada, 1990 to 2021, from the FAO table that the published domain replaces with zeros. The flat section to 1995 is the filled part of the series and the rest is derived from satellite observations."
 
@@ -704,7 +672,7 @@ ggplot2::ggplot(canada, ggplot2::aes(Year, `Burned area (ha)` / 1000)) +
 ```
 
 
-Over the `r nrow(obs)` years of the satellite record, 2001 to 2021, fires in organic soils in Canada burned a mean of `r format(round(mean(obs[["Burned area (ha)"]])), big.mark = ",")` hectares a year (@tbl-canada-peat, @fig-canada-peat). They released `r format(round(mean(obs[["CO2 (kt)"]])), big.mark = ",")` kilotonnes of carbon dioxide and `r format(round(mean(obs[["CH4 (kt)"]])), big.mark = ",")` kilotonnes of methane a year, none of which appeared in the FAOSTAT domain a government downloaded. The largest year was `r obs$Year[which.max(obs[["Burned area (ha)"]])]`, at `r format(round(max(obs[["Burned area (ha)"]])), big.mark = ",")` hectares and `r format(round(obs[["CO2 (kt)"]][which.max(obs[["Burned area (ha)"]])]), big.mark = ",")` kilotonnes of carbon dioxide. The smallest was `r obs$Year[which.min(obs[["Burned area (ha)"]])]`, at `r format(round(min(obs[["Burned area (ha)"]])), big.mark = ",")` hectares.
+Over the `r nrow(obs)` years of the satellite record, 2001 to 2021, fires in organic soils in Canada burned a mean of `r format(round(mean(obs[["Burned area (ha)"]])), big.mark = ",")` hectares a year (@fig-canada-peat). They released `r format(round(mean(obs[["CO2 (kt)"]])), big.mark = ",")` kilotonnes of carbon dioxide and `r format(round(mean(obs[["CH4 (kt)"]])), big.mark = ",")` kilotonnes of methane a year, none of which appeared in the FAOSTAT domain a government downloaded. The largest year was `r obs$Year[which.max(obs[["Burned area (ha)"]])]`, at `r format(round(max(obs[["Burned area (ha)"]])), big.mark = ",")` hectares and `r format(round(obs[["CO2 (kt)"]][which.max(obs[["Burned area (ha)"]])]), big.mark = ",")` kilotonnes of carbon dioxide. The smallest was `r obs$Year[which.min(obs[["Burned area (ha)"]])]`, at `r format(round(min(obs[["Burned area (ha)"]])), big.mark = ",")` hectares.
 
 The six years from 1990 to 1995 repeated one value, `r format(round(fill), big.mark = ",")` hectares. That value was the mean of every later year to the last digit the table printed, `r format(round(mean(post[["Burned area (ha)"]]), 2), big.mark = ",", nsmall = 2)` hectares for 1996 to 2021 against `r format(round(fill, 2), big.mark = ",", nsmall = 2)`. The filled years were therefore the average of the whole remaining series rather than of the window the methodological note described. Any mean over the full series returned that value whatever the observations did.
 

@@ -178,7 +178,50 @@ def main() -> None:
               re.finditer(r'<div id="((?:tbl|fig)-[^"]+)"', doc)]
     bounds = [p for p, _ in floats] + [len(doc)]
 
+    # Numbered section headings, so each float can be placed in its section.
+    heads = [(m.start(), clean(m.group(2))) for m in re.finditer(r"<h([12])[^>]*data-number[^>]*>(.*?)</h\1>", doc, re.S)]
+
+    def section_of(pos: int) -> str:
+        last = ""
+        for p, h in heads:
+            if p >= pos:
+                break
+            last = h
+        return last
+
     fm = front_matter()
+    n_fig = n_tbl = 0
+    overview, body = [], []
+    for i, (start, slug) in enumerate(floats):
+        chunk = doc[start:bounds[i + 1]]
+        cap = ""
+        for c in re.findall(r"<figcaption[^>]*>(.*?)</figcaption>", chunk, re.S):
+            c = clean(c)
+            if re.match(r"^(Table|Figure) \d+:", c):
+                cap = c
+                break
+        label, _, text = cap.partition(":")
+        label, text = label.strip(), text.strip()
+        first = re.split(r"(?<=[.?!])\s+(?=[A-Z])", text)[0].rstrip(".")
+
+        if slug.startswith("fig-"):
+            path = save_figure(chunk, slug)
+            if not path:
+                continue
+            n_fig += 1
+            body += [f"#### {label or 'Figure'}", "",
+                     f"![{label}]({path.as_posix()})", "", f"*{text}*", ""]
+        else:
+            got = to_pipe_table(chunk)
+            if not got:
+                continue
+            table, note = got
+            n_tbl += 1
+            body += [f"#### {label or 'Table'}", "", f"*{text}*", "", table, ""]
+            if note:
+                body += [f"*{note}*", ""]
+        overview.append(f"- {label}, in section {section_of(start)}. {first}.")
+
     parts = [
         START,
         "",
@@ -193,43 +236,21 @@ def main() -> None:
         "",
         fm.get("abstract") or abstract_from_render(doc),
         "",
+        "### Figures and tables",
+        "",
+        f"The render holds {n_fig} figures and {n_tbl} tables, listed here in document order "
+        "with the section each sits in.",
+        "",
+        *overview,
+        "",
         "### Results",
         "",
         "Every figure and table below is reproduced from the current render, "
         "in the order it appears in the manuscript.",
         "",
+        *body,
+        END,
     ]
-
-    n_fig = n_tbl = 0
-    for i, (start, slug) in enumerate(floats):
-        chunk = doc[start:bounds[i + 1]]
-        cap = ""
-        for c in re.findall(r"<figcaption[^>]*>(.*?)</figcaption>", chunk, re.S):
-            c = clean(c)
-            if re.match(r"^(Table|Figure) \d+:", c):
-                cap = c
-                break
-        label, _, text = cap.partition(":")
-        label, text = label.strip(), text.strip()
-
-        if slug.startswith("fig-"):
-            path = save_figure(chunk, slug)
-            if not path:
-                continue
-            n_fig += 1
-            parts += [f"#### {label or 'Figure'}", "",
-                      f"![{label}]({path.as_posix()})", "", f"*{text}*", ""]
-        else:
-            got = to_pipe_table(chunk)
-            if not got:
-                continue
-            table, note = got
-            n_tbl += 1
-            parts += [f"#### {label or 'Table'}", "", f"*{text}*", "", table, ""]
-            if note:
-                parts += [f"*{note}*", ""]
-
-    parts += [END]
     readme = OUT.read_text(encoding="utf8")
     if START not in readme or END not in readme:
         raise SystemExit(f"{OUT.name} has no {START} and {END} markers; add them where the results belong")
