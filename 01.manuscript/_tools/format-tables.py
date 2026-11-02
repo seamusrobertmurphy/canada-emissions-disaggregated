@@ -61,7 +61,8 @@ cm_to_twips = lambda cm: int(round(cm * 1440 / 2.54))
 # Word's default cell margins, 0.19 cm each side, plus a little slack
 CELL_MARGIN_TWIPS = 2 * 108 + 40
 LINE_TWIPS = 200          # one line of 8 pt text with its leading
-TABLE_FONT = "/System/Library/Fonts/Helvetica.ttc"
+TABLE_FONT_NAME = "Arial"      # the body font of style-formal.docx, so tables match the text
+TABLE_FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 
 try:
     from PIL import ImageFont
@@ -280,6 +281,13 @@ def format_table(tbl, spec=None, width=None):
                         for old in rPr.findall(w(tag)):
                             rPr.remove(old)
                         etree.SubElement(rPr, w(tag)).set(w("val"), str((cs or {}).get("sz") or TABLE_PT * 2))
+                    # the same font as the body text, set on every run and paragraph mark
+                    fonts = rPr.find(w("rFonts"))
+                    if fonts is None:
+                        fonts = etree.Element(w("rFonts"))
+                        rPr.insert(0, fonts)
+                    for attr in ("ascii", "hAnsi", "cs", "eastAsia"):
+                        fonts.set(w(attr), TABLE_FONT_NAME)
 
 
     # A last row whose first cell begins with a footnote marker and whose other cells are
@@ -343,6 +351,23 @@ def is_blank(el):
         and el.find(f".//{w('sectPr')}") is None and el.find(f".//{w('drawing')}") is None
 
 
+def strip_breaks(body, base):
+    """Remove the section breaks an earlier run added, so a rerun starts from one section.
+    The first break holds the document's original section properties, title page footer
+    and page number start included, and those go back onto the body's closing sectPr."""
+    breaks = [p for p in body.findall(w("p"))
+              if p.find(f"{w('pPr')}/{w('sectPr')}") is not None
+              and not "".join(t.text or "" for t in p.iter(w("t"))).strip()]
+    if not breaks:
+        return base
+    original = copy.deepcopy(breaks[0].find(f"{w('pPr')}/{w('sectPr')}"))
+    for p in breaks:
+        body.remove(p)
+    body.remove(base)
+    body.append(original)
+    return original
+
+
 def own_landscape_pages(body, base, wrappers):
     """Give each wide table its own landscape section, portrait on both sides. Two wide
     tables with nothing but blank paragraphs between them share one landscape section,
@@ -378,7 +403,7 @@ def process(path):
 
     root = etree.fromstring(parts["word/document.xml"])
     body = root.find(w("body"))
-    base = body.find(w("sectPr"))
+    base = strip_breaks(body, body.find(w("sectPr")))
     pgSz, pgMar = base.find(w("pgSz")), base.find(w("pgMar"))
     portrait_width = cm_to_twips(TABLE_WIDTH_CM)
     landscape_width = max(int(pgSz.get(w("w"))), int(pgSz.get(w("h")))) \
