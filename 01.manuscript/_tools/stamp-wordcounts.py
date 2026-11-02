@@ -10,10 +10,12 @@ WC_PROSE is running text without tables, captions, code or references. WC_TOTAL 
 tables, captions and references. WC_ABSTRACT is the Abstract section alone, found by
 position between its heading and the next heading, and is in neither total.
 
-The target journal is Climatic Change, chosen by Seamus on 1 November 2026. Its limit is
-recorded in LIMITS with the page, the date it was read and its verbatim wording, and the
-script computes the count the journal's own rule gives, WC_JOURNAL, and reports any excess
-on every render. Read the guide again before submission, because publishers change it.
+The target journal is Climatic Change, chosen by Seamus on 1 November 2026 and confirmed on
+2 November 2026 after the Journal of Environmental Management was weighed and set aside
+for its 8,000 word cap. Its limit is recorded in LIMITS with the page, the date it was read
+and its verbatim wording, and the script computes the count the journal's own rule gives,
+WC_JOURNAL, and reports any excess on every render. Read the guide again before submission,
+because publishers change it.
 
 Run:  python3 01.manuscript/_tools/stamp-wordcounts.py <file.docx>
 Wired into _quarto.yml as a post-render step, after format-tables.py.

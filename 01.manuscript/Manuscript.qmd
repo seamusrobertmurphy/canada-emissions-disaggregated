@@ -2,56 +2,21 @@
 title: "Reported emissions and removals from Canada's managed forest with disaggregation of natural disturbances"
 keywords:
   - natural disturbance
-  - uncertainty
-  - managed land proxy
-  - factoring out
   - greenhouse gas inventory
-  - greenhouse gas reporting
-  - national inventory
-  - UNFCCC
-  - Kyoto Protocol
-  - Paris Agreement
-  - carbon accounting
-  - LULUCF
-  - managed forest
-  - forest reference level
-  - fire regime
-  - disturbance regime
-  - fire cycle
-  - fire history
-  - fire frequency
-  - time-since-fire
-  - fire return interval
-  - natural range of variation
-  - historical range of variability
-  - range of natural variability
-  - interannual variability
-  - record length
-  - baseline period
-  - age-class distribution
-  - negative exponential
-  - Weibull
-  - carbon budget
+  - managed land proxy
   - forest carbon
-  - carbon balance
-  - net ecosystem production
-  - net biome production
-  - carbon flux
-  - carbon sink
-  - Monte Carlo
   - wildfire
-  - FAOSTAT
-  - Global Fire Emissions Database
-  - crediting
-  - carbon credits
-  - REDD+
-  - buffer pool
-  - reversal
+  - carbon crediting
 author:
   - name: Seamus Murphy
     orcid: 0000-0002-1792-0351
     email: seamusrobertmurphy@gmail.com
     corresponding: true
+    affiliations:
+      - name: Independent researcher
+        city: Vancouver
+        region: British Columbia
+        country: Canada
 date: today
 
 format:
@@ -422,7 +387,7 @@ province <- dplyr::filter(eccc, region == "BC")
 
 # Abstract {.unnumbered}
 
-Canada reported its managed forest with natural disturbance disaggregated from human activity, as cited in the 2019 Refinement to the guidelines of the Intergovernmental Panel on Climate Change. Whether that disaggregation decided the credit a country or province could claim had not been tested. This study ran Canada's 2026 inventory (1990 to 2024) through ART TREES, the standard of the Architecture for REDD+ Transactions, for 2017 to 2024, with and without the disaggregation. A third account followed Australia's rule, which left natural disturbance out only in a fire year above a baseline threshold. With the disaggregation, Canada showed reductions in `r sum(split_pos)` of `r nrow(credits)` crediting years, totalling `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` million tonnes of carbon dioxide equivalent. Without it, reductions appeared in `r sum(whole_pos)` years and emissions exceeded the crediting level by `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` million tonnes in `r credits$Year[worst]` alone. British Columbia showed `r round(sum(bc_credits[["Disaggregated reductions (Mt)"]][bc_split_pos]), 1)` million tonnes with the disaggregation and exceeded its level by `r format(abs(bc_credits[["Undisaggregated reductions (Mt)"]][bc_worst]), big.mark = ",")` million tonnes without it. Australia's rule gave Canada `r round(sum(credits[["Australian rule reductions (Mt)"]][rule_pos]), 1)` million tonnes, `r round(sum(credits[["Australian rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times its reported account, because the fires of ordinary years kept in the reference period raised the crediting level. The disaggregated account stayed uncertain by more than its own size, with uncertainty deductions of `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent. Nothing was left to issue once the reported uncertainty reached `r round(100 * break_even())` per cent. FAOSTAT's fire emissions for Canada applied savanna and grassland emission factors and reported no carbon dioxide for the `r round(100 * sum(savanna_share[["Savanna fires"]]) / sum(savanna_share[["Savanna fires"]] + savanna_share[["Forest fires"]]))` per cent of burned area it classed as savanna, grassland or shrubland. Crediting standards that relied on the disaggregation therefore needed a stated record length, a stated regrowth period and an exclusion limited to the emissions above the ordinary level. They also needed an uncertainty deduction on gross emissions and removals rather than a net near zero.
+Canada reported its managed forest with natural disturbance disaggregated from human activity, as cited in the 2019 Refinement to the guidelines of the Intergovernmental Panel on Climate Change. Whether that disaggregation decided the credit a country could claim had not been tested. This study ran Canada's 2026 inventory (1990 to 2024) through ART TREES, the standard of the Architecture for REDD+ Transactions, for 2017 to 2024, with and without the disaggregation. A third account followed Australia's rule, which excluded natural disturbance only in fire years above a baseline threshold. With the disaggregation, Canada showed reductions in `r sum(split_pos)` of `r nrow(credits)` crediting years, totalling `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` million tonnes of carbon dioxide equivalent. Without it, emissions exceeded the crediting level by `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` million tonnes in `r credits$Year[worst]` alone. Australia's rule gave Canada `r round(sum(credits[["Australian rule reductions (Mt)"]][rule_pos]), 1)` million tonnes, `r round(sum(credits[["Australian rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times its reported account, because ordinary fire years in the reference period raised the crediting level. The disaggregated account stayed uncertain by more than its own size, with deductions of `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent. Nothing was left to issue once the reported uncertainty reached `r round(100 * break_even())` per cent. FAOSTAT applied savanna and grassland emission factors to Canada's fires and reported no carbon dioxide for the `r round(100 * sum(savanna_share[["Savanna fires"]]) / sum(savanna_share[["Savanna fires"]] + savanna_share[["Forest fires"]]))` per cent of burned area in those classes. Crediting standards relying on the disaggregation therefore needed a stated record length, a stated regrowth period and an exclusion limited to emissions above the ordinary level. They also needed an uncertainty deduction on gross emissions and removals rather than a net near zero.
 
 # Introduction
 
@@ -444,11 +409,7 @@ FAOSTAT gave every government an independent estimate of its fire emissions. The
 
 What the disaggregation was worth was set by the crediting standard, the rules under which the reported reductions of a country or province became credits. The standard here was that of the Architecture for REDD+ Transactions, The REDD+ Environmental Excellence Standard, cited as ART TREES [@art2021trees]. ART TREES stated that "only anthropogenic emissions shall be considered, and IPCC guidance shall be adhered to on any exclusion of non-anthropogenic emissions" [@art2021trees]. Its 2025 draft added that natural disturbances "may be excluded if they are 'non-anthropogenic events or non-anthropogenic circumstances that cause significant emissions and are beyond the control of, and not materially influenced by a country'" [@art2025trees3; @ogle2019generic]. Two deductions were then taken from the reported account. The uncertainty deduction multiplied gross reductions and removals by an adjustment factor, 0.524417 divided by 1.645006 times the half width of the 90 per cent confidence interval [@art2021trees]. That interval came from 10,000 Monte Carlo iterations [@art2021trees]. The buffer withheld 25 per cent of the same quantity, or 5 per cent where three mitigating factors were met [@art2021trees]. A reversal, any year after credits were issued in which reported emissions rose above the crediting level, raised the buffer by 5 percentage points for five years [@art2021trees].
 
-No study found had run the account of a country or province through a crediting standard both with and without the disaggregation. The nearest compared Canada's reported series under different divisions of the managed forest [@kurz2024revised; @bysouth2024high]. Others compared national inventories with independent estimates [@pilli2016modellinga; @grassi2022carbon], or mapped reversal risk without reference to an inventory [@wu2026global]. This study therefore tested the natural disturbance approach of the 2019 Refinement on Canada and British Columbia over 1990 to 2024, the period of the 2026 national inventory. It compared what each reported, and what each could have been credited, with and without the approach. It also tested whether the fire emissions FAOSTAT published could be rebuilt from its stated method, through three objectives.
-
-1. To compare the two accounts, and a third built under Australia's rule, by their net emissions over 1990 to 2024 and their ART TREES credits over 2017 to 2024.
-2. To test how a baseline of 13, 20 or 30 years changed the natural disturbance threshold and the years classed as natural, since the 2019 Refinement set no length. To show where the regrowth period and a net balance near zero made the disaggregation hard to apply.
-3. To rebuild the forest fire emissions FAOSTAT published for Canada from its stated method and the IPCC Tier 1 steps it cited, and to compare them with what Canada reported.
+No study found had run the account of a country or province through a crediting standard both with and without the disaggregation. The nearest compared Canada's reported series under different divisions of the managed forest [@kurz2024revised; @bysouth2024high]. Others compared national inventories with independent estimates [@pilli2016modellinga; @grassi2022carbon], or mapped reversal risk without reference to an inventory [@wu2026global]. This study therefore tested the natural disturbance approach of the 2019 Refinement on Canada and British Columbia over 1990 to 2024, the period of the 2026 national inventory. The objective was to compare what each reported, and what each could have been credited under ART TREES, with and without the approach, and under Australia's rule. Because the Refinement set no length for the record behind a natural disturbance test, baselines of 13, 20 and 30 years were compared. The fire emissions FAOSTAT published for Canada were then rebuilt from its stated method and compared with what Canada reported.
 
 # Materials and Methods
 
@@ -458,7 +419,7 @@ Six datasets were read. Canada's inventory came as Table 6-1 of the 2026 Nationa
 
 ## IPCC method
 
-The disaggregation followed section 2.6 of Volume 4, Chapter 2 of the 2019 Refinement [@ogle2019generic]. That section stated that "Voluntary disaggregation of the total of emissions and removals in the MLP into those that are associated with human effects and those due to natural disturbances may provide a clearer picture of the impact of management activities" [@ogle2019generic]. Its footnote 9 stated that "Disaggregating means that an estimate is separated into its component parts" [@ogle2019generic]. The total stayed reported, with the two parts beside it [@ogle2019generic]. The Refinement set no length for the record behind a natural disturbance test, the gap objective 2 tested. Canada divided the land into two parts, as set out below, and Australia divided the years, as set out under the natural disturbance rule.
+The disaggregation followed section 2.6 of Volume 4, Chapter 2 of the 2019 Refinement [@ogle2019generic]. That section stated that "Voluntary disaggregation of the total of emissions and removals in the MLP into those that are associated with human effects and those due to natural disturbances may provide a clearer picture of the impact of management activities" [@ogle2019generic]. Its footnote 9 stated that "Disaggregating means that an estimate is separated into its component parts" [@ogle2019generic]. The total stayed reported, with the two parts beside it [@ogle2019generic]. The Refinement set no length for the record behind a natural disturbance test, the gap tested below. Canada divided the land into two parts, as set out below, and Australia divided the years, as set out under the natural disturbance rule.
 
 ## Canadian inventory
 

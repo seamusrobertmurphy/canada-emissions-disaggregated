@@ -1,28 +1,27 @@
 ---
-title: "Cover letter"
 format:
   docx:
-    reference-doc: ../04.references/style-formal.docx
+    reference-doc: ../04.references/style-letter.docx
 ---
 
-1 November 2026
+2 November 2026
 
 The Editors, Climatic Change
 
 Dear Editors,
 
-I submit the manuscript "Reported emissions and removals from Canada's managed forest with disaggregation of natural disturbances" for consideration as an Original Research Article in Climatic Change.
+I submit "Reported emissions and removals from Canada's managed forest with disaggregation of natural disturbances" as an Original Research Article.
 
-The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. Canada has reported that way since 2017, and the crediting standard of the Architecture for REDD+ Transactions, ART TREES, accepts the disaggregated account. Whether the disaggregation decides the credit a country or province can claim had not been tested. The manuscript runs Canada's 2026 inventory, 1990 to 2024, through the crediting rules of ART TREES for 2017 to 2024, with and without the disaggregation and under Australia's natural disturbance rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size, and the guidance sets no length for the fire record behind a natural disturbance test. The manuscript also recovers the fuel loads and emission factors behind the FAOSTAT fire emissions that governments use as their independent check, which FAOSTAT's method does not state.
+The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. Canada has reported that way since 2017, and ART TREES, the crediting standard of the Architecture for REDD+ Transactions, accepts the disaggregated account. Whether the disaggregation decides the credit a country can claim had not been tested. The manuscript runs Canada's 2026 inventory through the ART TREES rules for 2017 to 2024, with and without the disaggregation and under Australia's natural disturbance rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size. The manuscript also recovers the fuel loads and emission factors behind the FAOSTAT fire emissions that governments use as their independent check.
 
-The work sits where inventory method, crediting policy and fire ecology meet, which is why I think it belongs in Climatic Change. The whole analysis is one Quarto document, and its code, data and input manifest are in a public repository, so that any national inventory team can repeat the comparison on its own figures.
+The work sits where inventory method, crediting policy and fire ecology meet, which is why it belongs in Climatic Change. The analysis is one Quarto document whose code, data and input manifest are in a public repository.
 
-The manuscript is within the journal's 10,000 word limit by its own rule, with two figures and four tables. It is original, has not been published and is not under consideration elsewhere, and it has not been posted as a preprint. I am the sole author, I have no competing interests to declare, and no funding was received. An anonymised manuscript and a separate title page are submitted for double-blind review.
+The manuscript is within the 10,000 word limit, with two figures and four tables. It is original, is not published or under consideration elsewhere, and is not a preprint. I am the sole author, have no competing interests and received no funding. An anonymised manuscript and a separate title page are submitted for double-blind review.
 
 Yours sincerely,
 
 Seamus Murphy
 
-ORCID 0000-0002-1792-0351
+Independent researcher, Vancouver, Canada
 
-seamusrobertmurphy@gmail.com
+ORCID 0000-0002-1792-0351, seamusrobertmurphy@gmail.com
