@@ -1,0 +1,316 @@
+category,year,kt
+Sector total,1990,61000
+Sector total,1991,51000
+Sector total,1992,62000
+Sector total,1993,74000
+Sector total,1994,64000
+Sector total,1995,73000
+Sector total,1996,62000
+Sector total,1997,59000
+Sector total,1998,51000
+Sector total,1999,55000
+Sector total,2000,62000
+Sector total,2001,47000
+Sector total,2002,79000
+Sector total,2003,76000
+Sector total,2004,75000
+Sector total,2005,81000
+Sector total,2006,60000
+Sector total,2007,58000
+Sector total,2008,46000
+Sector total,2009,14000
+Sector total,2010,41000
+Sector total,2011,40000
+Sector total,2012,26000
+Sector total,2013,28000
+Sector total,2014,6400
+Sector total,2015,42000
+Sector total,2016,26000
+Sector total,2017,19000
+Sector total,2018,24000
+Sector total,2019,16000
+Sector total,2020,26000
+Sector total,2021,14000
+Sector total,2022,46000
+Sector total,2023,-8700
+Sector total,2024,4300
+Forest Land,1990,79000
+Forest Land,1991,72000
+Forest Land,1992,81000
+Forest Land,1993,87000
+Forest Land,1994,94000
+Forest Land,1995,110000
+Forest Land,1996,92000
+Forest Land,1997,99000
+Forest Land,1998,88000
+Forest Land,1999,110000
+Forest Land,2000,120000
+Forest Land,2001,99000
+Forest Land,2002,120000
+Forest Land,2003,110000
+Forest Land,2004,150000
+Forest Land,2005,150000
+Forest Land,2006,120000
+Forest Land,2007,100000
+Forest Land,2008,70000
+Forest Land,2009,36000
+Forest Land,2010,62000
+Forest Land,2011,58000
+Forest Land,2012,56000
+Forest Land,2013,58000
+Forest Land,2014,54000
+Forest Land,2015,63000
+Forest Land,2016,55000
+Forest Land,2017,52000
+Forest Land,2018,56000
+Forest Land,2019,36000
+Forest Land,2020,36000
+Forest Land,2021,29000
+Forest Land,2022,15000
+Forest Land,2023,1300
+Forest Land,2024,-1200
+Cropland,1990,5600
+Cropland,1991,-1900
+Cropland,1992,800
+Cropland,1993,8200
+Cropland,1994,-4800
+Cropland,1995,-6400
+Cropland,1996,-5200
+Cropland,1997,-8600
+Cropland,1998,-4600
+Cropland,1999,-14000
+Cropland,2000,-16000
+Cropland,2001,-9500
+Cropland,2002,6800
+Cropland,2003,9700
+Cropland,2004,-22000
+Cropland,2005,-20000
+Cropland,2006,-24000
+Cropland,2007,-17000
+Cropland,2008,-19000
+Cropland,2009,-34000
+Cropland,2010,-20000
+Cropland,2011,-13000
+Cropland,2012,-21000
+Cropland,2013,-22000
+Cropland,2014,-40000
+Cropland,2015,-7800
+Cropland,2016,-13000
+Cropland,2017,-19000
+Cropland,2018,-19000
+Cropland,2019,-12000
+Cropland,2020,-10000
+Cropland,2021,-14000
+Cropland,2022,24000
+Cropland,2023,-21000
+Cropland,2024,-3600
+Grassland,1990,0.69
+Grassland,1991,0.86
+Grassland,1992,1.3
+Grassland,1993,0.44
+Grassland,1994,1
+Grassland,1995,0.32
+Grassland,1996,0.58
+Grassland,1997,0.59
+Grassland,1998,0.71
+Grassland,1999,0.82
+Grassland,2000,1.1
+Grassland,2001,1
+Grassland,2002,1.2
+Grassland,2003,1.3
+Grassland,2004,0.98
+Grassland,2005,0.91
+Grassland,2006,1.3
+Grassland,2007,0.46
+Grassland,2008,0.51
+Grassland,2009,0.45
+Grassland,2010,0.34
+Grassland,2011,0.67
+Grassland,2012,1.7
+Grassland,2013,2
+Grassland,2014,0.88
+Grassland,2015,1.3
+Grassland,2016,1.3
+Grassland,2017,1.3
+Grassland,2018,1.3
+Grassland,2019,1.3
+Grassland,2020,1.3
+Grassland,2021,1.3
+Grassland,2022,1.3
+Grassland,2023,1.3
+Grassland,2024,1.3
+Wetlands,1990,10000
+Wetlands,1991,9700
+Wetlands,1992,9500
+Wetlands,1993,9000
+Wetlands,1994,8600
+Wetlands,1995,8800
+Wetlands,1996,8400
+Wetlands,1997,8200
+Wetlands,1998,8200
+Wetlands,1999,8300
+Wetlands,2000,7500
+Wetlands,2001,7300
+Wetlands,2002,7300
+Wetlands,2003,7300
+Wetlands,2004,7200
+Wetlands,2005,7000
+Wetlands,2006,6800
+Wetlands,2007,6900
+Wetlands,2008,6800
+Wetlands,2009,6800
+Wetlands,2010,6600
+Wetlands,2011,6200
+Wetlands,2012,6200
+Wetlands,2013,6400
+Wetlands,2014,6300
+Wetlands,2015,6000
+Wetlands,2016,6100
+Wetlands,2017,5800
+Wetlands,2018,5600
+Wetlands,2019,5600
+Wetlands,2020,5600
+Wetlands,2021,6000
+Wetlands,2022,5700
+Wetlands,2023,5500
+Wetlands,2024,5400
+Settlements,1990,4900
+Settlements,1991,5000
+Settlements,1992,4700
+Settlements,1993,4300
+Settlements,1994,4100
+Settlements,1995,3700
+Settlements,1996,4400
+Settlements,1997,4100
+Settlements,1998,4400
+Settlements,1999,4300
+Settlements,2000,4300
+Settlements,2001,4500
+Settlements,2002,4900
+Settlements,2003,4800
+Settlements,2004,5200
+Settlements,2005,5100
+Settlements,2006,5600
+Settlements,2007,5500
+Settlements,2008,5800
+Settlements,2009,4700
+Settlements,2010,4800
+Settlements,2011,5100
+Settlements,2012,5600
+Settlements,2013,6200
+Settlements,2014,6300
+Settlements,2015,6300
+Settlements,2016,6300
+Settlements,2017,5400
+Settlements,2018,4900
+Settlements,2019,5000
+Settlements,2020,4700
+Settlements,2021,4600
+Settlements,2022,4500
+Settlements,2023,4600
+Settlements,2024,4300
+Other Land,1990,
+Other Land,1991,
+Other Land,1992,
+Other Land,1993,
+Other Land,1994,
+Other Land,1995,
+Other Land,1996,
+Other Land,1997,
+Other Land,1998,
+Other Land,1999,
+Other Land,2000,
+Other Land,2001,
+Other Land,2002,
+Other Land,2003,
+Other Land,2004,
+Other Land,2005,
+Other Land,2006,
+Other Land,2007,
+Other Land,2008,
+Other Land,2009,
+Other Land,2010,
+Other Land,2011,
+Other Land,2012,
+Other Land,2013,
+Other Land,2014,
+Other Land,2015,
+Other Land,2016,
+Other Land,2017,
+Other Land,2018,
+Other Land,2019,
+Other Land,2020,
+Other Land,2021,
+Other Land,2022,
+Other Land,2023,
+Other Land,2024,
+Harvested Wood Products,1990,-39000
+Harvested Wood Products,1991,-34000
+Harvested Wood Products,1992,-34000
+Harvested Wood Products,1993,-35000
+Harvested Wood Products,1994,-39000
+Harvested Wood Products,1995,-39000
+Harvested Wood Products,1996,-38000
+Harvested Wood Products,1997,-43000
+Harvested Wood Products,1998,-44000
+Harvested Wood Products,1999,-57000
+Harvested Wood Products,2000,-52000
+Harvested Wood Products,2001,-55000
+Harvested Wood Products,2002,-58000
+Harvested Wood Products,2003,-57000
+Harvested Wood Products,2004,-61000
+Harvested Wood Products,2005,-57000
+Harvested Wood Products,2006,-51000
+Harvested Wood Products,2007,-39000
+Harvested Wood Products,2008,-17000
+Harvested Wood Products,2009,1000
+Harvested Wood Products,2010,-12000
+Harvested Wood Products,2011,-16000
+Harvested Wood Products,2012,-21000
+Harvested Wood Products,2013,-21000
+Harvested Wood Products,2014,-20000
+Harvested Wood Products,2015,-26000
+Harvested Wood Products,2016,-28000
+Harvested Wood Products,2017,-25000
+Harvested Wood Products,2018,-24000
+Harvested Wood Products,2019,-18000
+Harvested Wood Products,2020,-10000
+Harvested Wood Products,2021,-11000
+Harvested Wood Products,2022,-3000
+Harvested Wood Products,2023,730
+Harvested Wood Products,2024,-630
+Natural disturbances,1990,-130000
+Natural disturbances,1991,-91000
+Natural disturbances,1992,-140000
+Natural disturbances,1993,-95000
+Natural disturbances,1994,-89000
+Natural disturbances,1995,78000
+Natural disturbances,1996,-80000
+Natural disturbances,1997,-120000
+Natural disturbances,1998,80000
+Natural disturbances,1999,-47000
+Natural disturbances,2000,-100000
+Natural disturbances,2001,-68000
+Natural disturbances,2002,44000
+Natural disturbances,2003,29000
+Natural disturbances,2004,91000
+Natural disturbances,2005,8500
+Natural disturbances,2006,42000
+Natural disturbances,2007,53000
+Natural disturbances,2008,14000
+Natural disturbances,2009,26000
+Natural disturbances,2010,81000
+Natural disturbances,2011,100000
+Natural disturbances,2012,83000
+Natural disturbances,2013,23000
+Natural disturbances,2014,140000
+Natural disturbances,2015,230000
+Natural disturbances,2016,84000
+Natural disturbances,2017,200000
+Natural disturbances,2018,240000
+Natural disturbances,2019,140000
+Natural disturbances,2020,2700
+Natural disturbances,2021,290000
+Natural disturbances,2022,89000
+Natural disturbances,2023,1000000
+Natural disturbances,2024,430000

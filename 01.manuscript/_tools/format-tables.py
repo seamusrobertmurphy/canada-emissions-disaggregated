@@ -4,8 +4,20 @@
 Runs over a rendered .docx and sets, on every data table:
   * total width  16.5 cm, written as an explicit dxa so it does not drift
     with the page margins
-  * row height   1.1 cm on the header row, 0.6 cm on every body row, as an
-    exact height so Word does not grow the row to fit
+  * column width shared in proportion to what each column needs to hold its
+    widest body cell, or the longest word of its header, on one line, measured
+    in the table font. A year column stays narrow and a long label column gets
+    the room. Asked by Seamus on 2026-11-01 so that every body row is one line.
+  * landscape    a table whose one-line needs exceed 16.5 cm is given its own
+    section on a landscape page, the full text width wide, with the sections
+    before and after it portrait. Every added section keeps the default footer
+    and drops the title page footer and the page number start, so the numbers
+    run on through every page. Two wide tables with only blank paragraphs
+    between them share one landscape section. Asked by Seamus on 2026-11-01.
+    A table too wide even for landscape is scaled down, its body rows let wrap,
+    and named in the run's output.
+  * row height   0.6 cm on every body row as an exact height, one line of 8 pt,
+    and on the header row the height its wrapped words need, as a minimum
   * cell text    left justified, overriding the per-cell alignment knitr
     writes as direct formatting
   * table font   8 pt, belt and braces over the Table style
@@ -27,6 +39,7 @@ Wired into _quarto.yml as a post-render step, so every render comes out formatte
 """
 
 import sys
+import copy
 import json
 import re
 import zipfile
@@ -44,6 +57,83 @@ TABLE_PT = 8
 JUSTIFY = "left"
 
 cm_to_twips = lambda cm: int(round(cm * 1440 / 2.54))
+
+# Word's default cell margins, 0.19 cm each side, plus a little slack
+CELL_MARGIN_TWIPS = 2 * 108 + 40
+LINE_TWIPS = 200          # one line of 8 pt text with its leading
+TABLE_FONT = "/System/Library/Fonts/Helvetica.ttc"
+
+try:
+    from PIL import ImageFont
+    _FONT = ImageFont.truetype(TABLE_FONT, 100)
+except Exception:
+    _FONT = None
+
+
+def text_twips(text, pt):
+    """Width of text set in the table font at pt points, in twips."""
+    if _FONT is not None:
+        return int(round(_FONT.getlength(text) / 100 * pt * 20))
+    return int(round(len(text) * 0.55 * pt * 20))
+
+
+def cell_lines(tc):
+    return ["".join(t.text or "" for t in p.iter(w("t"))) for p in tc.findall(w("p"))]
+
+
+def is_footnote(tr):
+    """A last row whose first cell begins with a footnote marker and whose other cells are empty."""
+    tcs = tr.findall(w("tc"))
+    first = "".join(x.text or "" for x in tcs[0].iter(w("t"))).strip()
+    rest = "".join("".join(x.text or "" for x in tc.iter(w("t"))).strip() for tc in tcs[1:])
+    return len(tcs) > 1 and first[:1] in "#†‡" and not rest
+
+
+def ensure_grid(tbl):
+    """The column grid, built from the first row when flextable wrote none. Word adds
+    the grid on save, so a file saved in Word has one and a fresh render does not."""
+    grid = tbl.find(w("tblGrid"))
+    if grid is None:
+        ncols = len(tbl.find(w("tr")).findall(w("tc")))
+        grid = etree.Element(w("tblGrid"))
+        for _ in range(ncols):
+            etree.SubElement(grid, w("gridCol")).set(w("w"), str(cm_to_twips(TABLE_WIDTH_CM) // ncols))
+        tblPr = tbl.find(w("tblPr"))
+        tbl.insert(tbl.index(tblPr) + 1 if tblPr is not None else 0, grid)
+    return grid
+
+
+def content_needs(tbl, pt):
+    """Per column, the twips needed to hold the widest body cell, or the longest word
+    of the header, on one line. The footnote row is merged later and may wrap."""
+    rows = tbl.findall(w("tr"))
+    ncols = len(ensure_grid(tbl).findall(w("gridCol")))
+    need = [0] * ncols
+    for i, tr in enumerate(rows):
+        if i == len(rows) - 1 and i > 0 and is_footnote(tr):
+            continue
+        for k, tc in enumerate(tr.findall(w("tc"))[:ncols]):
+            for line in cell_lines(tc):
+                for piece in (line.split() if i == 0 else [line]):
+                    need[k] = max(need[k], text_twips(piece, pt))
+    return [n + CELL_MARGIN_TWIPS for n in need]
+
+
+def header_lines(tbl, widths, pt):
+    """Lines the tallest header cell needs when its words wrap in the given widths."""
+    most = 1
+    for tc, width in zip(tbl.findall(w("tr"))[0].findall(w("tc")), widths):
+        room = width - CELL_MARGIN_TWIPS
+        for line in cell_lines(tc):
+            lines, cur = 1, 0
+            for word in line.split():
+                wd, sp = text_twips(word, pt), text_twips(" ", pt)
+                if cur and cur + sp + wd > room:
+                    lines, cur = lines + 1, wd
+                else:
+                    cur = cur + sp + wd if cur else wd
+            most = max(most, lines)
+    return most
 
 SPEC_PATH = pathlib.Path(__file__).with_name("table-format.json")
 SPEC = json.loads(SPEC_PATH.read_text()) if SPEC_PATH.exists() else []
@@ -101,30 +191,38 @@ def props(el, tag):
     return pr
 
 
-def format_table(tbl, spec=None):
+def format_table(tbl, spec=None, width=None):
+    """Set one table's geometry. width is the table width in twips, the portrait default
+    or the landscape text width when the caller has given the table its own page."""
+    target = spec["tblW"] if spec else (width or cm_to_twips(TABLE_WIDTH_CM))
+    fits = True
     # width, as an exact dxa rather than a percentage
     tblPr = props(tbl, "tblPr")
     for old in tblPr.findall(w("tblW")):
         tblPr.remove(old)
     tblW = etree.SubElement(tblPr, w("tblW"))
-    tblW.set(w("w"), str(spec["tblW"] if spec else cm_to_twips(TABLE_WIDTH_CM)))
+    tblW.set(w("w"), str(target))
     tblW.set(w("type"), "dxa")
     # fixed layout so Word honours the widths instead of autofitting
     for old in tblPr.findall(w("tblLayout")):
         tblPr.remove(old)
     etree.SubElement(tblPr, w("tblLayout")).set(w("type"), "fixed")
 
-    # rescale the column grid to the new total, preserving relative widths, or take the
-    # hand-set widths from the specification when this table has one
-    grid = tbl.find(w("tblGrid"))
+    # share the total width in proportion to what each column's content needs, or take
+    # the hand-set widths from the specification when this table has one
+    grid = ensure_grid(tbl)
+    new = None
     if grid is not None:
         cols = grid.findall(w("gridCol"))
-        old = [int(c.get(w("w")) or 0) for c in cols]
         if spec and len(spec["grid"]) == len(cols):
             old = list(spec["grid"])
+        else:
+            old = content_needs(tbl, TABLE_PT)
+            fits = sum(old) <= target
+            if not fits:
+                print(f"    a table needs {sum(old) * 2.54 / 1440:.1f} cm and has {target * 2.54 / 1440:.1f} cm, so its body rows may wrap")
         tot = sum(old)
         if tot > 0:
-            target = spec["tblW"] if spec else cm_to_twips(TABLE_WIDTH_CM)
             new = [int(round(v * target / tot)) for v in old]
             new[-1] += target - sum(new)          # absorb rounding
             for c, v in zip(cols, new):
@@ -148,9 +246,13 @@ def format_table(tbl, spec=None):
         if rh:
             h.set(w("val"), str(rh["val"]))
             h.set(w("hRule"), rh["hRule"])
+        elif i == 0:
+            lines = header_lines(tbl, new, TABLE_PT) if new else 3
+            h.set(w("val"), str(lines * LINE_TWIPS + 80))
+            h.set(w("hRule"), "atLeast")
         else:
-            h.set(w("val"), str(cm_to_twips(HEADER_ROW_CM if i == 0 else BODY_ROW_CM)))
-            h.set(w("hRule"), "exact")
+            h.set(w("val"), str(cm_to_twips(BODY_ROW_CM)))
+            h.set(w("hRule"), "exact" if fits else "atLeast")
 
         cellspec = (spec or {}).get("header_cells" if i == 0 else "body_cells") or []
         for k, tc in enumerate(tr.findall(w("tc"))):
@@ -204,6 +306,67 @@ def format_table(tbl, spec=None):
             hh = etree.SubElement(trPr, w("trHeight")); hh.set(w("val"), "340"); hh.set(w("hRule"), "atLeast")
 
 
+def section_props(base, landscape, first):
+    """A copy of the document's section properties for one more section. Only the first
+    section in the document keeps the title page footer and the page number start, so
+    the numbering runs on through every later section and every page carries its number."""
+    sp = copy.deepcopy(base)
+    for tag in ("rsidR", "rsidSect"):
+        sp.attrib.pop(w(tag), None)
+    if not first:
+        for el in sp.findall(w("titlePg")) + sp.findall(w("pgNumType")):
+            sp.remove(el)
+        for ref in sp.findall(w("footerReference")) + sp.findall(w("headerReference")):
+            if ref.get(w("type")) == "first":
+                sp.remove(ref)
+    pgSz = sp.find(w("pgSz"))
+    if landscape:
+        wv, hv = pgSz.get(w("w")), pgSz.get(w("h"))
+        if int(wv) < int(hv):
+            pgSz.set(w("w"), hv)
+            pgSz.set(w("h"), wv)
+        pgSz.set(w("orient"), "landscape")
+    else:
+        pgSz.attrib.pop(w("orient"), None)
+    return sp
+
+
+def section_break(sectpr):
+    """An empty paragraph carrying the properties of the section it ends."""
+    p = etree.Element(w("p"))
+    etree.SubElement(p, w("pPr")).append(sectpr)
+    return p
+
+
+def is_blank(el):
+    return el.tag == w("p") and not "".join(t.text or "" for t in el.iter(w("t"))).strip() \
+        and el.find(f".//{w('sectPr')}") is None and el.find(f".//{w('drawing')}") is None
+
+
+def own_landscape_pages(body, base, wrappers):
+    """Give each wide table its own landscape section, portrait on both sides. Two wide
+    tables with nothing but blank paragraphs between them share one landscape section,
+    so no empty portrait page is left between them."""
+    first = True
+    last_break = None
+    for outer in wrappers:
+        i = body.index(outer)
+        between = body[body.index(last_break) + 1:i] if last_break is not None else None
+        if between is not None and all(is_blank(el) for el in between):
+            body.remove(last_break)
+        else:
+            body.insert(i, section_break(section_props(base, False, first)))
+            first = False
+        last_break = section_break(section_props(base, True, False))
+        body.insert(body.index(outer) + 1, last_break)
+    if wrappers:
+        for el in base.findall(w("titlePg")) + base.findall(w("pgNumType")):
+            base.remove(el)
+        for ref in base.findall(w("footerReference")) + base.findall(w("headerReference")):
+            if ref.get(w("type")) == "first":
+                base.remove(ref)
+
+
 def process(path):
     path = pathlib.Path(path)
     if not path.exists():
@@ -214,12 +377,19 @@ def process(path):
     zin.close()
 
     root = etree.fromstring(parts["word/document.xml"])
+    body = root.find(w("body"))
+    base = body.find(w("sectPr"))
+    pgSz, pgMar = base.find(w("pgSz")), base.find(w("pgMar"))
+    portrait_width = cm_to_twips(TABLE_WIDTH_CM)
+    landscape_width = max(int(pgSz.get(w("w"))), int(pgSz.get(w("h")))) \
+        - int(pgMar.get(w("left"))) - int(pgMar.get(w("right")))
+    wide = []
     # Quarto wraps every float, figures included, in a single-cell table. A real
     # data table is the innermost one, holds no image, and has more than one
     # cell. Without the last two tests a figure wrapper would be given an exact
     # 0.6 cm row height, which crops the image, and 8 pt, which shrinks its caption.
     n = 0
-    for tbl in root.iter(w("tbl")):
+    for tbl in list(root.iter(w("tbl"))):
         if tbl.find(f".//{w('tbl')}") is not None:
             continue
         if tbl.find(f".//{w('drawing')}") is not None or tbl.find(f".//{w('pict')}") is not None:
@@ -236,9 +406,16 @@ def process(path):
                 if re.match(r"Table[\s\u00a0]\d+", t):
                     caption = t
                     break
-        spec = spec_for(caption, len(tbl.find(w("tblGrid")).findall(w("gridCol"))) if tbl.find(w("tblGrid")) is not None else 0)
-        format_table(tbl, spec)
+        spec = spec_for(caption, len(ensure_grid(tbl).findall(w("gridCol"))))
+        # a table whose one-line needs exceed the portrait width goes on its own landscape page
+        landscape = (spec is None and outer is not None and outer.getparent() is body
+                     and sum(content_needs(tbl, TABLE_PT)) > portrait_width)
+        format_table(tbl, spec, landscape_width if landscape else portrait_width)
+        if landscape:
+            wide.append(outer)
+            print(f"    {caption[:40] or 'a table'}: landscape page, {landscape_width * 2.54 / 1440:.1f} cm wide")
         n += 1
+    own_landscape_pages(body, base, wide)
     parts["word/document.xml"] = etree.tostring(root, xml_declaration=True,
                                                 encoding="UTF-8", standalone=True)
 
@@ -247,8 +424,8 @@ def process(path):
         for name, data in parts.items():
             zout.writestr(name, data)
     shutil.move(tmp, path)
-    print(f"  {path.name}: {n} tables set to {TABLE_WIDTH_CM} cm, "
-          f"{HEADER_ROW_CM}/{BODY_ROW_CM} cm rows, {TABLE_PT} pt, {JUSTIFY}-justified")
+    print(f"  {path.name}: {n} tables set to {TABLE_WIDTH_CM} cm, columns shared by content, "
+          f"{BODY_ROW_CM} cm body rows, {TABLE_PT} pt, {JUSTIFY}-justified")
 
 
 if __name__ == "__main__":
