@@ -1,7 +1,7 @@
-Item,Burned area (kha a year),Fuel (t/ha),Table 2.4 row,CO2 (g/kg),CH4 (g/kg),N2O (g/kg),Table 2.5 row
-Other forest,340,41.2 to 47.6,All boreal forest to All other temperate forests,"1,613",2.3,0.21,Savanna and grassland
-Closed shrubland,0,26.7,Shrubland (general),not reported,2.3,0.21,Savanna and grassland
-Grassland,56,4.1,"Grassland, mid or late dry season burns",not reported,2.3,0.21,Savanna and grassland
-Open shrubland,35,14.3,All shrublands,not reported,2.3,0.21,Savanna and grassland
-Savanna,754,4.1,"Grassland, mid or late dry season burns",not reported,2.3,0.21,Savanna and grassland
-Woody savanna,1195,3.3,"Savanna woodland, mid or late dry season burns",not reported,2.3,0.21,Savanna and grassland
+Item,Burned area (ha a year),Fuel (t/ha),Table 2.4 row,CH4 (g/kg),N2O (g/kg),CO2 (g/kg)
+Other forest,"340,209",41.2 to 47.6,Between all boreal forest and all other temperate forests,2.3,0.21,"1,613"
+Woody savanna,"1,195,105",3.3,"Savanna woodland, mid or late dry season burns",2.3,0.21,
+Savanna,"754,333",4.1,"Grassland, mid or late dry season burns",2.3,0.21,
+Grassland,"55,585",4.1,"Grassland, mid or late dry season burns",2.3,0.21,
+Open shrubland,"34,955",14.3,All shrublands,2.3,0.21,
+"Table 2.5, extra tropical forest",,,,4.7,0.26,"1,569"

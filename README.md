@@ -113,7 +113,7 @@ The render holds 2 figures and 4 tables, listed here in document order with the 
 - Table 1, in section 3.3 Crediting Canada. Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period.
 - Table 2, in section 3.4 Crediting British Columbia. Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory.
 - Table 3, in section 3.5 Account uncertainty. Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws.
-- Table 4, in section 3.8 FAOSTAT’s coefficients. Fuel consumption and emission factors FAOSTAT applied to fires in Canada, 2001 to 2024, recovered from its published values.
+- Table 4, in section 3.8 FAOSTAT’s coefficients. Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division.
 
 ### Results
 
@@ -190,7 +190,7 @@ Every figure and table below is reproduced from the current render, in the order
 
 #### Table 3
 
-*Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws. The interval is the 90 per cent interval ART TREES requires, its half width against the mean reduction, and the deduction is what the adjustment factor takes from it. A percentage is printed only where the mean reduction is positive.*
+*Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws. The reduction is the mean of the draws. The interval is half the distance between the 5th and 95th percentiles of the draws, the 90 per cent interval ART TREES requires, as a percentage of the mean reduction. The deduction is that percentage multiplied by the standard’s adjustment factor, 0.524417 over 1.645006, and is the share of the reduction withheld. A percentage is printed only where the mean reduction is positive.*
 
 <table>
 <thead>
@@ -220,28 +220,27 @@ Every figure and table below is reproduced from the current render, in the order
 
 #### Table 4
 
-*Fuel consumption and emission factors FAOSTAT applied to fires in Canada, 2001 to 2024, recovered from its published values. The fuel is biomass burned divided by burned area, and each emission factor is the emission divided by biomass burned. The last columns name the rows of IPCC Tables 2.4 and 2.5 that the values equal. Carbon dioxide is not reported for the savanna, grassland and shrubland items.*
+*Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division. Fuel is biomass burned divided by burned area, the product of fuel load and combustion factor listed in Table 2.4 of the 2006 Guidelines, named by the row it equals. Each emission factor is the gas emitted divided by biomass burned. Every item’s factors equal the savanna and grassland row of Table 2.5, whose extra tropical forest row is given last for comparison. FAO publishes no carbon dioxide for the savanna, grassland and shrubland items.*
 
 <table>
 <thead>
 <tr>
 <th width="2000" align="left">Item</th>
-<th width="2000" align="left">Burned area (kha a year)</th>
+<th width="2000" align="left">Burned area (ha a year)</th>
 <th width="2000" align="left">Fuel (t/ha)</th>
 <th width="2000" align="left">Table 2.4 row</th>
-<th width="2000" align="left">CO2 (g/kg)</th>
 <th width="2000" align="left">CH4 (g/kg)</th>
 <th width="2000" align="left">N2O (g/kg)</th>
-<th width="2000" align="left">Table 2.5 row</th>
+<th width="2000" align="left">CO2 (g/kg)</th>
 </tr>
 </thead>
 <tbody>
-<tr><td align="left">Other forest</td><td align="left">340</td><td align="left">41.2 to 47.6</td><td align="left">All boreal forest to All other temperate forests</td><td align="left">1,613</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">Savanna and grassland</td></tr>
-<tr><td align="left">Closed shrubland</td><td align="left">0</td><td align="left">26.7</td><td align="left">Shrubland (general)</td><td align="left">not reported</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">Savanna and grassland</td></tr>
-<tr><td align="left">Grassland</td><td align="left">56</td><td align="left">4.1</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">not reported</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">Savanna and grassland</td></tr>
-<tr><td align="left">Open shrubland</td><td align="left">35</td><td align="left">14.3</td><td align="left">All shrublands</td><td align="left">not reported</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">Savanna and grassland</td></tr>
-<tr><td align="left">Savanna</td><td align="left">754</td><td align="left">4.1</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">not reported</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">Savanna and grassland</td></tr>
-<tr><td align="left">Woody savanna</td><td align="left">1,195</td><td align="left">3.3</td><td align="left">Savanna woodland, mid or late dry season burns</td><td align="left">not reported</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">Savanna and grassland</td></tr>
+<tr><td align="left">Other forest</td><td align="left">340,209</td><td align="left">41.2 to 47.6</td><td align="left">Between all boreal forest and all other temperate forests</td><td align="left">2.3</td><td align="left">0.21</td><td align="left">1,613</td></tr>
+<tr><td align="left">Woody savanna</td><td align="left">1,195,105</td><td align="left">3.3</td><td align="left">Savanna woodland, mid or late dry season burns</td><td align="left">2.3</td><td align="left">0.21</td><td align="left"></td></tr>
+<tr><td align="left">Savanna</td><td align="left">754,333</td><td align="left">4.1</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">2.3</td><td align="left">0.21</td><td align="left"></td></tr>
+<tr><td align="left">Grassland</td><td align="left">55,585</td><td align="left">4.1</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">2.3</td><td align="left">0.21</td><td align="left"></td></tr>
+<tr><td align="left">Open shrubland</td><td align="left">34,955</td><td align="left">14.3</td><td align="left">All shrublands</td><td align="left">2.3</td><td align="left">0.21</td><td align="left"></td></tr>
+<tr><td align="left">Table 2.5, extra tropical forest</td><td align="left"></td><td align="left"></td><td align="left"></td><td align="left">4.7</td><td align="left">0.26</td><td align="left">1,569</td></tr>
 </tbody>
 </table>
 
