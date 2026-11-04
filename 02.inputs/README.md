@@ -42,18 +42,6 @@ Each source takes one entry in this form.
 | Local path | `02.inputs/ipcc/raw/gez2010.zip` |
 | Read by | `zones` |
 
-### IPCC climate zones
-
-| Field | Entry |
-|---|---|
-| Dataset | IPCC Climate Zones from the 2019 Refinement, Figure 3A.5.1 of Volume 4 Chapter 3, recreated at 0.5 degree from CRU TS 3.25 by Matthew Lewis, version 0.1.0 |
-| Publisher | Zenodo |
-| Link | https://doi.org/10.5281/zenodo.7303808 |
-| Licence | CC BY 4.0 |
-| Retrieved | 2026-11-03 |
-| Local path | `02.inputs/ipcc/raw/IPCC_Climate_Zones_ts_3.25.tif`, with its colour map and README beside it |
-| Read by | `zones` |
-
 ### Canadian National Fire Database polygons
 
 | Field | Entry |
@@ -84,7 +72,7 @@ Each source takes one entry in this form.
 |---|---|
 | Dataset | IPCC default soil classes derived from the Harmonized World Soil Data Base (Ver. 1.1), 5 arc-minute global raster, 4320 × 2160, EPSG:4326, Idrisi raster `SOIL_TYPE.rst` with sidecar `SOIL_TYPE.RDC` converted to `soil_type.tif`. Legend from the sidecar, 1 Organic, 2 Sandy Soils, 3 Wetland Soils, 4 Volcanic Soils, 5 Spodic Soils, 6 High Activity Clay Soils, 7 Low Activity Clay Soils, 8 Other Areas, 0 background |
 | Publisher | ISRIC World Soil Information, Batjes (2010), Report 2009/02b |
-| Link | No retrieval link was recorded at delivery. The file came from the `02.inputs/IPCC/Soil Type (IPCC 2019)/` folder of the sibling repository `ipcc-carbon-gains`, whose manifest records the same absence. The report is cited as `batjes2010ipcc` |
+| Link | No retrieval link was recorded at delivery. The file was copied from an earlier local copy of the same raster, whose own manifest records the same absence. The report is cited as `batjes2010ipcc` |
 | Licence | Not recorded |
 | Retrieved | Copied 2026-11-04 |
 | Local path | `02.inputs/ipcc/raw/soil_type.tif` and `SOIL_TYPE.RDC`, with the Canada crop committed as `02.inputs/ipcc/soil-type-canada.tif` (34 kB) because the raw file has no public link |
@@ -98,21 +86,32 @@ Each source takes one entry in this form.
 | Publisher | NASA Land Processes Distributed Active Archive Center, Friedl and Sulla-Menashe (2022), through the Google Earth Engine collection `MODIS/061/MCD12Q1` |
 | Link | https://doi.org/10.5067/MODIS/MCD12Q1.061 and https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1 |
 | Licence | NASA data, no restriction on use |
-| Retrieved | 2026-11-04 through the Earth Engine Python API, project `murphys-deforisk` |
+| Retrieved | 2026-11-04 through the Earth Engine Python API, project `manuscripts-personal` |
 | Local path | `02.inputs/ipcc/mcd12q1-2023-canada.tif` (709 kB), committed because a rebuild needs an Earth Engine account; the `zones` chunk rebuilds it through `reticulate` only when it is missing |
-| Read by | `zones` for the land cover class of every fire and for panels (d) to (f) of the strata map |
+| Read by | `zones` for the land cover class of every fire and for panels (c) to (e) of the strata map |
 
-### Terrestrial ecozones of Canada
+### MODIS burned area
 
 | Field | Entry |
 |---|---|
-| Dataset | Terrestrial Ecozones, National Ecological Framework for Canada, Ecological Stratification Working Group (1995), shapefile `Ecozones/ecozones.shp`, 25 polygons in 15 ecozones, field `ZONE_NAME` |
-| Publisher | Agriculture and Agri-Food Canada, Canadian Soil Information Service |
-| Link | https://sis.agr.gc.ca/cansis/nsdb/ecostrat/gis_data.html and the file https://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/ecozone_shp.zip |
-| Licence | Government of Canada terms and conditions; the page states no dataset licence |
-| Retrieved | 2026-11-04, 1.5 MB |
-| Local path | `02.inputs/nrcan/raw/ecozone_shp.zip` |
-| Read by | `national` |
+| Dataset | MODIS/Terra+Aqua Burned Area Monthly L3 Global 500m SIN Grid V061, MCD64A1, bands `BurnDate` and `Uncertainty`, every month of 2001 to 2024, summed by IGBP class of the yearly MCD12Q1 map and by ecological zone group within the GAUL 2015 boundary of Canada, inside Earth Engine |
+| Publisher | NASA Land Processes Distributed Active Archive Center, Giglio et al. (2022), through the Google Earth Engine collection `MODIS/061/MCD64A1` |
+| Link | https://doi.org/10.5067/MODIS/MCD64A1.061 and https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD64A1 |
+| Licence | NASA data, no restriction on use |
+| Retrieved | 2026-11-04 through the Earth Engine Python API, project `manuscripts-personal`, as direct calls on 96 boxes with all 24 years per call, each box cached under `02.inputs/faostat/raw/mcd64a1-tiles/` |
+| Local path | `02.inputs/faostat/mcd64a1-burned-by-class.csv`, committed because a rebuild needs an Earth Engine account; the `faostat-burned` chunk rebuilds it through `reticulate` only when it is missing |
+| Read by | `faostat-burned` for the burned area of FAO's method by item, year and zone group, against the hectares FAOSTAT published |
+
+### FAO GAUL country boundary
+
+| Field | Entry |
+|---|---|
+| Dataset | Global Administrative Unit Layers 2015, level 0, the country boundary the FAOSTAT fires note names, feature `ADM0_NAME = Canada` |
+| Publisher | FAO, through the Google Earth Engine collection `FAO/GAUL/2015/level0` |
+| Link | https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2015_level0 |
+| Licence | FAO, for non-commercial use as the catalogue states |
+| Retrieved | 2026-11-04 inside Earth Engine; nothing is downloaded |
+| Read by | `faostat-burned` as the summing region |
 
 ### FBP fuel types
 

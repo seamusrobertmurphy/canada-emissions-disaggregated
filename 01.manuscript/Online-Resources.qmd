@@ -59,3 +59,15 @@ fmt_tbl(read_tbl("tbl-coefficients.csv"))
 **Online Resource 6** Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.
 
 ![](../03.outputs/PNG/fig-accounts-1.png)
+
+**Online Resource 7** Each term of the Tier 1 fire estimate as the global default supplied it and as the national datasets supply it. The national datasets are the 2026 Fire Behaviour Prediction fuel types and the peatland map of the Canadian Forest Service. The burned areas are from the National Burned Area Composite and the fire points of the Canadian National Fire Database, and the emission factors and natural share from the inventory's own method. Areas are counted on the 2 km grid of Fig. 1 of the article.
+
+```{r}
+fmt_tbl(read_tbl("tbl-tier2.csv"))
+```
+
+**Online Resource 8** The emission reduction of each account from 10,000 Monte Carlo draws with the published model interval on every annual value. The mean and standard deviation are those of the draws, and the 5th and 95th percentiles bound the 90 per cent interval. The relative half width is half the distance between those percentiles over the mean, the 90 per cent confidence interval of Equation 11, and the adjustment factor is that half width times 0.524417 over 1.645006, the share of the reduction withheld. Both are printed only where the mean reduction is positive.
+
+```{r}
+fmt_tbl(read_tbl("tbl-uncertainty.csv"))
+```

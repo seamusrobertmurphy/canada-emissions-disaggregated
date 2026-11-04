@@ -395,7 +395,9 @@ def own_landscape_pages(body, base, wrappers):
 def journal_caption(p):
     """Set a caption to Climatic Change's form, read from its guide on 1 November 2026:
     the label "Fig. 1" or "Table 1" in bold, no punctuation after the number and none at
-    the end of the caption. Quarto writes the caption as one run, so it is split in two."""
+    the end of the caption. Quarto writes the caption as one run, so it is split in two.
+    A cross reference inside a caption arrives as a hyperlink element beside the runs,
+    and its text is already in the rebuilt body, so it is removed with the runs."""
     text = "".join(t.text or "" for t in p.iter(w("t")))
     m = re.match(r"^((?:Fig\.|Figure|Table)[\s ]\d+):?\s*(.*?)\s*[.]?\s*$", text, re.S)
     runs = p.findall(w("r"))
@@ -403,8 +405,9 @@ def journal_caption(p):
         return False
     label, body = m.group(1).replace(" ", " "), m.group(2)
     rPr = runs[0].find(w("rPr"))
-    for r in runs:
-        p.remove(r)
+    for child in list(p):
+        if child.tag in (w("r"), w("hyperlink")):
+            p.remove(child)
     for part, bold in ((label, True), (" " + body, False)):
         r = etree.SubElement(p, w("r"))
         if rPr is not None:

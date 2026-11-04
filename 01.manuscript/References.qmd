@@ -9,7 +9,7 @@ bibliography:
 csl: ../04.references/apa.csl
 citeproc: true
 nocite: |
-  @aalde2006generic, @arsenault2016unravelling, @art2021trees, @art2025trees3, @bernier2010reconstructing, @bowman2023wildfire, @bysouth2024high, @canadell2007factoring, @eccc2026nir, @fao2025fires, @fcpf2024buffer, @gavin2007forest, @grassi2018science, @grassi2022carbon, @ipcc2014kp, @johnson1985theory, @johnson1991climatically, @krug2018accounting, @kukavskaya2013fire, @kurz2008risk, @kurz2018quantifying, @kurz2024revised, @linscheid2026forest, @marinelli2026risk, @metsaranta2017uncertainty, @nyawira2024pantropical, @ogle2019generic, @oliveira2011fire, @paciornik2019uncertainties, @pilli2016modellinga, @poulter2026north, @thompson2026incorporating, @verra2024nprt, @wagner1978class, @woodall2015forest, @wu2026global
+  @aalde2006generic, @art2021trees, @art2025trees3, @batjes2010ipcc, @bowman2023wildfire, @byrne2024carbon, @bysouth2024high, @cfs2026fbp, @cfs2026nbac, @cfs2026nfdb, @eccc2026nir, @fao2012gez, @fao2025fires, @friedl2022mcd12q1, @giglio2021mcd64a1, @ipcc2003gpg, @ipcc2014kp, @ipcc2014wetlands, @ipcc2024reconciling, @kurz2008risk, @kurz2018quantifying, @kurz2024revised, @marinelli2026risk, @metsaranta2017uncertainty, @ogle2019generic, @paciornik2019uncertainties, @thompson2026incorporating, @webster2018spatially, @wu2026global
 ---
 
 Reference list of "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances: uncertainty deductions under the ART TREES standard and the IPCC Tier 1 forest fire emissions estimate", submitted to Climatic Change.

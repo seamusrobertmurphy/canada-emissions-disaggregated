@@ -4,7 +4,7 @@ format:
     reference-doc: ../04.references/style-letter.docx
 ---
 
-2 November 2026
+4 November 2026
 
 The Editors, Climatic Change
 
@@ -12,11 +12,11 @@ Dear Editors,
 
 I submit "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances: uncertainty deductions under the ART TREES standard and the IPCC Tier 1 forest fire emissions estimate" as an Original Research Article.
 
-The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. ART TREES, the crediting standard of the Architecture for REDD+ Transactions, accepts the disaggregated account. Whether the disaggregation decides the credit a country can claim had not been tested. The manuscript runs Canada's 2026 inventory through the ART TREES rules for the crediting years 2017 to 2024, with and without the disaggregation and under Australia's natural disturbance rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. A deduction on the period's summed reductions left nothing either. The manuscript also recovers the fuel loads and emission factors behind the fire emissions the Food and Agriculture Organization publishes for Canada. Propagated from the IPCC tables' own standard errors, that estimate is uncertain by 175 per cent or more.
+The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. ART TREES, the crediting standard of the Architecture for REDD+ Transactions, accepts the disaggregated account. Whether the disaggregation decides the credit a country can claim had not been tested. The manuscript runs Canada's 2026 inventory through the ART TREES rules for the crediting years 2017 to 2024, with and without the disaggregation and under a threshold rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. A deduction on the period's summed reductions left nothing either. The manuscript also reproduces the burned area behind the fire emissions the Food and Agriculture Organization publishes for Canada from its stated method, within 1 per cent in every year, and recovers the fuel loads and emission factors it applied. Propagated from the IPCC tables' own standard errors, that estimate is uncertain by 175 per cent or more.
 
 The work sits where inventory method, crediting policy and fire ecology meet, and so belongs in Climatic Change.
 
-The manuscript is within the 10,000 word limit, with two figures and four tables. It is original, is not published or under consideration elsewhere, and is not a preprint. I am the sole author, have no competing interests and received no funding. An anonymised manuscript and a separate title page are submitted for double-blind review.
+The manuscript has two figures and four tables, with eight Online Resources. It is original, is not published or under consideration elsewhere, and is not a preprint. I am the sole author, have no competing interests and received no funding. An anonymised manuscript and a separate title page are submitted for double-blind review.
 
 Yours sincerely,
 

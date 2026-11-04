@@ -1,5 +1,4 @@
 Quantity,Tier 1 global default,National dataset
-Stratification units,"FAO ecological zones in Canada, 9","Terrestrial ecozones, 15"
 Forest fuel classes on the map,"Two Table 2.4 rows, boreal forest 380 Mha and temperate forest 109 Mha","FBP fuel types, conifer 300 Mha, mixedwood 88 Mha, deciduous 198 Mha, grass 76 Mha"
 Fuel burned (t dry matter per ha),"Table 2.4, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate","CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026"
 Organic soil (Mha),"IPCC default raster, 92","Peatland map, 96, of which 32 also organic in the default raster"
