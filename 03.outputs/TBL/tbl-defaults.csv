@@ -1,0 +1,10 @@
+Ecological zone,Area (Mha),Table 2.4 row,Fuel burned (t/ha),Combustion factor,Table 2.5 row,CO2 (g/kg),CH4 (g/kg),N2O (g/kg)
+Polar (P),244,Tundra,10.0,,Savanna and grassland,1613 ± 95,2.3 ± 0.9,0.21 ± 0.10
+Boreal tundra woodland (Bb),223,"Boreal forest, wildfire (general)",52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07
+Boreal coniferous forest (Ba),206,"Boreal forest, wildfire (general)",52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07
+Boreal mountain system (BM),75,"Boreal forest, wildfire (general)",52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07
+Temperate mountain system (TeM),68,"Other temperate forests, wildfire",19.8 ± 6.3,0.45 ± 0.16,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07
+Temperate continental forest (TeDc),60,"Other temperate forests, wildfire",19.8 ± 6.3,0.45 ± 0.16,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07
+Temperate steppe (TeBSk),46,"Grassland, mid or late dry season burns",4.1 ± 3.1,0.77 ± 0.26,Savanna and grassland,1613 ± 95,2.3 ± 0.9,0.21 ± 0.10
+Temperate desert (TeBWk),5,"Grassland, mid or late dry season burns",4.1 ± 3.1,0.77 ± 0.26,Savanna and grassland,1613 ± 95,2.3 ± 0.9,0.21 ± 0.10
+Temperate oceanic forest (TeDo),2,"Other temperate forests, wildfire",19.8 ± 6.3,0.45 ± 0.16,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07

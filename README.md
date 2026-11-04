@@ -106,14 +106,18 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 
 ### Figures and tables
 
-The render holds 2 figures and 4 tables, listed here in document order with the section each sits in.
+The render holds 3 figures and 7 tables, listed here in document order with the section each sits in.
 
 - Fig. 1, in section 2.3 Canadian inventory. Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory.
-- Fig. 2, in section 3.1 Reported national emissions. Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts.
-- Table 1, in section 3.3 Crediting Canada. Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period.
-- Table 2, in section 3.4 Crediting British Columbia. Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory.
-- Table 3, in section 3.5 Account uncertainty. Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws.
-- Table 4, in section 3.8 FAOSTAT’s coefficients. Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division.
+- Table 1, in section 2.8 Fire emission method. Tier 1 defaults of the 2006 Guidelines matched to Canada’s ecological zones.
+- Fig. 2, in section 2.9 Tier 1 by zone. Canada’s ecological zones of Table 4.1 of the 2006 Guidelines, from the FAO 2010 map, with every fire of 1,000 hectares or more in the Canadian National Fire Database for 2001 to 2024 (upper panel), and the climate zones of Figure 3A.5.1 of the 2019 Refinement at 0.5 degree (lower panel).
+- Fig. 3, in section 3.1 Reported national emissions. Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts.
+- Table 2, in section 3.3 Crediting Canada. Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period.
+- Table 3, in section 3.4 Crediting British Columbia. Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory.
+- Table 4, in section 3.5 Account uncertainty. Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws.
+- Table 5, in section 3.8 FAOSTAT’s coefficients. Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division.
+- Table 6, in section 3.9 Tier 1 by zone. The Tier 1 fire estimate for Canada rebuilt by ecological zone from the national fire record, 2023, with the burned area each zone averaged over 2001 to 2024.
+- Table 7, in section 3.10 Higher tier data. Canadian datasets available for each term of the Tier 1 fire equation, against the default FAO applied.
 
 ### Results
 
@@ -125,13 +129,50 @@ Every figure and table below is reproduced from the current render, in the order
 
 *Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory. The lower panel is the natural disturbance line the table shows beside the total but leaves out of it.*
 
+#### Table 1
+
+*Tier 1 defaults of the 2006 Guidelines matched to Canada’s ecological zones. The zone and its code follow Table 4.1 of Chapter 4, and the area is the zone’s extent within Canada. Fuel burned is the product of fuel load and combustion factor in Table 2.4, mean and standard error. The combustion factor is from Table 2.6, mean and standard deviation. Table 2.6 gives no wildfire value for other temperate forests or for grassland, so the values of all other temperate forests and of all savanna grasslands are shown. The emission factors are the Table 2.5 row named, mean and standard deviation. Tundra has no printed error and no combustion factor.*
+
+<table>
+<thead>
+<tr>
+<th width="2000" align="left">Ecological zone</th>
+<th width="2000" align="left">Area (Mha)</th>
+<th width="2000" align="left">Table 2.4 row</th>
+<th width="2000" align="left">Fuel burned (t/ha)</th>
+<th width="2000" align="left">Combustion factor</th>
+<th width="2000" align="left">Table 2.5 row</th>
+<th width="2000" align="left">CO2 (g/kg)</th>
+<th width="2000" align="left">CH4 (g/kg)</th>
+<th width="2000" align="left">N2O (g/kg)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td align="left">Polar (P)</td><td align="left">244</td><td align="left">Tundra</td><td align="left">10.0</td><td align="left"></td><td align="left">Savanna and grassland</td><td align="left">1613 ± 95</td><td align="left">2.3 ± 0.9</td><td align="left">0.21 ± 0.10</td></tr>
+<tr><td align="left">Boreal tundra woodland (Bb)</td><td align="left">223</td><td align="left">Boreal forest, wildfire (general)</td><td align="left">52.8 ± 48.4</td><td align="left">0.40 ± 0.06</td><td align="left">Extra tropical forest</td><td align="left">1569 ± 131</td><td align="left">4.7 ± 1.9</td><td align="left">0.26 ± 0.07</td></tr>
+<tr><td align="left">Boreal coniferous forest (Ba)</td><td align="left">206</td><td align="left">Boreal forest, wildfire (general)</td><td align="left">52.8 ± 48.4</td><td align="left">0.40 ± 0.06</td><td align="left">Extra tropical forest</td><td align="left">1569 ± 131</td><td align="left">4.7 ± 1.9</td><td align="left">0.26 ± 0.07</td></tr>
+<tr><td align="left">Boreal mountain system (BM)</td><td align="left">75</td><td align="left">Boreal forest, wildfire (general)</td><td align="left">52.8 ± 48.4</td><td align="left">0.40 ± 0.06</td><td align="left">Extra tropical forest</td><td align="left">1569 ± 131</td><td align="left">4.7 ± 1.9</td><td align="left">0.26 ± 0.07</td></tr>
+<tr><td align="left">Temperate mountain system (TeM)</td><td align="left">68</td><td align="left">Other temperate forests, wildfire</td><td align="left">19.8 ± 6.3</td><td align="left">0.45 ± 0.16</td><td align="left">Extra tropical forest</td><td align="left">1569 ± 131</td><td align="left">4.7 ± 1.9</td><td align="left">0.26 ± 0.07</td></tr>
+<tr><td align="left">Temperate continental forest (TeDc)</td><td align="left">60</td><td align="left">Other temperate forests, wildfire</td><td align="left">19.8 ± 6.3</td><td align="left">0.45 ± 0.16</td><td align="left">Extra tropical forest</td><td align="left">1569 ± 131</td><td align="left">4.7 ± 1.9</td><td align="left">0.26 ± 0.07</td></tr>
+<tr><td align="left">Temperate steppe (TeBSk)</td><td align="left">46</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">4.1 ± 3.1</td><td align="left">0.77 ± 0.26</td><td align="left">Savanna and grassland</td><td align="left">1613 ± 95</td><td align="left">2.3 ± 0.9</td><td align="left">0.21 ± 0.10</td></tr>
+<tr><td align="left">Temperate desert (TeBWk)</td><td align="left">5</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">4.1 ± 3.1</td><td align="left">0.77 ± 0.26</td><td align="left">Savanna and grassland</td><td align="left">1613 ± 95</td><td align="left">2.3 ± 0.9</td><td align="left">0.21 ± 0.10</td></tr>
+<tr><td align="left">Temperate oceanic forest (TeDo)</td><td align="left">2</td><td align="left">Other temperate forests, wildfire</td><td align="left">19.8 ± 6.3</td><td align="left">0.45 ± 0.16</td><td align="left">Extra tropical forest</td><td align="left">1569 ± 131</td><td align="left">4.7 ± 1.9</td><td align="left">0.26 ± 0.07</td></tr>
+</tbody>
+</table>
+
 #### Fig. 2
 
-![Fig. 2](03.outputs/PNG/fig-accounts.png)
+![Fig. 2](03.outputs/PNG/fig-zones.png)
+
+*Canada’s ecological zones of Table 4.1 of the 2006 Guidelines, from the FAO 2010 map, with every fire of 1,000 hectares or more in the Canadian National Fire Database for 2001 to 2024 (upper panel), and the climate zones of Figure 3A.5.1 of the 2019 Refinement at 0.5 degree (lower panel). Canada Atlas Lambert projection, EPSG:3978.*
+
+#### Fig. 3
+
+![Fig. 3](03.outputs/PNG/fig-accounts.png)
 
 *Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.*
 
-#### Table 1
+#### Table 2
 
 *Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The Australian rule account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural. A negative reduction is emissions above the crediting level, a reversal under ART TREES.*
 
@@ -159,7 +200,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 2
+#### Table 3
 
 *Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory. The burned area share is the province’s share of the area burned in Canada. The Australian rule account leaves out the natural disturbance line only in years that pass both the national and the provincial test.*
 
@@ -188,7 +229,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 3
+#### Table 4
 
 *Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws. The reduction is the mean of the draws. The interval is half the distance between the 5th and 95th percentiles of the draws, the 90 per cent interval ART TREES requires, as a percentage of the mean reduction. The deduction is that percentage multiplied by the standard’s adjustment factor, 0.524417 over 1.645006, and is the share of the reduction withheld. A percentage is printed only where the mean reduction is positive.*
 
@@ -218,7 +259,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 4
+#### Table 5
 
 *Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division. Fuel is biomass burned divided by burned area, the product of fuel load and combustion factor listed in Table 2.4 of the 2006 Guidelines, named by the row it equals. Each emission factor is the gas emitted divided by biomass burned. Every item’s factors equal the savanna and grassland row of Table 2.5, whose extra tropical forest row is given last for comparison. FAO publishes no carbon dioxide for the savanna, grassland and shrubland items.*
 
@@ -241,6 +282,60 @@ Every figure and table below is reproduced from the current render, in the order
 <tr><td align="left">Grassland</td><td align="left">55,585</td><td align="left">4.1</td><td align="left">Grassland, mid or late dry season burns</td><td align="left">2.3</td><td align="left">0.21</td><td align="left"></td></tr>
 <tr><td align="left">Open shrubland</td><td align="left">34,955</td><td align="left">14.3</td><td align="left">All shrublands</td><td align="left">2.3</td><td align="left">0.21</td><td align="left"></td></tr>
 <tr><td align="left">Table 2.5, extra tropical forest</td><td align="left"></td><td align="left"></td><td align="left"></td><td align="left">4.7</td><td align="left">0.26</td><td align="left">1,569</td></tr>
+</tbody>
+</table>
+
+#### Table 6
+
+*The Tier 1 fire estimate for Canada rebuilt by ecological zone from the national fire record, 2023, with the burned area each zone averaged over 2001 to 2024. Fuel burned and the emission factors are the zone’s rows in Table 1. Carbon dioxide equivalent uses the inventory’s warming potentials of 28 for methane and 265 for nitrous oxide. The uncertainty is the Approach 1 half width of the 95 per cent interval for carbon dioxide, from the printed spreads of the fuel and emission factor, with no error on burned area. The last row is the value FAO published for the same year from one fuel value and the savanna emission factors.*
+
+<table>
+<thead>
+<tr>
+<th width="2000" align="left">Ecological zone</th>
+<th width="2000" align="left">Burned 2001 to 2024 (kha a year)</th>
+<th width="2000" align="left">Burned 2023 (kha)</th>
+<th width="2000" align="left">Fuel burned (t/ha)</th>
+<th width="2000" align="left">CO2 (Mt)</th>
+<th width="2000" align="left">CH4 (kt)</th>
+<th width="2000" align="left">N2O (kt)</th>
+<th width="2000" align="left">CO2e (Mt)</th>
+<th width="2000" align="left">Uncertainty (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td align="left">Boreal tundra woodland</td><td align="left">1433</td><td align="left">10967</td><td align="left">52.8</td><td align="left">908.6</td><td align="left">2722</td><td align="left">150.6</td><td align="left">1024.7</td><td align="left">180</td></tr>
+<tr><td align="left">Boreal coniferous forest</td><td align="left">1481</td><td align="left">4912</td><td align="left">52.8</td><td align="left">407.0</td><td align="left">1219</td><td align="left">67.4</td><td align="left">459.0</td><td align="left">180</td></tr>
+<tr><td align="left">Temperate mountain system</td><td align="left">206</td><td align="left">744</td><td align="left">19.8</td><td align="left">23.1</td><td align="left">69</td><td align="left">3.8</td><td align="left">26.0</td><td align="left">64</td></tr>
+<tr><td align="left">Boreal mountain system</td><td align="left">268</td><td align="left">634</td><td align="left">52.8</td><td align="left">52.5</td><td align="left">157</td><td align="left">8.7</td><td align="left">59.2</td><td align="left">180</td></tr>
+<tr><td align="left">Temperate desert</td><td align="left">46</td><td align="left">179</td><td align="left">4.1</td><td align="left">1.2</td><td align="left">2</td><td align="left">0.2</td><td align="left">1.3</td><td align="left">149</td></tr>
+<tr><td align="left">Temperate continental forest</td><td align="left">27</td><td align="left">81</td><td align="left">19.8</td><td align="left">2.5</td><td align="left">8</td><td align="left">0.4</td><td align="left">2.8</td><td align="left">64</td></tr>
+<tr><td align="left">Polar</td><td align="left">7</td><td align="left">68</td><td align="left">10.0</td><td align="left">1.1</td><td align="left">2</td><td align="left">0.1</td><td align="left">1.2</td><td align="left"></td></tr>
+<tr><td align="left">Temperate steppe</td><td align="left">5</td><td align="left">15</td><td align="left">4.1</td><td align="left">0.1</td><td align="left">0</td><td align="left">0.0</td><td align="left">0.1</td><td align="left">149</td></tr>
+<tr><td align="left">Temperate oceanic forest</td><td align="left">1</td><td align="left">4</td><td align="left">19.8</td><td align="left">0.1</td><td align="left">0</td><td align="left">0.0</td><td align="left">0.1</td><td align="left">64</td></tr>
+<tr><td align="left">All zones</td><td align="left">3474</td><td align="left">17604</td><td align="left">50.5</td><td align="left">1396.2</td><td align="left">4179</td><td align="left">231.3</td><td align="left">1574.5</td><td align="left">177</td></tr>
+<tr><td align="left">FAOSTAT, other forest, one coefficient</td><td align="left">340</td><td align="left">2750</td><td align="left">42.2</td><td align="left">187.0</td><td align="left">267</td><td align="left">24.3</td><td align="left">200.9</td><td align="left">175</td></tr>
+</tbody>
+</table>
+
+#### Table 7
+
+*Canadian datasets available for each term of the Tier 1 fire equation, against the default FAO applied.*
+
+<table>
+<thead>
+<tr>
+<th width="2000" align="left">Term of Equation 2.27</th>
+<th width="2000" align="left">Tier 1 default used by FAO</th>
+<th width="2000" align="left">Canadian data for Tier 2 or Tier 3</th>
+</tr>
+</thead>
+<tbody>
+<tr><td align="left">A, area burnt</td><td align="left">MODIS MCD64A1 burned area at 500 m, pixels under 20 per cent uncertainty (Food and Agriculture Organization of the United Nations, 2025)</td><td align="left">National Burned Area Composite, 1986 to 2024, agency perimeters with Landsat and Sentinel mapping (Hall et al., 2020; Skakun et al., 2022); the Canadian National Fire Database used here; area adjustments to the historical record (Skakun et al., 2021)</td></tr>
+<tr><td align="left">MB, fuel load</td><td align="left">Table 2.4 product, one value for the country (Aalde et al., 2006)</td><td align="left">Stand carbon pools of CBM-CFS3 from the national forest inventory (Kurz et al., 2018); forest floor loads (de Groot et al., 2009); dead and down woody debris loads by ecozone and fuel type (Hanes et al., 2021)</td></tr>
+<tr><td align="left">Cf, combustion factor</td><td align="left">Within the Table 2.4 product (Aalde et al., 2006)</td><td align="left">Forest floor consumption from fuel load, duff depth and fire weather (de Groot et al., 2009); crown fuel consumption (de Groot et al., 2022); burn severity mapped from Landsat in the carbon budget model (Thompson et al., 2026)</td></tr>
+<tr><td align="left">Gef, emission factor</td><td align="left">Table 2.5, savanna and grassland row (Food and Agriculture Organization of the United Nations, 2025)</td><td align="left">The inventory’s split of combusted carbon, 90 per cent as carbon dioxide, 9 per cent as carbon monoxide and 1 per cent as methane (Environment and Climate Change Canada, 2026)</td></tr>
+<tr><td align="left">Natural share</td><td align="left">None</td><td align="left">Stand replacing fire and disturbances killing over 20 per cent of a stand, tracked to a regional harvest age of 45 to 99 years (Environment and Climate Change Canada, 2026)</td></tr>
 </tbody>
 </table>
 
