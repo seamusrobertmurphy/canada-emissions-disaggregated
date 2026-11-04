@@ -1,12 +1,12 @@
 Ecological zone,Burned 2001 to 2024 (kha a year),Burned 2023 (kha),Fuel burned (t/ha),CO2 (Mt),CH4 (kt),N2O (kt),CO2e (Mt),Uncertainty (%)
-Boreal tundra woodland,1433,10967,52.8,908.6,2722,150.6,1024.7,180
-Boreal coniferous forest,1481,4912,52.8,407.0,1219,67.4,459.0,180
-Temperate mountain system,206,744,19.8,23.1,69,3.8,26.0,64
-Boreal mountain system,268,634,52.8,52.5,157,8.7,59.2,180
+Boreal tundra woodland,1355,10967,52.8,908.6,2722,150.6,1024.7,180
+Boreal coniferous forest,1226,4912,52.8,407.0,1219,67.4,459.0,180
+Temperate mountain system,199,744,19.8,23.1,69,3.8,26.0,64
+Boreal mountain system,249,634,52.8,52.5,157,8.7,59.2,180
 Temperate desert,46,179,4.1,1.2,2,0.2,1.3,149
-Temperate continental forest,27,81,19.8,2.5,8,0.4,2.8,64
-Polar,7,68,10.0,1.1,2,0.1,1.2,
+Temperate continental forest,25,81,19.8,2.5,8,0.4,2.8,64
+Polar,6,68,10.0,1.1,2,0.1,1.2,
 Temperate steppe,5,15,4.1,0.1,0,0.0,0.1,149
-Temperate oceanic forest,1,4,19.8,0.1,0,0.0,0.1,64
-All zones,3474,17604,50.5,1396.2,4179,231.3,1574.5,177
+Temperate oceanic forest,0,4,19.8,0.1,0,0.0,0.1,64
+All zones,3112,17604,50.5,1396.2,4179,231.3,1574.5,177
 "FAOSTAT, other forest, one coefficient",340,2750,42.2,187.0,267,24.3,200.9,175

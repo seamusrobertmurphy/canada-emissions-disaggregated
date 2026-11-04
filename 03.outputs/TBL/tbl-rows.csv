@@ -1,0 +1,19 @@
+Vegetation,Subcategory,Fuel burned (t/ha),Combustion factor,Emission factor row
+Boreal forest,Wildfire (general),52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest
+Boreal forest,Crown fire,25.1 ± 7.9,0.43 ± 0.21,Extra tropical forest
+Boreal forest,Surface fire,21.6 ± 25.1,0.15 ± 0.08,Extra tropical forest
+Boreal forest,Post logging slash burn,69.6 ± 44.8,0.33 ± 0.13,Extra tropical forest
+Boreal forest,Land clearing fire,87.5 ± 35.0,0.59,Extra tropical forest
+Boreal forest,All boreal forest,41.0 ± 36.5,0.34 ± 0.17,Extra tropical forest
+Other temperate forests,Wildfire,19.8 ± 6.3,,Extra tropical forest
+Other temperate forests,Post logging slash burn,77.5 ± 65.0,0.62 ± 0.12,Extra tropical forest
+Other temperate forests,Felled and burned (land clearing fire),48.4 ± 62.7,0.51,Extra tropical forest
+Other temperate forests,All other temperate forests,50.4 ± 53.7,0.45 ± 0.16,Extra tropical forest
+Shrublands,Shrubland (general),26.7 ± 4.2,0.95,Savanna and grassland
+Shrublands,All shrublands,14.3 ± 9.0,0.72 ± 0.25,Savanna and grassland
+Savanna grasslands and pastures,All savanna grasslands (early dry season burns),2.1,0.74,Savanna and grassland
+Savanna grasslands and pastures,Grassland (mid or late dry season burns),4.1 ± 3.1,0.77 ± 0.26,Savanna and grassland
+Other vegetation types,Peatland,41.0 ± 1.4,,
+Other vegetation types,Tundra,10.0,,Savanna and grassland
+"Organic soil, boreal and temperate",Wildfire (undrained peat),66 (46 to 86),1,Wetlands Supplement Table 2.7
+"Organic soil, boreal and temperate",Wildfire (drained peat),336 ± 4,1,Wetlands Supplement Table 2.7

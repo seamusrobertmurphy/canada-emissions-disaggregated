@@ -51,4 +51,9 @@ _freeze/
 *.gpkg
 *.gdb/
 
+# Two small rasters the manuscript reads are committed, because the soil raster has no
+# public retrieval link and the land cover raster needs an Earth Engine account to rebuild.
+!02.inputs/ipcc/soil-type-canada.tif
+!02.inputs/ipcc/mcd12q1-2023-canada.tif
+
 /.quarto/

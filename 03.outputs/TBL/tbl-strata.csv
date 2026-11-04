@@ -1,0 +1,25 @@
+Stratum,Class,Canada burned (kha),Canada vegetation CO2e (Mt),Canada organic soil CO2e (Mt),BC burned (kha),BC vegetation CO2e (Mt),BC organic soil CO2e (Mt)
+Ignition,Natural,16220,1372.2,457.4,2758,203.0,103.6
+,Unknown,888,56.5,32.2,93,6.5,0.2
+,Human,496,39.9,0.5,49,3.8,0.0
+Fire type,Unspecified,15523,1380.0,403.4,2899,213.2,103.8
+,Surface,1028,39.3,52.7,0,0.0,0.0
+,Crown,1000,44.4,33.0,0,0.0,0.0
+,Ground,53,5.0,1.1,0,0.0,0.0
+,Prescribed,0,0.0,0.0,0,0.0,0.0
+Month,April to May,6545,529.9,195.4,1040,96.6,30.2
+,July,5016,414.7,166.4,1086,61.7,35.9
+,June,4793,412.6,67.5,631,45.5,30.2
+,August to October,1248,111.2,60.8,142,9.3,7.5
+,Other months,2,0.2,0.1,0,0.0,0.0
+Soil class,Mineral,12496,1035.3,0.0,1895,119.6,0.0
+,Organic,4702,395.9,490.1,996,93.0,103.8
+,Other,406,37.5,0.0,9,0.6,0.0
+Land cover,"Woody savanna, IGBP 8",8605,688.0,330.3,1367,99.0,77.8
+,"Savanna, IGBP 9",5241,487.6,117.3,1,0.1,0.0
+,"Forest, IGBP 1 to 5",2704,205.4,42.2,1458,112.9,26.0
+,"Shrubland, IGBP 6 to 7",506,43.5,0.1,0,0.0,0.0
+,Other,334,29.6,0.0,8,0.5,0.0
+,"Wetland, IGBP 11",140,13.1,0.2,0,0.0,0.0
+,"Grassland, IGBP 10",73,1.5,0.0,65,0.8,0.0
+All fires,,17604,1468.6,490.1,2899,213.2,103.8

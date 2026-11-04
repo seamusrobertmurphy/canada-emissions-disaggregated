@@ -70,13 +70,37 @@ Each source takes one entry in this form.
 
 | Field | Entry |
 |---|---|
-| Dataset | Canadian National Fire Database, fire points, version of 2026-08-11, layer `NFDB_point_20260811`, 448,618 fires with year, location and size in hectares |
+| Dataset | Canadian National Fire Database, fire points, version of 2026-08-11, layer `NFDB_point_20260811`, 448,618 fires with year, month, location, size in hectares, cause code (`CAUSE`, values H, N and U), fire type (`FIRE_TYPE`) and prescribed flag (`PRESCRIBED`). The publisher's citation reads "Canadian Forest Service. Canadian National Fire Database – Agency Fire Data. Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre, Edmonton, Alberta." |
 | Publisher | Natural Resources Canada, Canadian Forest Service |
-| Link | https://cwfis.cfs.nrcan.gc.ca/ha/nfdb and the file https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_pnt/current_version/NFDB_point_shp.zip |
+| Link | https://cwfis.cfs.nrcan.gc.ca/ha/nfdb, the catalogue record https://cwfis.cfs.nrcan.gc.ca/en/catalogue/results/7355c08f-1590-41cc-a751-8856afaa5959 and the file https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_pnt/current_version/NFDB_point_shp.zip |
 | Licence | Open Government Licence, Canada |
-| Retrieved | 2026-11-03, 42 MB |
+| Retrieved | 2026-11-03, 42 MB; metadata PDF and README read 2026-11-04 |
 | Local path | `02.inputs/nfdb/raw/NFDB_point_shp.zip` |
-| Read by | `zones` for the area burned by ecological zone, cached as `02.inputs/ipcc/burned-area-by-zone.csv`, and for the fires of 1,000 ha or more on the map |
+| Read by | `zones`, which places every fire of 2001 to 2024 in its ecological zone, soil class, land cover class and province and caches the sums by year, zone, soil, cover, cause, type, month and province as `02.inputs/ipcc/fires-by-stratum.csv`, and keeps the fires of 1,000 ha or more with their cause for the map |
+
+### IPCC default soil classes
+
+| Field | Entry |
+|---|---|
+| Dataset | IPCC default soil classes derived from the Harmonized World Soil Data Base (Ver. 1.1), 5 arc-minute global raster, 4320 × 2160, EPSG:4326, Idrisi raster `SOIL_TYPE.rst` with sidecar `SOIL_TYPE.RDC` converted to `soil_type.tif`. Legend from the sidecar, 1 Organic, 2 Sandy Soils, 3 Wetland Soils, 4 Volcanic Soils, 5 Spodic Soils, 6 High Activity Clay Soils, 7 Low Activity Clay Soils, 8 Other Areas, 0 background |
+| Publisher | ISRIC World Soil Information, Batjes (2010), Report 2009/02b |
+| Link | No retrieval link was recorded at delivery. The file came from the `02.inputs/IPCC/Soil Type (IPCC 2019)/` folder of the sibling repository `ipcc-carbon-gains`, whose manifest records the same absence. The report is cited as `batjes2010ipcc` |
+| Licence | Not recorded |
+| Retrieved | Copied 2026-11-04 |
+| Local path | `02.inputs/ipcc/raw/soil_type.tif` and `SOIL_TYPE.RDC`, with the Canada crop committed as `02.inputs/ipcc/soil-type-canada.tif` (34 kB) because the raw file has no public link |
+| Read by | `zones` for the soil class of every fire and for panels (c) and (f) of the strata map |
+
+### MODIS land cover
+
+| Field | Entry |
+|---|---|
+| Dataset | MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m SIN Grid V061, MCD12Q1, band `LC_Type1` (IGBP classes), year 2023, exported at 2 km in EPSG:4326 over −141.5 to −52 degrees longitude and 41 to 84 degrees latitude |
+| Publisher | NASA Land Processes Distributed Active Archive Center, Friedl and Sulla-Menashe (2022), through the Google Earth Engine collection `MODIS/061/MCD12Q1` |
+| Link | https://doi.org/10.5067/MODIS/MCD12Q1.061 and https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1 |
+| Licence | NASA data, no restriction on use |
+| Retrieved | 2026-11-04 through the Earth Engine Python API, project `murphys-deforisk` |
+| Local path | `02.inputs/ipcc/mcd12q1-2023-canada.tif` (709 kB), committed because a rebuild needs an Earth Engine account; the `zones` chunk rebuilds it through `reticulate` only when it is missing |
+| Read by | `zones` for the land cover class of every fire and for panels (d) to (f) of the strata map |
 
 ### IPCC 2024 expert meeting report
 
