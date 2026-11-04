@@ -4,7 +4,7 @@
 
 ## Abstract
 
-Canada reported its managed forest with natural disturbance disaggregated from human activity, as cited in the 2019 Refinement to the guidelines of the Intergovernmental Panel on Climate Change. Whether it decided the credit a country could claim had not been tested. This study ran Canada’s 2026 inventory through ART TREES, the standard of the Architecture for REDD+ Transactions, for the crediting years 2017 to 2024, with and without the disaggregation. A third account followed Australia’s rule, which excluded natural disturbance only in fire years above a threshold. With the disaggregation, Canada showed reductions in 6 of 8 crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, emissions exceeded the crediting level by 853.6 million tonnes in 2023. Australia’s rule gave Canada 396.2 million tonnes, 4.6 times its reported account, because ordinary fire years in the reference period raised the crediting level. The disaggregated account stayed uncertain by more than its own size, with deductions of 51.8 to 1,176.9 per cent. Nothing was left to issue once uncertainty reached 235 per cent. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. Crediting standards relying on the disaggregation therefore needed a stated record length and regrowth period. They also needed to exclude only the part of an extreme fire year’s emissions above those of an ordinary year. The uncertainty deduction had to be taken on gross emissions and removals rather than on a net near zero.
+Canada reported its managed forest with natural disturbance disaggregated from human activity, as cited in the 2019 Refinement to the guidelines of the Intergovernmental Panel on Climate Change. Whether it decided the credit a country could claim had not been tested. This study ran Canada’s 2026 inventory through ART TREES, the standard of the Architecture for REDD+ Transactions, for the crediting years 2017 to 2024, with and without the disaggregation. A third account followed the threshold rule, which excluded natural disturbance only in fire years above a threshold. With the disaggregation, Canada showed reductions in 6 of 8 crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, emissions exceeded the crediting level by 853.6 million tonnes in 2023. the threshold rule gave Canada 396.2 million tonnes, 4.6 times its reported account, because ordinary fire years in the reference period raised the crediting level. The disaggregated account stayed uncertain by more than its own size, with deductions of 51.8 to 1,176.9 per cent. Nothing was left to issue once uncertainty reached 235 per cent. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. Crediting standards relying on the disaggregation therefore needed a stated record length and regrowth period. They also needed to exclude only the part of an extreme fire year’s emissions above those of an ordinary year. The uncertainty deduction had to be taken on gross emissions and removals rather than on a net near zero.
 
 ![Fig. 1](03.outputs/PNG/fig-inventory.png)
 
@@ -47,7 +47,7 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 
 *Fig. 3 Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.*
 
-*Table 2 Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The Australian rule account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural. A negative reduction is emissions above the crediting level, a reversal under ART TREES.*
+*Table 2 Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The threshold account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural. A negative reduction is emissions above the crediting level, a reversal under ART TREES.*
 
 <table>
 <thead>
@@ -57,8 +57,8 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 <th width="2000" align="left">Disaggregated reductions (Mt)</th>
 <th width="2000" align="left">Undisaggregated emissions (Mt)</th>
 <th width="2000" align="left">Undisaggregated reductions (Mt)</th>
-<th width="2000" align="left">Australian rule emissions (Mt)</th>
-<th width="2000" align="left">Australian rule reductions (Mt)</th>
+<th width="2000" align="left">Threshold rule emissions (Mt)</th>
+<th width="2000" align="left">Threshold rule reductions (Mt)</th>
 </tr>
 </thead>
 <tbody>
@@ -73,7 +73,7 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 </tbody>
 </table>
 
-*Table 3 Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory. The burned area share is the province’s share of the area burned in Canada. The Australian rule account leaves out the natural disturbance line only in years that pass both the national and the provincial test.*
+*Table 3 Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory. The burned area share is the province’s share of the area burned in Canada. The threshold account leaves out the natural disturbance line only in years that pass both the national and the provincial test.*
 
 <table>
 <thead>
@@ -84,8 +84,8 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 <th width="2000" align="left">Disaggregated reductions (Mt)</th>
 <th width="2000" align="left">Undisaggregated emissions (Mt)</th>
 <th width="2000" align="left">Undisaggregated reductions (Mt)</th>
-<th width="2000" align="left">Australian rule emissions (Mt)</th>
-<th width="2000" align="left">Australian rule reductions (Mt)</th>
+<th width="2000" align="left">Threshold rule emissions (Mt)</th>
+<th width="2000" align="left">Threshold rule reductions (Mt)</th>
 </tr>
 </thead>
 <tbody>
@@ -111,9 +111,9 @@ Canada reported its managed forest with natural disturbance disaggregated from h
 <th width="2000" align="left">Disaggregated deduction (%)</th>
 <th width="2000" align="left">Undisaggregated reductions (Mt)</th>
 <th width="2000" align="left">Undisaggregated interval (% of mean)</th>
-<th width="2000" align="left">Australian rule reductions (Mt)</th>
-<th width="2000" align="left">Australian rule interval (% of mean)</th>
-<th width="2000" align="left">Australian rule deduction (%)</th>
+<th width="2000" align="left">Threshold rule reductions (Mt)</th>
+<th width="2000" align="left">Threshold rule interval (% of mean)</th>
+<th width="2000" align="left">Threshold rule deduction (%)</th>
 </tr>
 </thead>
 <tbody>
