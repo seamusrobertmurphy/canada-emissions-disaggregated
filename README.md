@@ -1,137 +1,16 @@
-# canada-emissions-disaggregated
-
-This repository holds a manuscript in development on disaggregating natural disturbance from human activity in Canada's forest carbon inventory, as the 2019 Refinement to the IPCC guidelines allows, and on what that disaggregation does to the credit a country or province can claim under ART TREES. It compares the account Canada reports with the same land undisaggregated and with a third account built under Australia's natural disturbance rule, and it checks whether the FAOSTAT fire emissions for Canada can be rebuilt from FAOSTAT's own method. The whole analysis is one Quarto document, `01.manuscript/Manuscript.qmd`, and rendering it with R reproduces every number, table and figure the paper reports.
-
-## Hard rules
-
-These rules were set by Seamus Murphy on 17 September 2026 in these words, "only code that is present inside the manuscript.qmd is considered in the analysis, any code left outside in helper scripts or anywhere are disregarded, and as a result we rely only report calculcation estimates from the runtime by R of the full manuscript markdown."
-
-1. Only code inside `01.manuscript/Manuscript.qmd` is part of the study. A script anywhere else in this repository, or on any machine, is disregarded, and an output it produced is not evidence and is not cited.
-2. Every estimate the paper reports is computed by R while the full manuscript renders, and is written into the prose as an inline `r` expression or printed by a chunk. No number is typed by hand.
-3. Every chunk is R, shows its code with `echo: true` and runs with `eval: true`. No chunk calls `source()`, reads chunks from another file, includes another document, shells out with `system()` or reads from `05.tasks/`. The pre-render guard `01.manuscript/_tools/check-manuscript-code.py` checks all of this and stops the render on any breach.
-4. A step that is slow or fetches data runs inside a guarded chunk, which writes its output to `02.inputs/` or `03.outputs/` and rebuilds that output only when the file is missing. Deleting the output and rendering again reproduces it from the same code and the same seed.
-5. Every line that reads a third-party dataset carries, in the comment lines directly above it, the dataset's name and the link it was retrieved from, the DOI as an https link where one exists. The same entry is recorded in `02.inputs/README.md`.
-6. The scripts in `01.manuscript/_tools/` format the Word file, count its words and rebuild the results block of this README. None of them computes anything the paper reports.
-7. `05.tasks/` holds correspondence and working notes only. Nothing is read from it or written to it by a render, and it is not in git.
-
-A guarded chunk that fetches a dataset takes this form.
-
-```r
-#| label: fetch-example
-#| echo: true
-#| output: false
-
-# <Dataset name as the publisher gives it>
-# <https link or DOI the file was retrieved from>
-if (!file.exists("02.inputs/example/raw/example.csv")) {
-  dir.create("02.inputs/example/raw", recursive = TRUE)
-  download.file("<https link>", "02.inputs/example/raw/example.csv", mode = "wb")
-}
-example <- readr::read_csv("02.inputs/example/raw/example.csv")
-```
-
-## Repository layout
-
-| Path | Contents |
-|---|---|
-| `01.manuscript/Manuscript.qmd` | The manuscript and the entire analysis |
-| `01.manuscript/_tools/` | Render hooks that check the manuscript, format the Word file and rebuild this README |
-| `02.inputs/` | Input data, with the provenance of every source in `02.inputs/README.md` |
-| `03.outputs/PNG/` | Figures written by the render at 300 dpi |
-| `03.outputs/TBL/` | Tables written by the render as CSV |
-| `04.references/` | `references.bib`, the citation style, the Word reference document and the HTML stylesheet |
-| `04.references/literature/` | Saved PDFs of cited work, kept out of git |
-| `05.tasks/` | Correspondence and working notes, kept out of git |
-
-## Rendering
-
-Render from the repository root with a bare command, so that both formats are produced, Word first.
-
-```bash
-quarto render
-```
-
-The Word copy for submission is rendered with the code hidden, `quarto render --to docx -M echo:false`, while the HTML keeps every chunk visible. The README block below is built from the HTML, so render that format after a change to the prose or captions.
-
-The submission to Climatic Change, which reviews double blind, is four files. The same render also produces `Title-page.docx` from `Title-page.qmd`, which carries the author, affiliation, contributions, funding, competing interests, repository address and acknowledgements, and `Cover-letter.docx` from `Cover-letter.qmd`. The anonymised manuscript is a second render of the same source followed by the anonymiser, which removes the author block and the file properties and refuses to finish if any identifying string remains.
-
-```bash
-quarto render 01.manuscript/Manuscript.qmd --to docx -M echo:false --output Manuscript-anonymised.docx
-mv Manuscript-anonymised.docx 01.manuscript/
-python3 01.manuscript/_tools/anonymise-docx.py 01.manuscript/Manuscript-anonymised.docx
-```
-
-Quarto runs the steps in this order.
-
-1. `clean-appledouble.py` deletes the `._` files the exFAT drive writes beside every file.
-2. `check-manuscript-code.py` stops the render if the manuscript depends on code it does not contain.
-3. R renders `Manuscript.qmd` to `Manuscript.docx` and `Manuscript.html`, with every chunk run from the repository root.
-4. `format-tables.py` sets every Word table to 16.5 cm wide and 8 pt, shares the columns in proportion to the widest cell each must hold on one line, sets body rows to 0.6 cm and the header to the lines it needs, and gives any table wider than 16.5 cm its own landscape page with the page numbers running on.
-5. `stamp-wordcounts.py` counts the Word file, fills the word count paragraph and reports the counts.
-6. `build-readme.py` replaces the block between the render markers below with the title, the abstract, a list of every figure and table with the section it sits in, and the figures and tables themselves.
-
-The hooks need Python 3.12 with `lxml`. The manuscript needs R 4.4 with `knitr`, `rmarkdown`, `flextable` and `ggplot2`, read from the global user library.
-
-## Tables and figures
-
-Every table is a chunk labelled `tbl-` with its caption in `#| tbl-cap:`, printed through `fmt_tbl()` from the setup chunk, which centres the header, right-aligns numeric columns and left-aligns text. Every figure is a chunk labelled `fig-` with its caption in `#| fig-cap:`, drawn with `ggplot2` on the setup theme `th` and written to `03.outputs/PNG/` at 300 dpi. The prose refers to each as `@tbl-name` or `@fig-name`, so Quarto numbers them and no caption types its own number. A table the manuscript reports is also written to `03.outputs/TBL/` as CSV by the chunk that builds it.
-
-Significance in a table is marked beside the estimate, `*` for p ≤ 0.05, `**` for p ≤ 0.01, `***` for p ≤ 0.001 and `****` for p ≤ 0.0001, with the legend in the caption. Exact p-values, with a floor of p < 0.001, belong in the prose.
-
-## References
-
-`04.references/references.bib` holds one entry per cited work. Each journal article is taken from its CrossRef record rather than typed, and a report or chapter without a DOI is taken from its own title page. Citations print in APA style from `apa.csl` until a target journal is chosen, when its own style replaces it after its current guide for authors has been read.
-
-## Git rules
-
-Raw third-party data, saved PDFs, `05.tasks/`, the Claude Code state in `.claude/` and `CLAUDE.md`, and every Quarto and knitr intermediate are ignored, because this repository is public and GitHub rejects any file over 100 MB. The manuscript source, the render hooks, the bibliography, the style files, the rendered `Manuscript.docx` and `Manuscript.html`, and the derived figures and tables are committed. Commit subjects are plain imperative sentences that give the reason for the change.
-
-## Traps
-
-A bracketed citation placed directly after a cross-reference is swallowed and never prints, because pandoc reads the bracket as the suffix of the reference beside it. Writing `@fig-test [@kurz2024revised]` gives "Figure 1" and no citation, and the render reports nothing. A comma between the two, `@fig-test, [@kurz2024revised]`, prints both. Every citation is therefore read back out of the render rather than trusted from the source.
-
-## Current render
-
-<!-- render:start -->
-
-## Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances
+# Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances
 
 *Uncertainty deductions under the ART TREES standard and the IPCC Tier 1 forest fire emissions estimate*
 
-Everything from here to the end marker is generated from the render by `01.manuscript/_tools/build-readme.py`. Do not edit it by hand.
-
-### Abstract
+## Abstract
 
 Canada reported its managed forest with natural disturbance disaggregated from human activity, as cited in the 2019 Refinement to the guidelines of the Intergovernmental Panel on Climate Change. Whether it decided the credit a country could claim had not been tested. This study ran Canada’s 2026 inventory through ART TREES, the standard of the Architecture for REDD+ Transactions, for the crediting years 2017 to 2024, with and without the disaggregation. A third account followed Australia’s rule, which excluded natural disturbance only in fire years above a threshold. With the disaggregation, Canada showed reductions in 6 of 8 crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, emissions exceeded the crediting level by 853.6 million tonnes in 2023. Australia’s rule gave Canada 396.2 million tonnes, 4.6 times its reported account, because ordinary fire years in the reference period raised the crediting level. The disaggregated account stayed uncertain by more than its own size, with deductions of 51.8 to 1,176.9 per cent. Nothing was left to issue once uncertainty reached 235 per cent. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. Crediting standards relying on the disaggregation therefore needed a stated record length and regrowth period. They also needed to exclude only the part of an extreme fire year’s emissions above those of an ordinary year. The uncertainty deduction had to be taken on gross emissions and removals rather than on a net near zero.
 
-### Figures and tables
-
-The render holds 3 figures and 7 tables, listed here in document order with the section each sits in.
-
-- Fig. 1, in section 2.3 Canadian inventory. Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory.
-- Table 1, in section 2.8 Fire emission method. Tier 1 defaults of the 2006 Guidelines matched to Canada’s ecological zones.
-- Fig. 2, in section 2.9 Tier 1 by zone. Canada’s ecological zones of Table 4.1 of the 2006 Guidelines, from the FAO 2010 map, with every fire of 1,000 hectares or more in the Canadian National Fire Database for 2001 to 2024 (upper panel), and the climate zones of Figure 3A.5.1 of the 2019 Refinement at 0.5 degree (lower panel).
-- Fig. 3, in section 3.1 Reported national emissions. Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts.
-- Table 2, in section 3.3 Crediting Canada. Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period.
-- Table 3, in section 3.4 Crediting British Columbia. Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory.
-- Table 4, in section 3.5 Account uncertainty. Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws.
-- Table 5, in section 3.8 FAOSTAT’s coefficients. Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division.
-- Table 6, in section 3.9 Tier 1 by zone. The Tier 1 fire estimate for Canada rebuilt by ecological zone from the national fire record, 2023, with the burned area each zone averaged over 2001 to 2024.
-- Table 7, in section 3.10 Higher tier data. Canadian datasets available for each term of the Tier 1 fire equation, against the default FAO applied.
-
-### Results
-
-Every figure and table below is reproduced from the current render, in the order it appears in the manuscript.
-
-#### Fig. 1
-
 ![Fig. 1](03.outputs/PNG/fig-inventory.png)
 
-*Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory. The lower panel is the natural disturbance line the table shows beside the total but leaves out of it.*
+*Fig. 1 Net emissions of Canada’s land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 inventory. The lower panel is the natural disturbance line the table shows beside the total but leaves out of it.*
 
-#### Table 1
-
-*Tier 1 defaults of the 2006 Guidelines matched to Canada’s ecological zones. The zone and its code follow Table 4.1 of Chapter 4, and the area is the zone’s extent within Canada. Fuel burned is the product of fuel load and combustion factor in Table 2.4, mean and standard error. The combustion factor is from Table 2.6, mean and standard deviation. Table 2.6 gives no wildfire value for other temperate forests or for grassland, so the values of all other temperate forests and of all savanna grasslands are shown. The emission factors are the Table 2.5 row named, mean and standard deviation. Tundra has no printed error and no combustion factor.*
+*Table 1 Tier 1 defaults of the 2006 Guidelines matched to Canada’s ecological zones. The zone and its code follow Table 4.1 of Chapter 4, and the area is the zone’s extent within Canada. Fuel burned is the product of fuel load and combustion factor in Table 2.4, mean and standard error. The combustion factor is from Table 2.6, mean and standard deviation. Table 2.6 gives no wildfire value for other temperate forests or for grassland, so the values of all other temperate forests and of all savanna grasslands are shown. The emission factors are the Table 2.5 row named, mean and standard deviation. Tundra has no printed error and no combustion factor.*
 
 <table>
 <thead>
@@ -160,21 +39,15 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Fig. 2
-
 ![Fig. 2](03.outputs/PNG/fig-zones.png)
 
-*Canada’s ecological zones of Table 4.1 of the 2006 Guidelines, from the FAO 2010 map, with every fire of 1,000 hectares or more in the Canadian National Fire Database for 2001 to 2024 (upper panel), and the climate zones of Figure 3A.5.1 of the 2019 Refinement at 0.5 degree (lower panel). Canada Atlas Lambert projection, EPSG:3978.*
-
-#### Fig. 3
+*Fig. 2 Canada’s ecological zones of Table 4.1 of the 2006 Guidelines, from the FAO 2010 map, with every fire of 1,000 hectares or more in the Canadian National Fire Database for 2001 to 2024 (upper panel), and the climate zones of Figure 3A.5.1 of the 2019 Refinement at 0.5 degree (lower panel). Canada Atlas Lambert projection, EPSG:3978.*
 
 ![Fig. 3](03.outputs/PNG/fig-accounts.png)
 
-*Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.*
+*Fig. 3 Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.*
 
-#### Table 2
-
-*Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The Australian rule account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural. A negative reduction is emissions above the crediting level, a reversal under ART TREES.*
+*Table 2 Emissions and reductions for Canada’s managed land under three accounts, 2017 to 2024, on a 2012 to 2016 reference period. The Australian rule account leaves out the natural disturbance line only in the years the 13 year baseline classes as natural. A negative reduction is emissions above the crediting level, a reversal under ART TREES.*
 
 <table>
 <thead>
@@ -200,9 +73,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 3
-
-*Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory. The burned area share is the province’s share of the area burned in Canada. The Australian rule account leaves out the natural disturbance line only in years that pass both the national and the provincial test.*
+*Table 3 Emissions and reductions for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory. The burned area share is the province’s share of the area burned in Canada. The Australian rule account leaves out the natural disturbance line only in years that pass both the national and the provincial test.*
 
 <table>
 <thead>
@@ -229,9 +100,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 4
-
-*Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws. The reduction is the mean of the draws. The interval is half the distance between the 5th and 95th percentiles of the draws, the 90 per cent interval ART TREES requires, as a percentage of the mean reduction. The deduction is that percentage multiplied by the standard’s adjustment factor, 0.524417 over 1.645006, and is the share of the reduction withheld. A percentage is printed only where the mean reduction is positive.*
+*Table 4 Reductions and their uncertainty for Canada under the three accounts, from 10,000 Monte Carlo draws. The reduction is the mean of the draws. The interval is half the distance between the 5th and 95th percentiles of the draws, the 90 per cent interval ART TREES requires, as a percentage of the mean reduction. The deduction is that percentage multiplied by the standard’s adjustment factor, 0.524417 over 1.645006, and is the share of the reduction withheld. A percentage is printed only where the mean reduction is positive.*
 
 <table>
 <thead>
@@ -259,9 +128,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 5
-
-*Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division. Fuel is biomass burned divided by burned area, the product of fuel load and combustion factor listed in Table 2.4 of the 2006 Guidelines, named by the row it equals. Each emission factor is the gas emitted divided by biomass burned. Every item’s factors equal the savanna and grassland row of Table 2.5, whose extra tropical forest row is given last for comparison. FAO publishes no carbon dioxide for the savanna, grassland and shrubland items.*
+*Table 5 Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division. Fuel is biomass burned divided by burned area, the product of fuel load and combustion factor listed in Table 2.4 of the 2006 Guidelines, named by the row it equals. Each emission factor is the gas emitted divided by biomass burned. Every item’s factors equal the savanna and grassland row of Table 2.5, whose extra tropical forest row is given last for comparison. FAO publishes no carbon dioxide for the savanna, grassland and shrubland items.*
 
 <table>
 <thead>
@@ -285,9 +152,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 6
-
-*The Tier 1 fire estimate for Canada rebuilt by ecological zone from the national fire record, 2023, with the burned area each zone averaged over 2001 to 2024. Fuel burned and the emission factors are the zone’s rows in Table 1. Carbon dioxide equivalent uses the inventory’s warming potentials of 28 for methane and 265 for nitrous oxide. The uncertainty is the Approach 1 half width of the 95 per cent interval for carbon dioxide, from the printed spreads of the fuel and emission factor, with no error on burned area. The last row is the value FAO published for the same year from one fuel value and the savanna emission factors.*
+*Table 6 The Tier 1 fire estimate for Canada rebuilt by ecological zone from the national fire record, 2023, with the burned area each zone averaged over 2001 to 2024. Fuel burned and the emission factors are the zone’s rows in Table 1. Carbon dioxide equivalent uses the inventory’s warming potentials of 28 for methane and 265 for nitrous oxide. The uncertainty is the Approach 1 half width of the 95 per cent interval for carbon dioxide, from the printed spreads of the fuel and emission factor, with no error on burned area. The last row is the value FAO published for the same year from one fuel value and the savanna emission factors.*
 
 <table>
 <thead>
@@ -318,9 +183,7 @@ Every figure and table below is reproduced from the current render, in the order
 </tbody>
 </table>
 
-#### Table 7
-
-*Canadian datasets available for each term of the Tier 1 fire equation, against the default FAO applied.*
+*Table 7 Canadian datasets available for each term of the Tier 1 fire equation, against the default FAO applied.*
 
 <table>
 <thead>
@@ -338,5 +201,3 @@ Every figure and table below is reproduced from the current render, in the order
 <tr><td align="left">Natural share</td><td align="left">None</td><td align="left">Stand replacing fire and disturbances killing over 20 per cent of a stand, tracked to a regional harvest age of 45 to 99 years (Environment and Climate Change Canada, 2026)</td></tr>
 </tbody>
 </table>
-
-<!-- render:end -->

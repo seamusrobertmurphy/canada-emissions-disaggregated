@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Rebuild the results block of the repository README from the rendered manuscript.
+"""Rebuild the repository README from the rendered manuscript.
 
-The README keeps its written protocols above a marker line. Everything between
-<!-- render:start --> and <!-- render:end --> is replaced on each run with the title, the
-abstract and every rendered figure and table in the order they appear in the manuscript,
-all taken from the current render rather than retyped so the two cannot drift. Wired into
-_quarto.yml as a post-render step, and runnable by hand:
+Seamus ruled on 4 November 2026 that the README hold only the manuscript's title and
+subtitle, its abstract and its figures and tables, with no comments and no guidance, so
+this script writes the whole file from the current render and nothing is kept by hand.
+Wired into _quarto.yml as a post-render step, and runnable by hand:
 
     python3 01.manuscript/_tools/build-readme.py
 
@@ -30,7 +29,6 @@ HTML = ROOT / "01.manuscript" / "Manuscript.html"
 QMD = ROOT / "01.manuscript" / "Manuscript.qmd"
 FIGDIR = ROOT / "03.outputs" / "PNG"
 OUT = ROOT / "README.md"
-START, END = "<!-- render:start -->", "<!-- render:end -->"
 
 MIN_FIG_WIDTH = 1000  # anything narrower is interface furniture, not a figure
 
@@ -210,54 +208,29 @@ def main() -> None:
             if not path:
                 continue
             n_fig += 1
-            body += [f"#### {label or 'Figure'}", "",
-                     f"![{label}]({path.as_posix()})", "", f"*{text}*", ""]
+            body += [f"![{label}]({path.as_posix()})", "", f"*{label} {text}*", ""]
         else:
             got = to_pipe_table(chunk)
             if not got:
                 continue
             table, note = got
             n_tbl += 1
-            body += [f"#### {label or 'Table'}", "", f"*{text}*", "", table, ""]
+            body += [f"*{label} {text}*", "", table, ""]
             if note:
                 body += [f"*{note}*", ""]
-        overview.append(f"- {label}, in section {section_of(start)}. {first}.")
 
     parts = [
-        START,
-        "",
-        f"## {fm.get('title', 'Manuscript')}",
+        f"# {fm.get('title', 'Manuscript')}",
         "",
         f"*{fm['subtitle']}*" if fm.get("subtitle") else "",
         "",
-        "Everything from here to the end marker is generated from the render by "
-        "`01.manuscript/_tools/build-readme.py`. Do not edit it by hand.",
-        "",
-        "### Abstract",
+        "## Abstract",
         "",
         fm.get("abstract") or abstract_from_render(doc),
         "",
-        "### Figures and tables",
-        "",
-        f"The render holds {n_fig} figures and {n_tbl} tables, listed here in document order "
-        "with the section each sits in.",
-        "",
-        *overview,
-        "",
-        "### Results",
-        "",
-        "Every figure and table below is reproduced from the current render, "
-        "in the order it appears in the manuscript.",
-        "",
         *body,
-        END,
     ]
-    readme = OUT.read_text(encoding="utf8")
-    if START not in readme or END not in readme:
-        raise SystemExit(f"{OUT.name} has no {START} and {END} markers; add them where the results belong")
-    head, rest = readme.split(START, 1)
-    tail = rest.split(END, 1)[1]
-    OUT.write_text(head + "\n".join(parts) + tail, encoding="utf8")
+    OUT.write_text("\n".join(parts).rstrip("\n") + "\n", encoding="utf8")
     print(f"wrote {OUT.relative_to(ROOT)}: {n_fig} figures and {n_tbl} tables, in document order")
 
 
