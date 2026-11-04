@@ -102,6 +102,54 @@ Each source takes one entry in this form.
 | Local path | `02.inputs/ipcc/mcd12q1-2023-canada.tif` (709 kB), committed because a rebuild needs an Earth Engine account; the `zones` chunk rebuilds it through `reticulate` only when it is missing |
 | Read by | `zones` for the land cover class of every fire and for panels (d) to (f) of the strata map |
 
+### Terrestrial ecozones of Canada
+
+| Field | Entry |
+|---|---|
+| Dataset | Terrestrial Ecozones, National Ecological Framework for Canada, Ecological Stratification Working Group (1995), shapefile `Ecozones/ecozones.shp`, 25 polygons in 15 ecozones, field `ZONE_NAME` |
+| Publisher | Agriculture and Agri-Food Canada, Canadian Soil Information Service |
+| Link | https://sis.agr.gc.ca/cansis/nsdb/ecostrat/gis_data.html and the file https://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/ecozone_shp.zip |
+| Licence | Government of Canada terms and conditions; the page states no dataset licence |
+| Retrieved | 2026-11-04, 1.5 MB |
+| Local path | `02.inputs/nrcan/raw/ecozone_shp.zip` |
+| Read by | `national` |
+
+### FBP fuel types
+
+| Field | Entry |
+|---|---|
+| Dataset | CFFDRS Fire Behaviour Prediction (FBP) Fuel Types, Canada, 250 m, 2026 release, `FBP_FuelTypes_Canada_2026_250m.tiff`, classified from the Spatialized Canadian National Forest Inventory, the ecozones of Canada and the National Burned Area Composite. The raster carries no legend; its codes were read from the catalogue's map service (`public:cffdrs_fbp_fuel_types`, GetFeatureInfo) on 2026-11-04: 1 to 7 C-1 to C-7, 11 D-1 leafless aspen, 13 D-1/D-2 aspen, 31 O-1a matted grass, 101 non-fuel, 102 water, 105 vegetated non-fuel, 415, 625, 650 and 675 M-1/M-2 boreal mixedwood at 15, 25, 50 and 75 per cent conifer |
+| Publisher | Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre |
+| Link | https://cwfis.cfs.nrcan.gc.ca/en/catalogue/results/b7cc58d4-4b16-4a3a-8131-3ae370d4d6e6 and the file https://cwfis.cfs.nrcan.gc.ca/downloads/fuels/current/FBP_FuelTypes_Canada_2026_250m.tiff |
+| Licence | Open Government Licence, Canada |
+| Retrieved | 2026-11-04, 49 MB, with the 2024 metadata PDFs, the CIFFC colour standard and the 2014 metadata beside it |
+| Local path | `02.inputs/nrcan/raw/FBP_FuelTypes_Canada_2026_250m.tiff` |
+| Read by | `national` |
+
+### Peatland map of Canada
+
+| Field | Entry |
+|---|---|
+| Dataset | Distribution of peatlands in Canada using National Forest Inventory forest structure and ancillary land cover data (2011), classified peatland map `ClassPeatMap_2020_EPSG_3978.tif`, 250 m, classes 0 not peat, 1 open bog, 2 open poor fen, 3 open rich fen, 4 treed bog, 5 treed poor fen, 6 treed rich fen, 7 forested bog, 8 forested poor fen, 9 forested rich fen |
+| Publisher | Natural Resources Canada, Canadian Forest Service, Webster et al. (2018) |
+| Link | https://open.canada.ca/data/en/dataset/62d63169-7739-4515-9178-8f628c32a9d4 and the file http://ftp.maps.canada.ca/pub/nrcan_rncan/Forestry-industry_Industrie-forestiere/peatlands/ClassPeatMap_2020_EPSG_3978.tif; method https://doi.org/10.1186/s13021-018-0105-5 |
+| Licence | Open Government Licence, Canada |
+| Retrieved | 2026-11-04, 19 MB |
+| Local path | `02.inputs/nrcan/raw/ClassPeatMap_2020_EPSG_3978.tif` |
+| Read by | `national` |
+
+### National Burned Area Composite statistics
+
+| Field | Entry |
+|---|---|
+| Dataset | National Burned Area Composite (NBAC), summary statistics by year and administrative unit, 1972 to 2025, version of 2026-05-13, `NBAC_summarystats_1972_to_2025_20260513.xlsx`, sheet `sumstats_admin_name`, column `CANADA` in adjusted hectares |
+| Publisher | Natural Resources Canada, Canadian Forest Service |
+| Link | https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/ and the file https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_summarystats_1972_to_2025_20260513.xlsx |
+| Licence | Open Government Licence, Canada |
+| Retrieved | 2026-11-04, 4.4 MB |
+| Local path | `02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx` |
+| Read by | `national` |
+
 ### IPCC 2024 expert meeting report
 
 | Field | Entry |

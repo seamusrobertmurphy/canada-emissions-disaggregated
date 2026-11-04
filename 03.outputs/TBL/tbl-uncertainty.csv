@@ -1,9 +1,25 @@
-Year,Disaggregated reductions (Mt),Disaggregated interval (% of mean),Disaggregated deduction (%),Undisaggregated reductions (Mt),Undisaggregated interval (% of mean),Australian rule reductions (Mt),Australian rule interval (% of mean),Australian rule deduction (%)
-2017,6.7,821,261.6,-80.8,NA,-127.2,NA,NA
-2018,1.5,3692,1176.9,-126.5,NA,67.7,82,26.2
-2019,9.7,574,182.9,-18.5,NA,-65,NA,NA
-2020,-0.7,NA,NA,109.4,52,63.4,88,28.1
-2021,12,458,146,-165.7,NA,78.1,70,22.4
-2022,-20.2,NA,NA,2.6,2126,-44.1,NA,NA
-2023,34.4,163,51.8,-853.8,NA,100.3,56,17.9
-2024,21.4,264,84.2,-296.9,NA,87.3,64,20.4
+Year,Account,Mean reduction (Mt CO2e),Standard deviation (Mt CO2e),5th percentile (Mt CO2e),95th percentile (Mt CO2e),Relative half width (%),Adjustment factor (%)
+2017,Disaggregated,6.7,33.7,-49,61,821,261.6
+2017,Undisaggregated,-80.8,34.4,-137,-24,,
+2017,Threshold,-127.2,34.1,-183,-71,,
+2018,Disaggregated,1.5,33.6,-54,57,3692,1176.9
+2018,Undisaggregated,-126.5,34.1,-183,-71,,
+2018,Threshold,67.7,33.9,12,123,82,26.2
+2019,Disaggregated,9.7,34.0,-46,66,574,182.9
+2019,Undisaggregated,-18.5,33.9,-74,37,,
+2019,Threshold,-65.0,33.9,-120,-8,,
+2020,Disaggregated,-0.7,34.3,-57,55,,
+2020,Undisaggregated,109.4,34.0,53,166,52,16.5
+2020,Threshold,63.4,33.9,7,119,88,28.1
+2021,Disaggregated,12.0,33.6,-43,67,458,146.0
+2021,Undisaggregated,-165.7,33.8,-221,-110,,
+2021,Threshold,78.1,33.6,23,133,70,22.4
+2022,Disaggregated,-20.2,33.8,-76,35,,
+2022,Undisaggregated,2.6,34.0,-53,59,2126,677.8
+2022,Threshold,-44.1,34.0,-100,11,,
+2023,Disaggregated,34.4,33.8,-21,91,163,51.8
+2023,Undisaggregated,-853.8,34.2,-909,-797,,
+2023,Threshold,100.3,34.3,44,156,56,17.9
+2024,Disaggregated,21.4,34.0,-35,79,264,84.2
+2024,Undisaggregated,-296.9,34.1,-353,-241,,
+2024,Threshold,87.3,34.2,31,143,64,20.4

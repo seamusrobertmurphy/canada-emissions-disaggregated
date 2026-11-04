@@ -1,9 +1,25 @@
-Year,Disaggregated emissions (Mt),Disaggregated reductions (Mt),Undisaggregated emissions (Mt),Undisaggregated reductions (Mt),Australian rule emissions (Mt),Australian rule reductions (Mt)
-2017,19,6.7,219,-81.3,219,-127.3
-2018,24,1.7,264,-126.3,24,67.7
-2019,16,9.7,156,-18.3,156,-64.3
-2020,26,-0.3,28.7,109,28.7,63
-2021,14,11.7,304,-166.3,14,77.7
-2022,46,-20.3,135,2.7,135,-43.3
-2023,-8.7,34.4,991.3,-853.6,-8.7,100.4
-2024,4.3,21.4,434.3,-296.6,4.3,87.4
+Year,Account,Net emissions (Mt CO2e),Crediting level (Mt CO2e),Emission reduction (Mt CO2e)
+2017,Disaggregated,19.0,25.7,6.7
+2017,Undisaggregated,219.0,137.7,-81.3
+2017,Threshold,219.0,91.7,-127.3
+2018,Disaggregated,24.0,25.7,1.7
+2018,Undisaggregated,264.0,137.7,-126.3
+2018,Threshold,24.0,91.7,67.7
+2019,Disaggregated,16.0,25.7,9.7
+2019,Undisaggregated,156.0,137.7,-18.3
+2019,Threshold,156.0,91.7,-64.3
+2020,Disaggregated,26.0,25.7,-0.3
+2020,Undisaggregated,28.7,137.7,109.0
+2020,Threshold,28.7,91.7,63.0
+2021,Disaggregated,14.0,25.7,11.7
+2021,Undisaggregated,304.0,137.7,-166.3
+2021,Threshold,14.0,91.7,77.7
+2022,Disaggregated,46.0,25.7,-20.3
+2022,Undisaggregated,135.0,137.7,2.7
+2022,Threshold,135.0,91.7,-43.3
+2023,Disaggregated,-8.7,25.7,34.4
+2023,Undisaggregated,991.3,137.7,-853.6
+2023,Threshold,-8.7,91.7,100.4
+2024,Disaggregated,4.3,25.7,21.4
+2024,Undisaggregated,434.3,137.7,-296.6
+2024,Threshold,4.3,91.7,87.4

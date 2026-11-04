@@ -1,0 +1,57 @@
+---
+title: "Online Resources"
+subtitle: "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances"
+format:
+  docx:
+    reference-doc: ../04.references/style-formal.docx
+bibliography: ../04.references/references.bib
+csl: ../04.references/apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: or-setup
+fmt_tbl <- function(df, right = NULL) {
+  right <- union(names(df)[vapply(df, is.numeric, TRUE)], right)
+  flextable::flextable(df) |>
+    flextable::fontsize(size = 9, part = "all") |>
+    flextable::align(align = "center", part = "header") |>
+    flextable::align(j = setdiff(names(df), right), align = "left", part = "body") |>
+    flextable::align(j = right, align = "right", part = "body") |>
+    flextable::colformat_int(big.mark = "") |>
+    flextable::padding(padding.top = 1, padding.bottom = 1, part = "all") |>
+    flextable::set_table_properties(layout = "autofit", width = 1)
+}
+read_tbl <- function(f) readr::read_csv(file.path("../03.outputs/TBL", f), show_col_types = FALSE, col_types = readr::cols(.default = "c"))
+```
+
+Online Resources for the article submitted to Climatic Change. Each item is cited in the article by its number. The code that produced every table and figure is in the article's source file in the repository named in the Data availability statement.
+
+**Online Resource 1** Net emissions of Canada's land use sector by category, 1990 to 2024, from Table 6-1 of the 2026 National Inventory Report. The lower panel is the natural disturbance line the table shows beside the total but leaves out of it.
+
+![](../03.outputs/PNG/fig-inventory-1.png)
+
+**Online Resource 2** Tier 1 defaults of the 2006 Guidelines matched to Canada's ecological zones. The zone and its code follow Table 4.1 of Chapter 4, and the area is the zone's extent within Canada. Fuel burned is the product of fuel load and combustion factor in Table 2.4, mean and standard error. The combustion factor is from Table 2.6, mean and standard deviation. Table 2.6 gives no wildfire value for other temperate forests or for grassland, so the values of all other temperate forests and of all savanna grasslands are shown. The emission factors are the Table 2.5 row named, mean and standard deviation. Tundra has no printed error and no combustion factor.
+
+```{r}
+fmt_tbl(read_tbl("tbl-defaults.csv"))
+```
+
+**Online Resource 3** Net emissions, crediting level and emission reduction for British Columbia under three accounts, 2017 to 2024, on a 2012 to 2016 reference period, from the provincial lines of the national inventory. The burned area share is the province's share of the area burned in Canada. The threshold account leaves out the natural disturbance line only in years that pass both the national and the provincial test.
+
+```{r}
+fmt_tbl(read_tbl("tbl-bc.csv"))
+```
+
+**Online Resource 4** Fuel consumption and emission factors behind the FAOSTAT fire values for Canada, 2001 to 2024, recovered by division. Fuel is biomass burned divided by burned area, the product of fuel load and combustion factor listed in Table 2.4 of the 2006 Guidelines, named by the row it equals. Each emission factor is the gas emitted divided by biomass burned. Every item's factors equal the savanna and grassland row of Table 2.5, whose extra tropical forest row is given last for comparison. FAO publishes no carbon dioxide for the savanna, grassland and shrubland items.
+
+```{r}
+fmt_tbl(read_tbl("tbl-coefficients.csv"))
+```
+
+**Online Resource 5** Area burned in Canada and British Columbia by year and recorded cause, 2001 to 2024, from the fire points of the Canadian National Fire Database. Natural, human and unknown are the database's cause codes.
+
+![](../03.outputs/PNG/fig-cause-1.png)
