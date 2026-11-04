@@ -55,3 +55,7 @@ fmt_tbl(read_tbl("tbl-coefficients.csv"))
 **Online Resource 5** Area burned in Canada and British Columbia by year and recorded cause, 2001 to 2024, from the fire points of the Canadian National Fire Database. Natural, human and unknown are the database's cause codes.
 
 ![](../03.outputs/PNG/fig-cause-1.png)
+
+**Online Resource 6** Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, under two accounts. The disaggregated account is the total Canada reports, and the undisaggregated account is that total plus the natural disturbance line.
+
+![](../03.outputs/PNG/fig-accounts-1.png)
