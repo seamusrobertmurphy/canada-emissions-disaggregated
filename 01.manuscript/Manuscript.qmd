@@ -946,25 +946,421 @@ Canada's managed forest showed emission reductions under a crediting standard in
 
 National greenhouse gas inventories reported the land sector on the assumption that every emission and removal on managed land was caused by people [@kurz2018quantifying]. Managed land thereby stood in for human activity. The 2019 Refinement to the Guidelines of the Intergovernmental Panel on Climate Change (IPCC) called this assumption the managed land proxy, abbreviated there as MLP. In Canada's managed forest the assumption added the emissions and later removals of fire and insects to those of harvest and regrowth. The effect of management was thereby hidden in the reported trend [@kurz2018quantifying]. The Refinement took Canada's series for 1990 to 2016 as its example and offered "an approach that countries can apply on a voluntary basis within the MLP in order to indicate those emissions and removals considered to result from human activity, and those that are understood to result from natural disturbances" [@ogle2019generic]. The approach assumed that the carbon dioxide released would "be balanced by subsequent removals across the landscape at some future point in time" [@ogle2019generic]. In July 2024 an IPCC expert meeting in Ispra recorded that natural disturbance emissions "may be disaggregated from the total, but the total must be reported" [@ipcc2024reconciling].
 
-The rule that every disturbance on managed land was reported began in 2003. The Good Practice Guidance held that omitting natural disturbance losses "would overestimate carbon uptakes" [@ipcc2003gpg, p. 1.11]. The Guidance asked for all disturbed areas in managed forest "irrespective of whether these were the result of human activity" [@ipcc2003gpg, p. 3.27]. Factoring out was "currently under consideration by the IPCC and will therefore not be addressed further here" [@ipcc2003gpg, p. 4.33]. The IPCC wrote accounting rules for natural disturbance once, for the second Kyoto commitment period. The 2013 Supplement replaced the test of cause with "beyond the control of, and not materially influenced by a Party", because a wildfire's "immediate cause may be difficult to determine" [@ipcc2014kp, p. 2.36]. The Supplement excluded only the emissions above a background level built from a calibration period, and every later removal on the same land [@ipcc2014kp, pp. 2.46 to 2.53]. The 2019 Refinement carried the definition into reporting guidance word for word and carried none of the rules [@ogle2019generic, p. 2.69].
+The rule that every disturbance on managed land was reported began in 2003. The Good Practice Guidance held that omitting natural disturbance losses "would overestimate carbon uptakes" [@ipcc2003gpg, p. 1.11]. The Guidance asked for all disturbed areas in managed forest "irrespective of whether these were the result of human activity" [@ipcc2003gpg, p. 3.27]. Factoring out was "currently under consideration by the IPCC and will therefore not be addressed further here" [@ipcc2003gpg, p. 4.33]. The 2006 Guidelines defined anthropogenic emissions as "all those occurring on 'managed land'" [@paustian2006introduction, p. 1.5]. Work of the same years examined the factoring out of past disturbance and management carried in the age-class structure of a forest [@bottcher2008accounting]. A study of sink verification examined the exclusion of natural sinks from the estimates being verified [@alexandrov2004verification]. @canadell2007factoring set out five ways to factor out natural and indirect human effects, from longer accounting periods to national baselines. The outbreak of mountain pine beetle in British Columbia was expected to turn the province's forest into a net source by 2020 [@teobaldelli2008natural]. That expectation led to the argument that later agreements should protect the incentive to manage forests against the effects of natural disturbance [@teobaldelli2008natural]. An expert meeting of May 2009 kept the proxy because "none of the alternatives considered at the meeting proved to be sufficiently well developed" [@ipcc2010revisiting, p. 7].
 
-The effect of the assumption in Canada was known before the Refinement. CBM-CFS3, the Carbon Budget Model of the Canadian Forest Sector, was run with future fire and insect outbreaks drawn at random. The runs projected the managed forest as a net source of 30 to 245 Mt CO~2~e a year over 2008 to 2012. Canada therefore did not count forest management under the Kyoto Protocol [@kurz2008risk]. Canada's 2017 inventory then divided the managed forest into land dominated by natural disturbance and the rest, two parts that summed to the net emissions of the whole [@kurz2018quantifying]. A burned stand stayed in the natural disturbance part until it had enough wood to be worth cutting. The inventory set that point at 60 years nationally in 2017 and later at 60 to 100 years by region [@kurz2018quantifying; @kurz2024revised]. A revised harvest record for 1889 to 1989 moved 34 million hectares into that part. The revision cut the sink reported as anthropogenic for 1990 by 113 Mt CO~2~e, or 56 per cent, without any change in the forest [@kurz2024revised]. The model's fire matrices assumed that every fire burned at high severity. Those matrices gave regional emissions typically 10 to 25 per cent higher than a sub-model built on mapped burn severity [@thompson2026incorporating].
+ The IPCC wrote accounting rules for natural disturbance once, for the second Kyoto commitment period. The 2013 Supplement replaced the test of cause with "beyond the control of, and not materially influenced by a Party", because a wildfire's "immediate cause may be difficult to determine" [@ipcc2014kp, p. 2.36]. The Supplement excluded only the emissions above a background level built from a calibration period, and every later removal on the same land [@ipcc2014kp, pp. 2.46 to 2.53]. The 2019 Refinement carried the definition into reporting guidance word for word and carried none of the rules [@ogle2019generic, p. 2.69]. A review of the rules from Kyoto to Paris found factoring out natural effects "not sufficiently secured by currently discussed accounting rules" [@krug2018accounting].
 
-Australia's inventory classed a fire season as anomalous when national fire emissions exceeded the mean of a 2000 to 2012 baseline by two standard deviations. A state's fire emissions were then classed as natural if its burned area exceeded its own mean by one standard deviation [@bowman2023wildfire]. The 2023 fire season in Canada burned `r sprintf("%.1f", nbac_2023 / 1e6)` Mha on the National Burned Area Composite [@cfs2026nbac]. Inverse modelling of satellite carbon monoxide put the season's emissions at 647 Tg of carbon, with a range of 570 to 727, "comparable to the annual fossil fuel emissions of large nations" [@byrne2024carbon]. The length of the record behind the test decided whether such a year counted as natural.
+The effect of the assumption in Canada was known before the Refinement. CBM-CFS3, the Carbon Budget Model of the Canadian Forest Sector, was run with future fire and insect outbreaks drawn at random. The runs projected the managed forest as a net source of 30 to 245 Mt CO~2~e a year over 2008 to 2012. Canada therefore did not count forest management under the Kyoto Protocol [@kurz2008risk]. A projection to 2100 put the annual chance of a sink after 2050 near 70 per cent if area burned stayed at its late twentieth-century level [@metsaranta2010implications]. Canada's 2017 inventory then divided the managed forest into land dominated by natural disturbance and the rest, two parts that summed to the net emissions of the whole [@kurz2018quantifying]. A burned stand stayed in the natural disturbance part until it had enough wood to be worth cutting. The inventory set that point at 60 years nationally in 2017 and later at 60 to 100 years by region [@kurz2018quantifying; @kurz2024revised]. A revised harvest record for 1889 to 1989 moved 34 million hectares into that part. The revision cut the sink reported as anthropogenic for 1990 by 113 Mt CO~2~e, or 56 per cent, without any change in the forest [@kurz2024revised]. A review of 426 articles on Canada's forest carbon from 2012 to 2021 placed the inventory's treatment of human influence and natural disturbance at the centre of that research [@smyth2024year]. The model's fire matrices assumed that every fire burned at high severity. Those matrices gave regional emissions typically 10 to 25 per cent higher than a sub-model built on mapped burn severity [@thompson2026incorporating]. Applied in Europe, CBM-CFS3 put the European Union's forest management sink at 365 Mt CO~2~ a year for 2000 to 2012, about 8 per cent below the inventories [@pilli2016modellingb]. The model matched the inventories of 26 countries well in nine and partly in ten [@pilli2016modellinga]. The mismatches lay in how year-to-year variation, the pools other than biomass and the carbon dioxide from fire were represented [@pilli2016modellinga]. Adding fire to the simulation reduced Italy's sink for 2000 to 2009 from 23.7 to 20.5 Mt CO~2~ a year [@pilli2013application].
 
-A percentage uncertainty was the interval divided by the reported value, so a balance near zero had an uncertainty larger than itself whatever method produced the interval. The 2019 uncertainty chapter advised caution "in cases where the point estimate is very small when compared with the size of the confidence interval" [@paciornik2019uncertainties]. The interval of Canada's own model was 32.2 Tg C a year wide, which @metsaranta2017uncertainty stated "cannot be meaningfully expressed in percentage terms because its range of possible values contains zero".
+Natural disturbance was already lowering the forest sinks of other regions. European forest carbon uptake in 2020 to 2023 was 17 to 27 per cent below its 1990 to 2019 average in every dataset compared [@linscheid2026forest]. A preprint projected a 44 per cent fall in the forest sink of the European Union by 2030 [@ritter2025alarming]. The United States divided forest carbon change between growth, land use change and natural disturbances such as fire [@woodall2015forest]. Australia's inventory classed a fire season as anomalous when national fire emissions exceeded the mean of a 2000 to 2012 baseline by two standard deviations. A state's fire emissions were then classed as natural if its burned area exceeded its own mean by one standard deviation [@bowman2023wildfire]. The 2023 fire season in Canada burned `r sprintf("%.1f", nbac_2023 / 1e6)` Mha on the National Burned Area Composite [@cfs2026nbac]. The season's May to October temperature was 2.2 °C above the 1991 to 2020 average [@jain2024drivers]. Inverse modelling of satellite carbon monoxide put the season's emissions at 647 Tg of carbon, with a range of 570 to 727, "comparable to the annual fossil fuel emissions of large nations" [@byrne2024carbon]. The length of the record behind the test decided whether such a year counted as natural.
 
-The Food and Agriculture Organization (FAO) published in FAOSTAT, its statistical database, an independent estimate of every country's fire emissions. The IPCC recommended that estimate for checking an inventory's activity data, the measured quantities such as burned area, and its emission estimates. FAO's five page methodological note gave the equation and the layers, but not the row of Table 2.4 each zone took [@fao2025fires]. FAO set the emissions of fires in organic soils to zero outside Southeast Asia, publishing the full values in a separate table [@fao2025fires].
+A percentage uncertainty was the interval divided by the reported value, so a balance near zero had an uncertainty larger than itself whatever method produced the interval. The 2019 uncertainty chapter advised caution "in cases where the point estimate is very small when compared with the size of the confidence interval" [@paciornik2019uncertainties]. The interval of Canada's own model was 32.2 Tg C a year wide, which @metsaranta2017uncertainty stated "cannot be meaningfully expressed in percentage terms because its range of possible values contains zero". Regional carbon budgets met the same limit. Australia's land took up 36 ± 29 Tg C a year over 1990 to 2011 [@haverd2013australian]. The Brazilian Amazon gave −59 ± 160 Tg C a year over 2010 to 2018 from bottom-up estimates [@rosan2023contemporary]. In California the data could not establish whether the land was a source or a sink [@divittorio2021quantifying].
+
+The Food and Agriculture Organization (FAO) published in FAOSTAT, its statistical database, an independent estimate of every country's fire emissions. The IPCC recommended that estimate for checking an inventory's activity data, the measured quantities such as burned area, and its emission estimates. FAO's five page methodological note gave the equation and the layers, but not the row of IPCC Table 2.4 each zone took [@fao2025fires]. FAO set the emissions of fires in organic soils to zero outside Southeast Asia, publishing the full values in a separate table [@fao2025fires]. The IPCC Tier 1 defaults gave global forest results that differed by about 40 per cent between the 2003 and 2006 guidance [@petrescu2012global]. Independent fire estimates disagreed widely, four satellite burned area datasets for Siberia differing up to fivefold [@kukavskaya2013fire]. The national inventories of the five southern European countries most affected by fire estimated burnt biomass by different methods [@chiriaco2013comparison]. Methods based on nominal rates of biomass loss could overstate or understate the biomass burnt [@chiriaco2013comparison]. The United States reported 129 Tg CO~2~ from forest fires in 2022 from a system of its own, the Wildland Fire Emissions Inventory System [@smith2024application]. In North America over 2010 to 2019, inventories, atmospheric inversions and process models disagreed on the net source, partly through what each counted as human [@poulter2026north].
 
 The crediting standard, the rules under which the reported reductions of a country or province became credits, set what the disaggregation was worth. The standard here was that of the Architecture for REDD+ Transactions, The REDD+ Environmental Excellence Standard, cited as ART TREES, which stated that "only anthropogenic emissions shall be considered, and IPCC guidance shall be adhered to on any exclusion of non-anthropogenic emissions" [@art2021trees]. The 2025 draft of ART TREES added that natural disturbances "may be excluded if they are 'non-anthropogenic events or non-anthropogenic circumstances that cause significant emissions and are beyond the control of, and not materially influenced by a country'" [@art2025trees3; @ogle2019generic]. The Methods set out the standard's uncertainty deduction, buffer and reversal rule.
 
-No study found had run the account of a country or province through a crediting standard both with and without the disaggregation. The nearest compared Canada's reported series under different divisions of the managed forest [@kurz2024revised; @bysouth2024high] or mapped reversal risk without reference to an inventory [@wu2026global]. This study therefore tested the natural disturbance approach of the 2019 Refinement on Canada and British Columbia over 1990 to 2024, the period of the 2026 national inventory. The objective was to compare what Canada and British Columbia each reported, and what each could have been credited under ART TREES, with and without the approach. A third account followed a threshold rule. Because the Refinement set no length for the record behind a natural disturbance test, baselines of 13, 20 and 30 years were compared. The fire emissions FAO published for Canada were then rebuilt from its stated method, by ecological zone and by stratum. The rebuilt estimate was set beside the national datasets that a higher tier would use.
+No study found had run the account of a country or province through a crediting standard both with and without the disaggregation. The nearest compared Canada's reported series under different divisions of the managed forest [@kurz2024revised; @bysouth2024high], compared national inventories with independent estimates [@grassi2022carbon; @nyawira2024pantropical; @pilli2016modellinga], or mapped reversal risk without reference to an inventory [@wu2026global]. This study therefore tested the natural disturbance approach of the 2019 Refinement on Canada and British Columbia over 1990 to 2024, the period of the 2026 national inventory. The objective was to compare what Canada and British Columbia each reported, and what each could have been credited under ART TREES, with and without the approach. A third account followed a threshold rule. Because the Refinement set no length for the record behind a natural disturbance test, baselines of 13, 20 and 30 years were compared. The fire emissions FAO published for Canada were then rebuilt from its stated method, by ecological zone and by stratum. The rebuilt estimate was set beside the national datasets that a higher tier would use.
 
 # Materials and Methods
 
 ## Data sources
 
-Thirteen datasets were read. Canada's inventory came as Table 6-1 of the 2026 National Inventory Report, 1990 to 2024, from Environment and Climate Change Canada. Canada's fire polygons and fire points came from the Canadian National Fire Database of Natural Resources Canada, 1990 to 2024. FAO supplied the Emissions from Fires domain of FAOSTAT, 1990 to 2024, and the AllFires_OrganicSoils table it released beside that domain, 1990 to 2021. The two MODIS products behind that domain were read in Google Earth Engine, MCD64A1 burned area for 2001 to 2024 [@giglio2021mcd64a1] and MCD12Q1 land cover for 2001 to 2023 [@friedl2022mcd12q1]. Both products were summed within the 2015 Global Administrative Unit Layers boundary of Canada that FAO's note named. The ecological zones came from FAO's 2010 map, the default stratification of the 2006 Guidelines [@fao2012gez]. The soil classes came from the 5 arc minute IPCC default raster derived from the Harmonized World Soil Database [@batjes2010ipcc]. The fire points carried each fire's cause, type and month [@cfs2026nfdb]. Three national layers were read beside the global ones, the fuel types of the Fire Behaviour Prediction System [@cfs2026fbp] and the peatland map of the Canadian Forest Service [@webster2018spatially]. The burned area totals of the National Burned Area Composite came from the same service [@cfs2026nbac].
+Thirteen datasets were read. Canada's inventory came as Table 6-1 of the 2026 National Inventory Report, 1990 to 2024, from Environment and Climate Change Canada. Canada's fire polygons and fire points came from the Canadian National Fire Database of Natural Resources Canada, 1990 to 2024. FAO supplied the Emissions from Fires domain of FAOSTAT, 1990 to 2024, and the AllFires_OrganicSoils table it released beside that domain, 1990 to 2021. The two MODIS products behind that domain were read in Google Earth Engine, MCD64A1 burned area for 2001 to 2024 [@giglio2021mcd64a1] and MCD12Q1 land cover for 2001 to 2023 [@friedl2022mcd12q1]. Both products were summed within the 2015 Global Administrative Unit Layers boundary of Canada that FAO's note named. The ecological zones came from FAO's 2010 map, the default stratification of the 2006 Guidelines [@fao2012gez]. The soil classes came from the 5 arc minute IPCC default raster derived from the Harmonized World Soil Database [@batjes2010ipcc]. A 1 km update from version 2.0 of that database was published in 2024 [@sinitambirivoutin2024updated]. The fire points carried each fire's cause, type and month [@cfs2026nfdb]. Adjustments to the area burned in the historical fire record were published for Canada [@skakun2021area]. Three national layers were read beside the global ones, the fuel types of the Fire Behaviour Prediction System [@cfs2026fbp] and the peatland map of the Canadian Forest Service [@webster2018spatially]. The burned area totals of the National Burned Area Composite came from the same service, which built them from agency perimeters with Landsat and Sentinel mapping [@cfs2026nbac; @hall2020generating; @skakun2022extending].
+
+## Literature review
+
+A scoping review mapped the literature behind the Introduction and the Discussion, following the five stages of the scoping review framework as later refined [@arksey2005scoping; @levac2010scoping; @peters2020updated]. The review was reported against the PRISMA extension for scoping reviews [@tricco2018prisma]. The review questions, the search strings and the rules for what would change each claim were committed in a protocol before the first query ran. Search terms were drawn only from the title, subtitle and keywords the manuscript had on 22 October 2026. Each search wrote its results to a file that later renders read in place of the services.
+
+```{r}
+#| label: review-terms
+
+if (!file.exists("04.references/review/search-terms.csv")) {
+  front <- rmarkdown::yaml_front_matter(knitr::current_input(dir = TRUE))
+  small <- c("a", "an", "and", "as", "at", "by", "do", "does", "for", "from", "how", "in", "into", "is", "its", "of", "on", "or", "the", "to", "under", "using", "versus", "what", "why", "with")
+  phrases <- \(x) x |>
+    stringr::str_to_lower() |>
+    stringr::str_remove_all("[*_]") |>
+    stringr::str_replace_all("[^[:alnum:][:space:]-]", " | ") |>
+    stringr::str_replace_all(paste0("\\b(", paste(small, collapse = "|"), ")\\b"), " | ") |>
+    stringr::str_split_1("\\|") |>
+    stringr::str_squish() |>
+    purrr::keep(\(p) nchar(p) > 2)
+  dir.create("04.references/review", recursive = TRUE, showWarnings = FALSE)
+  dplyr::bind_rows(
+    tibble::tibble(term = stringr::str_squish(stringr::str_to_lower(unlist(front$keywords))), source = "keywords"),
+    tibble::tibble(term = phrases(front$title), source = "title"),
+    tibble::tibble(term = phrases(front$subtitle %||% ""), source = "subtitle")
+  ) |>
+    dplyr::distinct(term, .keep_all = TRUE) |>
+    dplyr::mutate(question = NA, concept = NA) |>
+    readr::write_csv("04.references/review/search-terms.csv", na = "")
+}
+```
+
+```{r}
+#| label: review-queries
+
+# The terms were drawn from the title, subtitle and keywords of 22 October 2026 and frozen with the protocol
+# in commit dd6f913. The keywords were cut from 46 to 6 on 2 November, so each term is checked against the
+# source the frozen file records for it, not against today's front matter.
+terms <- readr::read_csv("04.references/review/search-terms.csv", col_types = readr::cols(.default = "c")) |>
+  dplyr::filter(!is.na(question), !is.na(concept)) |>
+  dplyr::mutate(term = stringr::str_to_lower(term)) |>
+  tidyr::separate_longer_delim(question, " ")
+stray <- terms$term[!terms$source %in% c("title", "subtitle", "keywords")]
+if (nrow(terms) == 0) stop("No search terms selected in 04.references/review/search-terms.csv")
+if (length(stray) > 0) stop("Search terms with no title, subtitle or keyword source: ", paste(unique(stray), collapse = ", "))
+queries <- terms |>
+  dplyr::summarise(.by = c(question, concept), group = paste(term, collapse = "|")) |>
+  dplyr::summarise(.by = question, route = paste(c(dplyr::first(question), concept), collapse = "-"), concepts = paste(group, collapse = " AND "))
+record_id <- \(doi, title) dplyr::coalesce(stringr::str_to_lower(doi), stringr::str_squish(stringr::str_to_lower(stringr::str_replace_all(title, "[^[:alnum:] ]", " "))))
+```
+
+```{r}
+#| label: review-store
+
+if (!file.exists("02.inputs/derived/review-store-hits.csv")) {
+  dir.create("02.inputs/derived", recursive = TRUE, showWarnings = FALSE)
+  # library-science manifest, https://github.com/seamusrobertmurphy/library-science/blob/main/library/manifest.csv
+  manifest <- readr::read_csv("../library-science/library/manifest.csv", show_col_types = FALSE)
+  # library-science source notes, https://github.com/seamusrobertmurphy/library-science/tree/main/sources
+  notes <- tibble::tibble(path = list.files("../library-science/sources", "\\.md$", full.names = TRUE)) |>
+    dplyr::mutate(key = tools::file_path_sans_ext(basename(path)), note = purrr::map_chr(path, \(p) paste(readLines(p, warn = FALSE), collapse = " ")))
+  store <- manifest |>
+    dplyr::filter(status %in% c("verified", "filed", "unverified"), !is.na(title) | !is.na(key)) |>
+    dplyr::left_join(dplyr::select(notes, key, note), by = "key") |>
+    dplyr::mutate(text = stringr::str_to_lower(paste(title, note)))
+  hits <- queries |>
+    purrr::pmap(\(question, route, concepts) {
+      groups <- stringr::str_split_1(concepts, " AND ")
+      term <- \(x) if (stringr::str_ends(x, "\\*")) paste0(stringr::str_escape(stringr::str_remove(x, "\\*$")), "\\w*") else paste0(stringr::str_escape(x), "\\b")
+      patterns <- purrr::map_chr(groups, \(g) paste0("\\b(", paste(purrr::map_chr(stringr::str_split_1(g, "\\|"), term), collapse = "|"), ")"))
+      keep <- purrr::map(patterns, \(r) stringr::str_detect(store$text, r)) |> purrr::reduce(`&`)
+      store[keep, ] |> dplyr::transmute(question, route = paste0("store-", route), key, doi, title, year, venue = container, source_note = dplyr::if_else(has_source_note == "yes", key, NA))
+    }) |>
+    purrr::list_rbind()
+  readr::write_csv(hits, "02.inputs/derived/review-store-hits.csv")
+  queries |>
+    dplyr::transmute(strand = "library-science", route = paste0("store-", route), query = concepts, date = as.character(Sys.Date())) |>
+    dplyr::left_join(dplyr::count(hits, route, name = "retrieved"), by = "route") |>
+    dplyr::mutate(retrieved = tidyr::replace_na(retrieved, 0L), reported_total = retrieved, cap = NA, capped = FALSE, error = NA) |>
+    readr::write_csv("02.inputs/derived/review-log-store.csv", na = "")
+}
+```
+
+```{r}
+#| label: review-openalex
+
+if (!file.exists("02.inputs/derived/review-openalex-hits.csv")) {
+  search_openalex <- function(question, route, concepts, cap = 2000) {
+    query <- stringr::str_split_1(concepts, " AND ") |>
+      purrr::map_chr(\(g) paste0("(", paste0('"', stringr::str_remove(stringr::str_split_1(g, "\\|"), "\\*$"), '"', collapse = " OR "), ")")) |>
+      paste(collapse = " AND ")
+    tryCatch({
+      works <- list(); page <- 1; total <- NA
+      repeat {
+        # OpenAlex works, searched on title and abstract, https://docs.openalex.org/api-entities/works/search-works
+        body <- httr2::request("https://api.openalex.org/works") |>
+          httr2::req_url_query(filter = paste0("title_and_abstract.search:", query), `per-page` = 200, page = page,
+                               select = "doi,title,publication_year,primary_location,type,cited_by_count,abstract_inverted_index") |>
+          httr2::req_retry(max_tries = 8, is_transient = \(r) httr2::resp_status(r) == 429, backoff = \(i) 15 * i) |>
+          httr2::req_perform() |>
+          httr2::resp_body_json()
+        total <- body$meta$count
+        works <- c(works, body$results)
+        Sys.sleep(3)
+        if (length(body$results) < 200 || length(works) >= min(total, cap)) break
+        page <- page + 1
+      }
+      hits <- works |>
+        purrr::map(\(w) tibble::tibble(doi = stringr::str_remove(w$doi %||% NA_character_, "^https://doi.org/"), title = w$title %||% NA_character_, year = w$publication_year %||% NA_integer_,
+                                       venue = w$primary_location$source$display_name %||% NA_character_, type = w$type %||% NA_character_, citations = w$cited_by_count %||% NA_integer_,
+                                       abstract = if (length(w$abstract_inverted_index) == 0) NA_character_ else paste(rep(names(w$abstract_inverted_index), lengths(w$abstract_inverted_index))[order(unlist(w$abstract_inverted_index))], collapse = " "))) |>
+        purrr::list_rbind() |>
+        dplyr::mutate(question, route = paste0("oa-", route), .before = 1)
+      list(hits = hits, log = tibble::tibble(strand = "openalex", route = paste0("oa-", route), query, date = as.character(Sys.Date()), retrieved = nrow(hits), reported_total = total, cap, capped = total > cap, error = NA))
+    }, error = \(e) list(hits = NULL, log = tibble::tibble(strand = "openalex", route = paste0("oa-", route), query, date = as.character(Sys.Date()), retrieved = 0L, reported_total = NA, cap, capped = FALSE, error = conditionMessage(e))))
+  }
+  runs <- purrr::pmap(queries, search_openalex)
+  hits <- purrr::map(runs, "hits") |> purrr::list_rbind()
+  dir.create("02.inputs/review/raw", recursive = TRUE, showWarnings = FALSE)
+  hits |>
+    dplyr::transmute(id = record_id(doi, title), abstract) |>
+    dplyr::distinct(id, .keep_all = TRUE) |>
+    readr::write_csv("02.inputs/review/raw/review-abstracts.csv", na = "")
+  readr::write_csv(dplyr::select(hits, -abstract), "02.inputs/derived/review-openalex-hits.csv", na = "")
+  readr::write_csv(purrr::map(runs, "log") |> purrr::list_rbind(), "02.inputs/derived/review-log-openalex.csv", na = "")
+}
+```
+
+```{r}
+#| label: review-semantic-scholar
+
+if (!file.exists("02.inputs/derived/review-s2-hits.csv")) {
+  search_s2 <- function(question, route, concepts, cap = 3000) {
+    query <- stringr::str_split_1(concepts, " AND ") |>
+      purrr::map_chr(\(g) paste0("(", paste(purrr::map_chr(stringr::str_split_1(g, "\\|"), \(x) if (grepl(" ", x)) paste0('"', stringr::str_remove(x, "\\*$"), '"') else x), collapse = " | "), ")")) |>
+      paste(collapse = " + ")
+    tryCatch({
+      papers <- list(); token <- NULL; total <- NA
+      repeat {
+        # Semantic Scholar Academic Graph bulk search, https://api.semanticscholar.org/api-docs/graph#tag/Paper-Data/operation/get_graph_paper_bulk_search
+        body <- httr2::request("https://api.semanticscholar.org/graph/v1/paper/search/bulk") |>
+          httr2::req_url_query(query = query, fields = "title,year,venue,externalIds,citationCount,publicationTypes", token = token) |>
+          httr2::req_retry(max_tries = 4) |>
+          httr2::req_perform() |>
+          httr2::resp_body_json()
+        total <- body$total; token <- body$token
+        papers <- c(papers, body$data)
+        if (is.null(token) || length(papers) >= cap) break
+      }
+      works <- papers |>
+        purrr::map(\(w) tibble::tibble(doi = w$externalIds$DOI %||% NA_character_, title = w$title %||% NA_character_, year = w$year %||% NA_integer_, venue = w$venue %||% NA_character_, type = paste(unlist(w$publicationTypes), collapse = " "), citations = w$citationCount %||% NA_integer_)) |>
+        purrr::list_rbind()
+      list(hits = dplyr::mutate(works, question, route = paste0("s2-", route), .before = 1),
+           log = tibble::tibble(strand = "semantic-scholar", route = paste0("s2-", route), query, date = as.character(Sys.Date()), retrieved = nrow(works), reported_total = total, cap, capped = total > cap, error = NA))
+    }, error = \(e) list(hits = NULL, log = tibble::tibble(strand = "semantic-scholar", route = paste0("s2-", route), query, date = as.character(Sys.Date()), retrieved = 0L, reported_total = NA, cap, capped = FALSE, error = conditionMessage(e))))
+  }
+  runs <- purrr::pmap(queries, search_s2)
+  readr::write_csv(purrr::map(runs, "hits") |> purrr::list_rbind() |> dplyr::bind_rows(tibble::tibble(question = character(), route = character(), doi = character(), title = character())), "02.inputs/derived/review-s2-hits.csv", na = "")
+  readr::write_csv(purrr::map(runs, "log") |> purrr::list_rbind(), "02.inputs/derived/review-log-s2.csv", na = "")
+}
+```
+
+```{r}
+#| label: review-records
+
+if (!file.exists("02.inputs/derived/review-records.csv")) {
+  c("02.inputs/derived/review-store-hits.csv", "02.inputs/derived/review-openalex-hits.csv", "02.inputs/derived/review-s2-hits.csv") |>
+    purrr::map(\(f) readr::read_csv(f, col_types = readr::cols(.default = "c"))) |>
+    purrr::list_rbind() |>
+    dplyr::mutate(id = record_id(doi, title)) |>
+    dplyr::summarise(.by = id, doi = dplyr::first(stats::na.omit(doi)), title = dplyr::first(title), year = dplyr::first(stats::na.omit(year)), venue = dplyr::first(stats::na.omit(venue)), questions = paste(sort(unique(question)), collapse = " "), routes = paste(sort(unique(route)), collapse = " "), duplicates_merged = dplyr::n(), key = dplyr::first(stats::na.omit(key)), source_note = dplyr::first(stats::na.omit(source_note))) |>
+    dplyr::arrange(questions, dplyr::desc(year)) |>
+    dplyr::mutate(decision = NA, reason = NA, full_text = NA) |>
+    readr::write_csv("02.inputs/derived/review-records.csv", na = "")
+  c("02.inputs/derived/review-log-store.csv", "02.inputs/derived/review-log-openalex.csv", "02.inputs/derived/review-log-s2.csv") |>
+    purrr::map(\(f) readr::read_csv(f, col_types = readr::cols(.default = "c"))) |>
+    purrr::list_rbind() |>
+    readr::write_csv("02.inputs/derived/review-search-log.csv", na = "")
+}
+```
+
+```{r}
+#| label: review-chase
+
+central <- c()
+if (length(central) > 0 && !file.exists("02.inputs/derived/review-chase-hits.csv")) {
+  chase <- function(seed_doi, direction) {
+    # Semantic Scholar Academic Graph references and citations, https://api.semanticscholar.org/api-docs/graph#tag/Paper-Data
+    resp <- httr2::request(paste0("https://api.semanticscholar.org/graph/v1/paper/DOI:", seed_doi, "/", direction)) |>
+      httr2::req_url_query(fields = "title,year,venue,externalIds", limit = 1000) |>
+      httr2::req_retry(max_tries = 6) |>
+      httr2::req_error(is_error = \(r) FALSE) |>
+      httr2::req_perform()
+    if (httr2::resp_status(resp) != 200) return(tibble::tibble(seed = seed_doi, route = paste0("chase-", direction), error = httr2::resp_status_desc(resp)))
+    key <- if (direction == "references") "citedPaper" else "citingPaper"
+    httr2::resp_body_json(resp)$data |>
+      purrr::map(\(w) tibble::tibble(doi = w[[key]]$externalIds$DOI %||% NA_character_, title = w[[key]]$title %||% NA_character_, year = w[[key]]$year %||% NA_integer_, venue = w[[key]]$venue %||% NA_character_)) |>
+      purrr::list_rbind() |>
+      dplyr::mutate(seed = seed_doi, route = paste0("chase-", direction), .before = 1)
+  }
+  tidyr::expand_grid(seed_doi = central, direction = c("references", "citations")) |>
+    purrr::pmap(chase) |>
+    purrr::list_rbind() |>
+    readr::write_csv("02.inputs/derived/review-chase-hits.csv")
+}
+```
+
+```{r}
+#| label: review-screening
+
+if (!file.exists("02.inputs/derived/review-screening.csv")) {
+  records <- readr::read_csv("02.inputs/derived/review-records.csv", col_types = readr::cols(.default = "c"))
+  # Decisions on title and abstract by a language model, one row for each record in each pass, committed with the protocol
+  # The pilot pass read the author's 53 records blind under the first rule, the validation pass read 26 of them blind under the revised rule, and the screen pass read the rest
+  model <- readr::read_csv("04.references/review/screening-model.csv", col_types = readr::cols(.default = "c"))
+  # The author's decisions, entered by hand in the reading copy of review-records.csv that carries the abstracts, outside git
+  # Excel opened that copy as Mac Roman, so the accented characters in its ids are converted back to UTF-8 before the join
+  from_mac <- \(x) { y <- iconv(x, "UTF-8", "MACINTOSH"); Encoding(y) <- "UTF-8"; dplyr::coalesce(y, x) }
+  by_hand <- readxl::read_excel("02.inputs/review/raw/screening-with-abstracts.xlsx", col_types = "text") |>
+    dplyr::mutate(id = from_mac(id))
+  stopifnot(setequal(by_hand$id, records$id), setequal(c(by_hand$id[!is.na(by_hand$decision)], model$id[model$pass == "screen"]), records$id))
+  screening <- dplyr::select(by_hand, id, author = decision) |>
+    dplyr::left_join(dplyr::filter(model, pass %in% c("pilot", "screen")) |> dplyr::select(id, model = decision, reason, note), by = "id") |>
+    dplyr::mutate(screener = dplyr::if_else(is.na(author), "model", "author"), decision = dplyr::coalesce(author, model), reason = dplyr::if_else(decision == "exclude", reason, NA)) |>
+    dplyr::select(id, decision, reason, screener, author, note)
+  readr::write_csv(screening, "02.inputs/derived/review-screening.csv", na = "")
+  wb <- openxlsx::loadWorkbook("02.inputs/review/raw/screening-with-abstracts.xlsx")
+  openxlsx::writeData(wb, 1, dplyr::select(screening, decision, reason), startCol = 8)
+  openxlsx::writeData(wb, 1, dplyr::select(screening, screener, note), startCol = 11)
+  openxlsx::saveWorkbook(wb, "02.inputs/review/raw/screening-with-abstracts.xlsx", overwrite = TRUE)
+}
+screening <- readr::read_csv("02.inputs/derived/review-screening.csv", show_col_types = FALSE)
+```
+
+```{r}
+#| label: review-fulltext
+
+if (!file.exists("02.inputs/derived/review-fulltext.csv")) {
+  squash <- \(x) stringr::str_remove_all(stringr::str_to_lower(stringi::stri_trans_general(x, "NFKC; Latin-ASCII")), "[^a-z0-9]")
+  # library-science manifest, https://github.com/seamusrobertmurphy/library-science/blob/main/library/manifest.csv
+  held_doi <- stringr::str_to_lower(stats::na.omit(readr::read_csv("../library-science/library/manifest.csv", show_col_types = FALSE)$doi))
+  # PDFs saved by hand into library-science staging, named by author, year and title, outside git
+  staged <- squash(stringr::str_remove(basename(list.files("../library-science/library/staging", "\\.pdf$", recursive = TRUE)), "^.*?\\b(19|20)[0-9]{2}\\b"))
+  staged <- substr(staged[nchar(staged) >= 25], 1, 40)
+  wanted <- readr::read_csv("02.inputs/derived/review-records.csv", col_types = readr::cols(.default = "c")) |>
+    dplyr::select(id, doi, title, year, routes, url) |>
+    dplyr::inner_join(dplyr::filter(screening, decision %in% c("include", "undecided")) |> dplyr::select(id, decision), by = "id") |>
+    dplyr::mutate(work = squash(title),
+                  held = dplyr::case_when(routes == "grey" ~ "04.references/literature", stringr::str_to_lower(doi) %in% held_doi ~ "library-science pdf",
+                                          purrr::map_lgl(work, \(t) any(startsWith(t, staged))) ~ "library-science staging")) |>
+    dplyr::mutate(.by = work, held = dplyr::first(held[!is.na(held)]), copy = dplyr::row_number() > 1)
+  todo <- dplyr::filter(wanted, is.na(held), !copy)
+  look_up <- function(doi, title) {
+    req <- if (!is.na(doi)) {
+      # OpenAlex work by DOI, a single-work lookup that costs nothing against the daily budget, https://docs.openalex.org/api-entities/works/get-a-single-work
+      httr2::request(paste0("https://api.openalex.org/works/doi:", doi))
+    } else {
+      # OpenAlex works searched by title for a record with no DOI, at $0.001 of the $0.10 a day the unkeyed service allows, https://docs.openalex.org/api-entities/works/search-works
+      httr2::request("https://api.openalex.org/works") |>
+        httr2::req_url_query(filter = paste0("title.search:", stringr::str_squish(stringr::str_replace_all(stringi::stri_trans_nfkc(title), "[^[:alnum:]]", " "))), `per-page` = 5)
+    }
+    w <- req |> httr2::req_url_query(select = "title,authorships,best_oa_location,locations") |> httr2::req_retry(max_tries = 4) |> httr2::req_perform() |> httr2::resp_body_json()
+    if (is.na(doi)) w <- purrr::detect(w$results, \(r) squash(r$title %||% "") == squash(title))
+    list(urls = unique(stats::na.omit(c(w$best_oa_location$pdf_url %||% NA, purrr::map_chr(w$locations, \(l) l$pdf_url %||% NA)))),
+         authors = purrr::map_chr(w$authorships, \(a) a$author$display_name %||% NA))
+  }
+  folder <- file.path("../library-science/library/staging", paste0("ipcc-uncertainties-", Sys.Date()))
+  dir.create(folder, showWarnings = FALSE)
+  fetch <- function(id, doi, title, year, ...) {
+    found <- look_up(doi, title)
+    Sys.sleep(0.5)
+    author <- stringr::word(found$authors[1], -1)
+    name <- paste0(dplyr::coalesce(author, "Anon"), if (length(found$authors) > 2) " et al" else "", " ", year, " ",
+                   stringr::str_trunc(stringr::str_squish(stringr::str_replace_all(title, "[[:cntrl:]:/\\\\?*\"<>|]", " ")), 120, ellipsis = ""), ".pdf")
+    if (file.exists(file.path(folder, name))) name <- sub("\\.pdf$", paste0(" ", substr(rlang::hash(id), 1, 6), ".pdf"), name)
+    status <- "no open copy found"
+    for (u in found$urls) {
+      resp <- tryCatch(httr2::request(u) |> httr2::req_user_agent("ipcc-uncertainties literature review, R httr2") |> httr2::req_timeout(90) |>
+                         httr2::req_error(is_error = \(r) FALSE) |> httr2::req_perform(), error = \(e) NULL)
+      if (is.null(resp)) { status <- "no answer from the open copy"; next }
+      body <- if (httr2::resp_has_body(resp)) httr2::resp_body_raw(resp) else raw()
+      if (httr2::resp_status(resp) == 200 && length(body) > 10000 && identical(body[1:4], charToRaw("%PDF"))) {
+        writeBin(body, file.path(folder, name))
+        return(tibble::tibble(id, author, status = "downloaded", pdf_url = u, file = name))
+      }
+      status <- if (httr2::resp_status(resp) == 200) "open copy is a web page, not a PDF" else paste("publisher refused,", httr2::resp_status(resp))
+    }
+    tibble::tibble(id, author, status, pdf_url = found$urls[1], file = NA_character_)
+  }
+  got <- purrr::pmap(dplyr::select(todo, id, doi, title, year), \(...) tryCatch(fetch(...), error = \(e) tibble::tibble(id = list(...)$id, author = NA_character_, status = paste("lookup failed,", conditionMessage(e)), pdf_url = NA_character_, file = NA_character_)), .progress = TRUE) |>
+    purrr::list_rbind()
+  log <- wanted |>
+    dplyr::left_join(got, by = "id") |>
+    dplyr::mutate(status = dplyr::case_when(!is.na(held) ~ paste("held in", held), copy ~ "copy of a work listed above", .default = status)) |>
+    dplyr::select(id, doi, author, title, year, decision, status, url, pdf_url, file)
+  readr::write_csv(log, "02.inputs/derived/review-fulltext.csv", na = "")
+  log |>
+    dplyr::filter(!stringr::str_detect(status, "^(held|downloaded|copy)")) |>
+    dplyr::transmute(author, year, title, decision, link = dplyr::coalesce(dplyr::if_else(is.na(doi), NA, paste0("https://doi.org/", doi)), url, pdf_url), status) |>
+    readr::write_excel_csv("02.inputs/review/raw/pdfs-to-download.csv", na = "")
+}
+fulltext <- readr::read_csv("02.inputs/derived/review-fulltext.csv", show_col_types = FALSE)
+```
+
+```{r}
+#| label: review-bib
+
+if (!file.exists("04.references/review/review.json")) {
+  bib <- readr::read_file("04.references/references.bib")
+  held <- tibble::tibble(key = stringr::str_match_all(bib, "@\\w+\\{([^,]+),[^@]*?doi\\s*=\\s*\\{([^}]+)\\}")[[1]][, 2], doi = stringr::str_to_lower(stringr::str_match_all(bib, "@\\w+\\{([^,]+),[^@]*?doi\\s*=\\s*\\{([^}]+)\\}")[[1]][, 3]))
+  dois <- setdiff(stringr::str_to_lower(stats::na.omit(fulltext$doi[fulltext$status != "copy of a work listed above"])), held$doi)
+  # CrossRef and DataCite records of each work, by DOI content negotiation, https://citation.crosscite.org/docs.html
+  csl <- purrr::map(dois, \(d) tryCatch(httr2::request(paste0("https://doi.org/", d)) |> httr2::req_headers(Accept = "application/vnd.citationstyles.csl+json") |> httr2::req_retry(max_tries = 3) |> httr2::req_perform() |> httr2::resp_body_json(), error = \(e) NULL), .progress = TRUE) |>
+    purrr::compact() |>
+    purrr::map(\(w) w[intersect(names(w), c("type", "title", "author", "editor", "issued", "container-title", "volume", "issue", "page", "DOI", "publisher", "URL"))])
+  # CrossRef work types renamed to the item types of the Citation Style Language
+  csl_type <- c(`journal-article` = "article-journal", `book-chapter` = "chapter", `posted-content` = "article", `proceedings-article` = "paper-conference", dissertation = "thesis", `peer-review` = "review", `reference-entry` = "entry", `report-component` = "report", monograph = "book", `edited-book` = "book")
+  csl <- purrr::map(csl, \(w) purrr::list_modify(w, type = unname(dplyr::coalesce(csl_type[w$type], w$type))))
+  # Names kept to their parts and titles to one string, the forms Pandoc reads from CSL JSON
+  name_parts <- \(people) purrr::map(people, \(p) p[intersect(names(p), c("family", "given", "literal", "suffix", "non-dropping-particle", "dropping-particle"))]) |>
+    purrr::keep(\(p) length(p[intersect(names(p), c("family", "given", "literal"))]) > 0)
+  csl <- purrr::map(csl, \(w) {
+    w$author <- if (length(w$author)) name_parts(w$author)
+    w$editor <- if (length(w$editor)) name_parts(w$editor)
+    when <- purrr::keep(w$issued$`date-parts`[[1]], is.numeric)
+    w$issued <- if (length(when)) list(`date-parts` = list(when))
+    w$title <- unlist(w$title)[1]
+    w$`container-title` <- unlist(w$`container-title`)[1]
+    w
+  })
+  minor <- c("from", "with", "what", "does", "into", "their", "this", "that", "under", "over", "using", "toward", "towards", "across", "between", "after", "about", "when", "where", "which")
+  first_word <- \(t) purrr::detect(stringr::str_extract_all(stringr::str_to_lower(stringr::str_remove_all(paste(unlist(t), collapse = " "), "<[^>]+>")), "\\b[a-z]{4,}\\b")[[1]], \(w) !w %in% minor) %||% "work"
+  key <- purrr::map_chr(csl, \(w) paste0(stringr::str_remove_all(stringi::stri_trans_general(stringr::str_to_lower(w$author[[1]]$family %||% w$author[[1]]$literal %||% w$publisher %||% "anon"), "Latin-ASCII"), "[^a-z]"),
+                                         w$issued$`date-parts`[[1]][[1]] %||% "nd", first_word(w$title)))
+  key <- stats::ave(key, key, FUN = \(k) if (length(k) == 1) k else paste0(k, letters[seq_along(k)]))
+  stopifnot(!any(key %in% held$key))
+  csl <- purrr::map2(csl, key, \(w, k) c(list(id = k), w))
+  jsonlite::write_json(csl, "04.references/review/review.json", auto_unbox = TRUE, pretty = TRUE)
+  dplyr::bind_rows(held, tibble::tibble(key, doi = stringr::str_to_lower(purrr::map_chr(csl, "DOI")))) |>
+    readr::write_csv("04.references/review/review-keys.csv")
+}
+review_keys <- readr::read_csv("04.references/review/review-keys.csv", show_col_types = FALSE)
+```
+
+```{r}
+#| label: review-charting
+
+# Each included and undecided work charted from its title and abstract by a language model under charting-rule.md, committed with the protocol
+charting <- readr::read_csv("04.references/review/charting-model.csv", show_col_types = FALSE) |>
+  dplyr::left_join(dplyr::transmute(fulltext, id, doi = stringr::str_to_lower(doi)), by = "id") |>
+  dplyr::left_join(review_keys, by = "doi")
+stopifnot(setequal(charting$id, fulltext$id[fulltext$status != "copy of a work listed above"]))
+if (file.exists("02.inputs/review/raw/review-abstracts.csv")) {
+  # Abstracts of the records, the publishers' text, outside git
+  checked <- readr::read_csv("02.inputs/review/raw/review-abstracts.csv", show_col_types = FALSE) |>
+    dplyr::inner_join(dplyr::filter(charting, !is.na(quote)), by = "id")
+  stopifnot(all(stringr::str_detect(stringr::str_squish(checked$abstract), stringr::fixed(stringr::str_squish(checked$quote)))))
+}
+on <- \(q) sum(stringr::str_detect(charting$questions, q))
+```
+
+```{r}
+#| label: review-counts
+
+records <- readr::read_csv("02.inputs/derived/review-records.csv", show_col_types = FALSE) |>
+  dplyr::select(-decision, -reason) |>
+  dplyr::left_join(screening, by = "id")
+search_log <- readr::read_csv("02.inputs/derived/review-search-log.csv", show_col_types = FALSE)
+review_counts <- tibble::tibble(
+  Stage = c("Records retrieved", "Unique after removing duplicates", "Excluded on title and abstract", "Read in full", "Retained"),
+  Records = c(sum(search_log$retrieved), nrow(records), sum(records$decision == "exclude" & dplyr::coalesce(records$full_text, "") != "yes"), sum(records$full_text == "yes", na.rm = TRUE), sum(records$decision == "include"))
+)
+kappa <- \(a, b) {
+  lv <- c("include", "exclude", "undecided")
+  chance <- sum(prop.table(table(factor(a, lv))) * prop.table(table(factor(b, lv))))
+  (mean(a == b) - chance) / (1 - chance)
+}
+agreement <- readr::read_csv("04.references/review/screening-model.csv", show_col_types = FALSE) |>
+  dplyr::filter(pass != "screen") |>
+  dplyr::inner_join(dplyr::select(screening, id, author), by = "id") |>
+  dplyr::summarise(.by = pass, n = dplyr::n(), agree = sum(author == decision), kappa = kappa(author, decision))
+validation <- dplyr::filter(agreement, pass == "validation")
+works <- dplyr::filter(fulltext, status != "copy of a work listed above")
+review_reasons <- records |>
+  dplyr::filter(decision == "exclude") |>
+  dplyr::count(reason, name = "Records", sort = TRUE)
+oa <- dplyr::filter(search_log, strand == "openalex")
+s2 <- dplyr::filter(search_log, strand == "semantic-scholar")
+```
+
+On `r format(as.Date(min(search_log$date)), "%d %B %Y")` the `r nrow(oa)` searches of OpenAlex retrieved `r format(sum(oa$retrieved), big.mark = ",")` records on title and abstract. The same searches of the author's store of sources, each verified against CrossRef, retrieved `r n_store <- sum(search_log$retrieved[search_log$strand == "library-science"]); paste(n_store, if (n_store == 1) "record" else "records")`. `r if (all(!is.na(s2$error))) "Semantic Scholar refused every search made without an access key, so it contributed no records." else paste0("Semantic Scholar retrieved ", format(sum(s2$retrieved), big.mark = ","), " records.")` Guidelines, standards, inventory reports and methodological notes from the IPCC, Environment and Climate Change Canada, Architecture for REDD+ Transactions and FAO were added by hand, `r sum(records$routes == "grey")` in all. Merging the records that shared a DOI or a title left `r format(nrow(records), big.mark = ",")` unique records to screen. Scopus and Web of Science were not searched, because both required an institutional key.
+
+The author screened the first `r sum(records$screener == "author")` records on title and abstract, including a record that mentioned natural, anthropogenic, human-induced or any other kind of disturbance. The author's decisions showed that a record was excluded when disturbance was only background to another subject. The remaining `r format(sum(records$screener == "model"), big.mark = ",")` records were screened against a written form of that rule by a large language model (Claude Opus 5.5, Anthropic), given the author's decisions as worked examples. Tried blind on `r validation$n` of the author's records, with the other `r sum(records$screener == "author") - validation$n` as examples, the model agreed with the author on `r validation$agree` [Cohen's κ = `r sprintf("%.2f", validation$kappa)`]. Of the `r format(nrow(records), big.mark = ",")` records, `r sum(records$decision == "include")` were included, `r sum(records$decision == "exclude")` excluded and `r sum(records$decision == "undecided")` left undecided for want of an abstract. Of the exclusions, `r sum(records$reason == "wrong-concept", na.rm = TRUE)` concerned forest or land but none of the review's concepts. Open copies of the included and undecided works were sought through OpenAlex, and `r sum(stringr::str_detect(works$status, "^(held|downloaded)"))` of the `r nrow(works)` works were already held or were downloaded.
+
+The same model then charted each of the `r format(nrow(charting), big.mark = ",")` distinct included and undecided works from its title and abstract under a written rule. Each chart recorded the review questions the work bore on, its place, scale, method and disturbance, and its finding. Each chart also copied a passage of the abstract word for word, which a script checked against the abstract. The `r sum(charting$basis == "title")` works with no abstract were charted from their titles alone. The charted works bore on the effect of the disaggregation on reported emissions in `r on("q1")` cases and on the statistics of disturbance regimes in `r on("q2")`. The uncertainty of carbon flux estimates was the subject of `r on("q3")` works, fire emission data of `r on("q4")` and crediting or reversal of `r on("q5")`. Of all the charted works, `r sum(charting$role == "central")` bore directly on this study. The full texts were not read for the charting, so any statement that the charted works lacked a kind of study rested on titles and abstracts.
 
 ## Disaggregation guidance
 
@@ -984,7 +1380,7 @@ Reproduced from Chapter 2 of the 2013 Revised Supplementary Methods and Good Pra
 
 ## Accounts and crediting
 
-Table 6-1 of Canada's 2026 national inventory report to the United Nations Framework Convention on Climate Change gave the land use sector as seven categories and their total [@eccc2026nir]. Beneath the total the table gave one more line, natural disturbances, marked "Not a reporting category" and "provided solely for transparency purposes" [@eccc2026nir]. That line held the net balance of emissions and removals from natural disturbances in the managed forest, and the total above it left that balance out (Online Resource 1). Every wildfire in the managed forest went to that line, whatever its cause, and stayed there with its regrowth until the stand had enough wood to be worth cutting. Disturbances that killed a fifth or less of a mature stand's biomass, slash burning and prescribed burning stayed in the total [@eccc2026nir]. Two series were read from the table for Canada and for British Columbia, the reported total, the disaggregated account, and that total plus the natural disturbance line, the undisaggregated account. The forest values in both series came from Canada's National Forest Carbon Monitoring, Accounting and Reporting System. That system's core model, CBM-CFS3, grew each stand along a yield curve and moved its carbon through a disturbance matrix [@kurz2018quantifying]. The two accounts were compared over 1990 to 2024 by the mean and standard deviation of their annual net emissions, extending the averages @kurz2018quantifying reported.
+Table 6-1 of Canada's 2026 national inventory report to the United Nations Framework Convention on Climate Change gave the land use sector as seven categories and their total [@eccc2026nir]. Beneath the total the table gave one more line, natural disturbances, marked "Not a reporting category" and "provided solely for transparency purposes" [@eccc2026nir]. That line held the net balance of emissions and removals from natural disturbances in the managed forest, and the total above it left that balance out (Online Resource 1). Every wildfire in the managed forest went to that line, whatever its cause, and stayed there with its regrowth until the stand had enough wood to be worth cutting. Disturbances that killed a fifth or less of a mature stand's biomass, slash burning and prescribed burning stayed in the total [@eccc2026nir]. Two series were read from the table for Canada and for British Columbia, the reported total, the disaggregated account, and that total plus the natural disturbance line, the undisaggregated account. The forest values in both series came from Canada's National Forest Carbon Monitoring, Accounting and Reporting System. That system's core model, CBM-CFS3, grew each stand along a yield curve and moved its carbon through a disturbance matrix [@kurz2018quantifying]. Over 71 years on a boreal landscape in eastern Canada, the model underestimated the net biomass gain of undisturbed stands by 10 per cent [@bernier2010reconstructing]. The two accounts were compared over 1990 to 2024 by the mean and standard deviation of their annual net emissions, extending the averages @kurz2018quantifying reported.
 
 ```{r}
 #| label: fig-inventory
@@ -1070,7 +1466,7 @@ The uncertainty of each account followed Approach 2 of the Refinement's uncertai
 
 ## Fire emission method
 
-Fire emissions in every tier followed Equation 2.27 of Volume 4, Chapter 2 of the 2006 Guidelines, one formula with the tiers differing in the data behind it [@aalde2006generic]. The decision tree of the chapter's Figure 2.6 sent a country to Tier 3 where "detailed data on biomass burning" could feed "advanced models or methods", to Tier 2 where "country-specific activity data emission factors" existed, and otherwise to "aggregate data and default emission factors" [@aalde2006generic]. FAO's Statistics Division applied Tier 1 in Google Earth Engine and published the sums in FAOSTAT for forest fires, savanna fires and fires in organic soils [@fao2025fires]. FAO's note gave the burned pixels of MCD64A1 with uncertainty below 20 per cent and their class in the yearly MCD12Q1 map. The classes were those of the International Geosphere-Biosphere Programme (IGBP). Forest was classes 1 to 5, the savanna items classes 6 to 10, and the fuel came from Table 2.4 by ecological zone. That method was rerun in Earth Engine for 2001 to 2024, with the forest fuel of each pixel set by its zone. Each item's burned area, biomass and gases were compared with the values FAO published. The coefficients FAO used were recovered from its published values for Canada, biomass burned over burned area and each gas over biomass burned. The recovered coefficients were compared with Tables 2.4 and 2.5 [@aalde2006generic; @fao2025fires]. Each year's value was also compared with the value Canada submitted for the same item.
+Fire emissions in every tier followed Equation 2.27 of Volume 4, Chapter 2 of the 2006 Guidelines, one formula with the tiers differing in the data behind it [@aalde2006generic]. The decision tree of IPCC Fig. 2.6 sent a country to Tier 3 where "detailed data on biomass burning" could feed "advanced models or methods", to Tier 2 where "country-specific activity data emission factors" existed, and otherwise to "aggregate data and default emission factors" [@aalde2006generic]. FAO's Statistics Division applied Tier 1 in Google Earth Engine and published the sums in FAOSTAT for forest fires, savanna fires and fires in organic soils [@fao2025fires]. FAO's note gave the burned pixels of MCD64A1 with uncertainty below 20 per cent and their class in the yearly MCD12Q1 map. The classes were those of the International Geosphere-Biosphere Programme (IGBP). Forest was classes 1 to 5, the savanna items classes 6 to 10, and the fuel came from IPCC Table 2.4 by ecological zone. That method was rerun in Earth Engine for 2001 to 2024, with the forest fuel of each pixel set by its zone. Each item's burned area, biomass and gases were compared with the values FAO published. The coefficients FAO used were recovered from its published values for Canada, biomass burned over burned area and each gas over biomass burned. The recovered coefficients were compared with IPCC Tables 2.4 and 2.5 [@aalde2006generic; @fao2025fires]. Each year's value was also compared with the value Canada submitted for the same item.
 
 ::: {custom-style="IPCC Equation"}
 **EQUATION 2.27** [Estimation of greenhouse gas emissions from fire]{.smallcaps}
@@ -1087,7 +1483,7 @@ $G_{ef}$ = emission factor, g kg^-1^ dry matter burnt
 Reproduced from Chapter 2 of Volume 4 of the 2006 Guidelines, pages 2.42 to 2.43, with the notes under the terms omitted [@aalde2006generic].
 :::
 
-Where data for M~B~ and C~f~ were not available, Tier 1 took a default for their product from Table 2.4, which called it biomass consumption [@aalde2006generic]. The 2019 Refinement reissued the table with the same boreal and temperate rows [@ogle2019generic]. The uncertainty of the Tier 1 estimate was propagated by Equations 3.1 and 3.2 of the uncertainty chapter [@paciornik2019uncertainties]. Each term's uncertainty was 1.96 times the printed standard error or standard deviation over its mean. The chapter called the rule "reasonably accurate as long as the percentage uncertainty is less than approximately 30%" [@paciornik2019uncertainties]. The fuel took the boreal and other temperate rows of Table 2.4, and the emission factor the savanna and grassland row of Table 2.5 that FAO used. Burned area carried no error.
+Where data for M~B~ and C~f~ were not available, Tier 1 took a default for their product from IPCC Table 2.4, which called it biomass consumption [@aalde2006generic]. The 2019 Refinement reissued the table with the same boreal and temperate rows [@ogle2019generic]. The uncertainty of the Tier 1 estimate was propagated by Equations 3.1 and 3.2 of the uncertainty chapter [@paciornik2019uncertainties]. Each term's uncertainty was 1.96 times the printed standard error or standard deviation over its mean. The chapter called the rule "reasonably accurate as long as the percentage uncertainty is less than approximately 30%" [@paciornik2019uncertainties]. The fuel took the boreal and other temperate rows of IPCC Table 2.4, and the emission factor the savanna and grassland row of IPCC Table 2.5 that FAO used. Burned area carried no error.
 
 ::: {custom-style="IPCC Equation"}
 **EQUATION 3.1 (UPDATED)** [Combining uncertainties, Approach 1, multiplication]{.smallcaps}
@@ -1108,7 +1504,7 @@ Reproduced from Chapter 3 of Volume 1 of the 2019 Refinement, pages 3.18 to 3.19
 
 ## Strata
 
-The defaults were stratified by vegetation. The guidelines took as their default the ecological zones of the Food and Agriculture Organization, listed in Table 4.1 of the forest land chapter [@aalde2006generic]. Canada fell in `r xfun::numbers_to_words(nrow(gez))` ecological zones on land, `r sprintf("%.0f", sum(gez$mha[gez$gez_abbrev %in% c("Ba", "Bb", "BM")]))` Mha of them boreal, and each took the row of Tables 2.4, 2.5 and 2.6 that its vegetation matched (@fig-zones, Online Resource 2). Three more layers stratified the fire record. The soil raster gave eight classes, organic, sandy, wetland, volcanic, spodic, high activity clay, low activity clay and other [@batjes2010ipcc]. The MCD12Q1 map of 2023 kept its IGBP classes as FAO grouped them, forest for classes 1 to 5 and savanna and grassland for 6 to 10 [@fao2025fires]. The fire record supplied each fire's cause, natural, human or unknown, its type, crown, surface or ground where an agency had recorded it, and its month [@cfs2026nfdb].
+The defaults were stratified by vegetation. The guidelines took as their default the ecological zones of the Food and Agriculture Organization, listed in IPCC Table 4.1 of the forest land chapter [@aalde2006generic]. Canada fell in `r xfun::numbers_to_words(nrow(gez))` ecological zones on land, `r sprintf("%.0f", sum(gez$mha[gez$gez_abbrev %in% c("Ba", "Bb", "BM")]))` Mha of them boreal, and each took the row of IPCC Tables 2.4, 2.5 and 2.6 that its vegetation matched (@fig-zones, Online Resource 2). Three more layers stratified the fire record. The soil raster gave eight classes, organic, sandy, wetland, volcanic, spodic, high activity clay, low activity clay and other [@batjes2010ipcc]. The MCD12Q1 map of 2023 kept its IGBP classes as FAO grouped them, forest for classes 1 to 5 and savanna and grassland for 6 to 10 [@fao2025fires]. The fire record supplied each fire's cause, natural, human or unknown, its type, crown, surface or ground where an agency had recorded it, and its month [@cfs2026nfdb].
 
 ```{r}
 #| label: or-defaults
@@ -1120,14 +1516,14 @@ fmt_tbl(defaults, right = c("Area (Mha)", "Biomass consumption (t/ha)", "Combust
 
 ```{r}
 #| label: fig-zones
-#| fig-cap: "The global default layers of the Tier 1 fire estimate beside the national datasets of the higher tiers, four maps on one scale in EPSG:3978. (a) The ecological zones of FAO 2010, the default stratification of Table 2.4 of the 2006 Guidelines. (b) The fuel types of the Fire Behaviour Prediction System, 2026 release, grouped by fuel. (c) The IPCC default soil classes at 5 arc minutes. (d) The peatland map of the Canadian Forest Service, bog and fen by canopy. Map lines delineate study areas and do not necessarily depict accepted national boundaries."
+#| fig-cap: "The global default layers of the Tier 1 fire estimate beside the national datasets of the higher tiers, four maps on one scale in EPSG:3978. (a) The ecological zones of FAO 2010, the default stratification of Table 2.4 of the 2006 IPCC Guidelines. (b) The fuel types of the Fire Behaviour Prediction System, 2026 release, grouped by fuel. (c) The IPCC default soil classes at 5 arc minutes. (d) The peatland map of the Canadian Forest Service, bog and fen by canopy. Map lines delineate study areas and do not necessarily depict accepted national boundaries."
 #| fig-width: 6.5
 #| fig-height: 6.4
 
 map_theme <- ggplot2::theme_minimal(base_size = 7) + ggplot2::theme(
   panel.grid = ggplot2::element_line(colour = "grey80", linewidth = 0.15), axis.text = ggplot2::element_text(size = 5, colour = "grey30"),
   legend.position = "bottom", legend.key.size = ggplot2::unit(0.3, "cm"), legend.text = ggplot2::element_text(size = 5.5),
-  legend.title = ggplot2::element_blank(), legend.margin = ggplot2::margin(0, 0, 0, 0),
+  legend.title = ggplot2::element_blank(), legend.margin = ggplot2::margin(0, 0, 0, 0), legend.location = "plot",
   plot.title = ggplot2::element_text(size = 7.5, hjust = 0), plot.caption = ggplot2::element_text(size = 5, colour = "grey30"),
   plot.background = ggplot2::element_rect(fill = "white", colour = NA))
 bb <- sf::st_bbox(gez)
@@ -1146,7 +1542,7 @@ p_a <- ggplot2::ggplot() + ggplot2::geom_sf(data = gez, ggplot2::aes(fill = gez_
   ggplot2::scale_fill_brewer(palette = "Set3") + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) + canada_coord + furniture() +
   ggplot2::labs(title = "(a) Ecological zones, FAO 2010, the Tier 1 default") + map_theme
 p_b <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = fbp_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = fbp_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
+  ggplot2::scale_fill_manual(values = fbp_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) +
   canada_coord + furniture() + ggplot2::labs(title = "(b) Fire Behaviour Prediction fuel types, 2026, national") + map_theme
 p_c <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = soil_r, maxcell = 3e5) + outline_layer +
   ggplot2::scale_fill_manual(values = soil_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
@@ -1157,7 +1553,7 @@ p_d <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = cfs_peat_r, maxcell
 patchwork::wrap_plots(p_a, p_b, p_c, p_d, ncol = 2)
 ```
 
-Each fire was placed in the zone, soil class and land cover class at its reported location, and in British Columbia where that fell inside the province. Each fire's biomass consumption per hectare was the Table 2.4 row of its zone and fire type (@tbl-rows). Boreal crown and surface fires took their own rows and other boreal fires the general wildfire row. Temperate fires took the wildfire row of other temperate forests and polar fires the tundra row. Grassland fires of April to June took the early dry season row and later fires the mid or late season row. Table 2.4 gave peat a fuel of 41 ± 1.4 tonnes per hectare and no emission factor [@aalde2006generic]. The 2013 Wetlands Supplement supplied a peat fuel load and emission factors in Equation 2.8 and its Tables 2.6 and 2.7, for undrained as well as drained organic soils [@ipcc2014wetlands, p. 2.39]. A fire on organic soil therefore carried a second term, the undrained peat row of 66 tonnes per hectare with the boreal and temperate emission factors.
+Each fire was placed in the zone, soil class and land cover class at its reported location, and in British Columbia where that fell inside the province. Each fire's biomass consumption per hectare was the IPCC Table 2.4 row of its zone and fire type (@tbl-rows). Boreal crown and surface fires took their own rows and other boreal fires the general wildfire row. Temperate fires took the wildfire row of other temperate forests and polar fires the tundra row. Grassland fires of April to June took the early dry season row and later fires the mid or late season row. IPCC Table 2.4 gave peat a fuel of 41 ± 1.4 tonnes per hectare and no emission factor [@aalde2006generic]. The 2013 Wetlands Supplement supplied a peat fuel load and emission factors in Equation 2.8 and its Tables 2.6 and 2.7, for undrained as well as drained organic soils [@ipcc2014wetlands, p. 2.39]. A fire on organic soil therefore carried a second term, the undrained peat row of 66 tonnes per hectare with the boreal and temperate emission factors.
 
 ::: {custom-style="IPCC Equation"}
 **EQUATION 2.8** [Annual CO~2~-C and non-CO~2~ emissions from organic soil fire]{.smallcaps}
@@ -1176,13 +1572,13 @@ Reproduced from Chapter 2 of the 2013 Wetlands Supplement, page 2.39, with the r
 
 ```{r}
 #| label: tbl-rows
-#| tbl-cap: "Rows of Tables 2.4 and 2.6 of the 2006 Guidelines for Canada's vegetation, biomass consumption as mean and standard error, combustion factor as mean and standard deviation, and the Table 2.5 row of their emission factors, with the organic soil rows of the 2013 Wetlands Supplement, mean and 95 per cent interval, whose Table 2.7 gave 362 ± 41 g of carbon dioxide carbon and 9 ± 4 g of methane per kilogram. A blank is a value the table did not print."
+#| tbl-cap: "Rows of Tables 2.4 and 2.6 of the 2006 IPCC Guidelines for Canada's vegetation, biomass consumption as mean and standard error, combustion factor as mean and standard deviation, and the IPCC Table 2.5 row of their emission factors, with the organic soil rows of the 2013 Wetlands Supplement, mean and 95 per cent interval, whose Table 2.7 gave 362 ± 41 g of carbon dioxide carbon and 9 ± 4 g of methane per kilogram. A blank is a value the table did not print."
 
 readr::write_csv(rows_table, "03.outputs/TBL/tbl-rows.csv")
 fmt_tbl(rows_table, right = c("Biomass consumption (t/ha)", "Combustion factor"))
 ```
 
-The estimate was rebuilt by zone, every fire of 2001 to 2024 summed by zone and year and multiplied by the biomass consumption and emission factors of its row. Methane and nitrous oxide were converted at the inventory's warming potentials of 28 and 265 [@eccc2026nir]. Zones sharing a row shared its error, so their emissions were summed before the rows were combined in quadrature. The estimate was rebuilt again by stratum for Canada and British Columbia, each fire at the row of its zone and type, with the peat term on organic soil. The area burned was summed by year and cause. The zone rows were also applied to FAO's own burned area, each MCD64A1 pixel at the rows of its zone group. The 2023 estimate thus changed one input at a time, from FAO's method to the strata with the peat term. The rows were also laid on a 2 km grid from the zone and land cover of each cell, with the organic soil row where the soil raster was organic. On that grid forest took in woody savanna and savanna, classes 8 and 9, whose tree cover exceeded 10 per cent. Each default had a national counterpart at a higher tier, so three national layers were set beside the defaults term by term (@fig-zones). The fuel types of the Fire Behaviour Prediction System, 2026 release, were grouped into conifer, mixedwood, deciduous, grass and non-fuel from the labels of the catalogue's map service [@cfs2026fbp]. The peatland map of the Canadian Forest Service gave bog and fen by canopy at 250 m [@webster2018spatially]. The National Burned Area Composite, the inventory's source of burned area, gave the national total for each year [@cfs2026nbac; @eccc2026nir]. Each layer was projected to the 2 km grid, and the 2023 fires were placed on the peatland map and the fuel types. The organic soil of the IPCC raster was compared cell by cell with the peatland map.
+The estimate was rebuilt by zone, every fire of 2001 to 2024 summed by zone and year and multiplied by the biomass consumption and emission factors of its row. Methane and nitrous oxide were converted at the inventory's warming potentials of 28 and 265 [@eccc2026nir]. Zones sharing a row shared its error, so their emissions were summed before the rows were combined in quadrature. The estimate was rebuilt again by stratum for Canada and British Columbia, each fire at the row of its zone and type, with the peat term on organic soil. The area burned was summed by year and cause. The zone rows were also applied to FAO's own burned area, each MCD64A1 pixel at the rows of its zone group. The 2023 estimate thus changed one input at a time, from FAO's method to the strata with the peat term. The rows were also laid on a 2 km grid from the zone and land cover of each cell, with the organic soil row where the soil raster was organic. On that grid forest took in woody savanna and savanna, classes 8 and 9, whose tree cover exceeded 10 per cent. Each default had a national counterpart at a higher tier, so three national layers were set beside the defaults term by term (@fig-zones). Canada's higher tier fuel data also held forest floor loads and consumption [@degroot2009forest], dead and down woody debris loads across its forests [@hanes2021dead] and crown fuel consumption [@degroot2022crown]. The fuel types of the Fire Behaviour Prediction System, 2026 release, were grouped into conifer, mixedwood, deciduous, grass and non-fuel from the labels of the catalogue's map service [@cfs2026fbp]. The peatland map of the Canadian Forest Service gave bog and fen by canopy at 250 m [@webster2018spatially]. The National Burned Area Composite, the inventory's source of burned area, gave the national total for each year [@cfs2026nbac; @eccc2026nir]. Each layer was projected to the 2 km grid, and the 2023 fires were placed on the peatland map and the fuel types. The organic soil of the IPCC raster was compared cell by cell with the peatland map.
 
 # Results
 
@@ -1224,7 +1620,7 @@ The independent draws gave the upper bound of that uncertainty. With half the er
 
 ## Fire estimates
 
-Forest fires in Canada released `r format(round(forest[["CO2 (kt)"]][forest$Year == 2023] / 1000), big.mark = ",")` Mt of carbon dioxide in 2023 on the FAOSTAT Tier 1 estimate, `r round(forest[["CO2 (kt)"]][forest$Year == 2023] / mean(forest[["CO2 (kt)"]][forest$Year < 2023]), 1)` times the mean of 2001 to 2022. The `r format(round(burn_2023$ha), big.mark = ",")` hectares of other forest FAO recorded as burned, at `r sprintf("%.1f", burn_2023$fuel)` tonnes of dry matter per hectare and `r format(table_2_5$co2[1], big.mark = ",")` g of carbon dioxide per kilogram, gave that total. Rerun from the note in Earth Engine, that burned area was reproduced within `r round(100 * max(abs(repro_year$ratio - 1)))` per cent in every year over the five items. Of the `r nrow(repro_item)` item and year values, `r round(repro_within_2)` per cent fell within 2 per cent of the published value. FAO classed 2023 with the 2022 land cover map and 2024 with the 2023 map, the latest it held. The forest pixels covered `r sprintf("%.2f", sum(forest_2023$ha[forest_2023$zone_group == 1]) / 1e6)` Mha in boreal and `r sprintf("%.2f", sum(forest_2023$ha[forest_2023$zone_group == 2]) / 1e6)` Mha in temperate zones. At the all boreal and all other temperate rows of Table 2.4 those pixels gave `r sprintf("%.1f", fao_fuel_2023)` tonnes per hectare, the fuel FAO published. Across the `r nrow(gap)` years both sources reported, FAO's estimate was a median of `r round(median(gap$Ratio), 1)` times the value Canada submitted. By Equations 3.1 and 3.2 the fuel term carried `r round(100 * u_fuel[1])` to `r round(100 * u_fuel[2])` per cent and the emission factor `r round(100 * u_ef)` per cent. The two terms gave `r round(100 * u_forest[1])` to `r round(100 * u_forest[2])` per cent with no error in burned area, so the 2023 estimate lay within `r round(co2_2023 * (1 - u_forest[1]))` to `r round(co2_2023 * (1 + u_forest[1]))` Mt, an interval that contained zero. The coefficients recovered from the published values were the savanna and grassland factors of Table 2.5, `r coefficients[["CO2 (g/kg)"]][coefficients$Item == "Other forest"]` g of carbon dioxide and `r coefficients[["CH4 (g/kg)"]][coefficients$Item == "Other forest"]` g of methane per kilogram (Online Resource 4). The methane was `r round(100 * table_2_5$ch4[1] / table_2_5$ch4[2])` per cent of what the extra tropical forest row gave. FAO placed `r round(100 * sum(savanna_share[["Savanna fires"]]) / sum(savanna_share[["Savanna fires"]] + savanna_share[["Forest fires"]]))` per cent of the area burned over 2001 to 2024 in its savanna, grassland and shrubland items. FAO applied `r table_2_4$fuel[3]` and `r table_2_4$fuel[4]` tonnes of dry matter per hectare to those items and published no carbon dioxide for them.
+Forest fires in Canada released `r format(round(forest[["CO2 (kt)"]][forest$Year == 2023] / 1000), big.mark = ",")` Mt of carbon dioxide in 2023 on the FAOSTAT Tier 1 estimate, `r round(forest[["CO2 (kt)"]][forest$Year == 2023] / mean(forest[["CO2 (kt)"]][forest$Year < 2023]), 1)` times the mean of 2001 to 2022. The `r format(round(burn_2023$ha), big.mark = ",")` hectares of other forest FAO recorded as burned, at `r sprintf("%.1f", burn_2023$fuel)` tonnes of dry matter per hectare and `r format(table_2_5$co2[1], big.mark = ",")` g of carbon dioxide per kilogram, gave that total. Rerun from the note in Earth Engine, that burned area was reproduced within `r round(100 * max(abs(repro_year$ratio - 1)))` per cent in every year over the five items. Of the `r nrow(repro_item)` item and year values, `r round(repro_within_2)` per cent fell within 2 per cent of the published value. FAO classed 2023 with the 2022 land cover map and 2024 with the 2023 map, the latest it held. The forest pixels covered `r sprintf("%.2f", sum(forest_2023$ha[forest_2023$zone_group == 1]) / 1e6)` Mha in boreal and `r sprintf("%.2f", sum(forest_2023$ha[forest_2023$zone_group == 2]) / 1e6)` Mha in temperate zones. At the all boreal and all other temperate rows of IPCC Table 2.4 those pixels gave `r sprintf("%.1f", fao_fuel_2023)` tonnes per hectare, the fuel FAO published. Across the `r nrow(gap)` years both sources reported, FAO's estimate was a median of `r round(median(gap$Ratio), 1)` times the value Canada submitted. By Equations 3.1 and 3.2 the fuel term carried `r round(100 * u_fuel[1])` to `r round(100 * u_fuel[2])` per cent and the emission factor `r round(100 * u_ef)` per cent. The two terms gave `r round(100 * u_forest[1])` to `r round(100 * u_forest[2])` per cent with no error in burned area, so the 2023 estimate lay within `r round(co2_2023 * (1 - u_forest[1]))` to `r round(co2_2023 * (1 + u_forest[1]))` Mt, an interval that contained zero. The coefficients recovered from the published values were the savanna and grassland factors of IPCC Table 2.5, `r coefficients[["CO2 (g/kg)"]][coefficients$Item == "Other forest"]` g of carbon dioxide and `r coefficients[["CH4 (g/kg)"]][coefficients$Item == "Other forest"]` g of methane per kilogram (Online Resource 4). The methane was `r round(100 * table_2_5$ch4[1] / table_2_5$ch4[2])` per cent of what the extra tropical forest row gave. FAO placed `r round(100 * sum(savanna_share[["Savanna fires"]]) / sum(savanna_share[["Savanna fires"]] + savanna_share[["Forest fires"]]))` per cent of the area burned over 2001 to 2024 in its savanna, grassland and shrubland items. FAO applied `r table_2_4$fuel[3]` and `r table_2_4$fuel[4]` tonnes of dry matter per hectare to those items and published no carbon dioxide for them.
 
 ```{r}
 #| label: or-coefficients
@@ -1242,7 +1638,7 @@ readr::write_csv(zones_table, "03.outputs/TBL/tbl-zones.csv")
 fmt_tbl(zones_table, right = names(zones_table)[-1])
 ```
 
-The national fire record placed `r sprintf("%.1f", sum(zone_2023$ha) / 1e6)` Mha of fire in Canada's ecological zones in 2023, `r round(boreal_share_2023)` per cent of it in the three boreal zones (@tbl-zones). Boreal tundra woodland alone burned `r sprintf("%.1f", zone_2023$ha[zone_2023$gez_abbrev == "Bb"] / 1e6)` Mha. At the boreal wildfire row of Table 2.4 and the extra tropical forest row of Table 2.5, Equation 2.27 gave `r format(round(sum(zone_2023$co2_mt)), big.mark = ",")` Mt of carbon dioxide for the year. The zone estimate was `r round(sum(zone_2023$co2_mt) / co2_2023, 1)` times the `r round(co2_2023)` Mt FAO published from one coefficient. FAO had counted only `r sprintf("%.1f", burn_2023$ha / 1e6)` Mha of its `r sprintf("%.1f", sum(used$ha[used$year == 2023]) / 1e6)` Mha as other forest, against the `r sprintf("%.1f", sum(zone_2023$ha) / 1e6)` Mha of the national record. Methane came to `r format(round(sum(zone_2023$ch4_kt)), big.mark = ",")` kt against FAO's `r round(burn_2023$dm * burn_2023$ch4 / 1e6)` kt. The boreal row's standard error of 48.4 on a mean of 52.8 tonnes per hectare put the uncertainty of the national total at `r round(100 * u_2023)` per cent. The interval contained zero, as FAO's did.
+The national fire record placed `r sprintf("%.1f", sum(zone_2023$ha) / 1e6)` Mha of fire in Canada's ecological zones in 2023, `r round(boreal_share_2023)` per cent of it in the three boreal zones (@tbl-zones). Boreal tundra woodland alone burned `r sprintf("%.1f", zone_2023$ha[zone_2023$gez_abbrev == "Bb"] / 1e6)` Mha. At the boreal wildfire row of IPCC Table 2.4 and the extra tropical forest row of IPCC Table 2.5, Equation 2.27 gave `r format(round(sum(zone_2023$co2_mt)), big.mark = ",")` Mt of carbon dioxide for the year. The zone estimate was `r round(sum(zone_2023$co2_mt) / co2_2023, 1)` times the `r round(co2_2023)` Mt FAO published from one coefficient. FAO had counted only `r sprintf("%.1f", burn_2023$ha / 1e6)` Mha of its `r sprintf("%.1f", sum(used$ha[used$year == 2023]) / 1e6)` Mha as other forest, against the `r sprintf("%.1f", sum(zone_2023$ha) / 1e6)` Mha of the national record. Methane came to `r format(round(sum(zone_2023$ch4_kt)), big.mark = ",")` kt against FAO's `r round(burn_2023$dm * burn_2023$ch4 / 1e6)` kt. The boreal row's standard error of 48.4 on a mean of 52.8 tonnes per hectare put the uncertainty of the national total at `r round(100 * u_2023)` per cent. The interval contained zero, as FAO's did.
 
 ```{r}
 #| label: fig-cause
@@ -1277,7 +1673,7 @@ readr::write_csv(tier2_table, "03.outputs/TBL/tbl-tier2.csv")
 fmt_tbl(tier2_table)
 ```
 
-The national layers divided the land that the defaults treated as one (Online Resource 7). Where Table 2.4 gave Canada's forest two rows, the fuel types gave conifer `r sprintf("%.0f", fbp_mha(fbp_labels[1]))` Mha, mixedwood `r sprintf("%.0f", fbp_mha(fbp_labels[2]))` Mha and deciduous `r sprintf("%.0f", fbp_mha(fbp_labels[3]))` Mha. The 2023 fires burned `r round(conifer_share_2023)` per cent of their area in conifer, `r round(mixed_share_2023)` per cent in mixedwood and `r round(deciduous_share_2023)` per cent in deciduous fuel (@fig-zones). The peatland map held `r sprintf("%.0f", cfs_peat_mha)` Mha of bog and fen against `r sprintf("%.0f", ipcc_organic_mha)` Mha of organic soil in the IPCC raster, and only `r sprintf("%.0f", both_peat_mha)` Mha was organic in both. The 2023 fires therefore fell `r round(cfs_peat_share_2023)` per cent on the peatland map against `r round(organic_share_2023)` per cent on the default raster. The National Burned Area Composite recorded `r sprintf("%.1f", nbac_2023 / 1e6)` Mha for 2023, between FAO's `r sprintf("%.1f", sum(used$ha[used$year == 2023]) / 1e6)` Mha across its items and the `r sprintf("%.1f", sum(strata_2023$ha) / 1e6)` Mha of the fire points. The inventory used none of the defaults, since it held a national dataset for every term [@eccc2026nir].
+The national layers divided the land that the defaults treated as one (Online Resource 7). Where IPCC Table 2.4 gave Canada's forest two rows, the fuel types gave conifer `r sprintf("%.0f", fbp_mha(fbp_labels[1]))` Mha, mixedwood `r sprintf("%.0f", fbp_mha(fbp_labels[2]))` Mha and deciduous `r sprintf("%.0f", fbp_mha(fbp_labels[3]))` Mha. The 2023 fires burned `r round(conifer_share_2023)` per cent of their area in conifer, `r round(mixed_share_2023)` per cent in mixedwood and `r round(deciduous_share_2023)` per cent in deciduous fuel (@fig-zones). The peatland map held `r sprintf("%.0f", cfs_peat_mha)` Mha of bog and fen against `r sprintf("%.0f", ipcc_organic_mha)` Mha of organic soil in the IPCC raster, and only `r sprintf("%.0f", both_peat_mha)` Mha was organic in both. The 2023 fires therefore fell `r round(cfs_peat_share_2023)` per cent on the peatland map against `r round(organic_share_2023)` per cent on the default raster. The National Burned Area Composite recorded `r sprintf("%.1f", nbac_2023 / 1e6)` Mha for 2023, between FAO's `r sprintf("%.1f", sum(used$ha[used$year == 2023]) / 1e6)` Mha across its items and the `r sprintf("%.1f", sum(strata_2023$ha) / 1e6)` Mha of the fire points. The inventory used none of the defaults, since it held a national dataset for every term [@eccc2026nir].
 
 # Discussion
 
@@ -1287,27 +1683,19 @@ The disaggregated account kept part of its reductions in only `r sum(banked > 0,
 
 The length of the record mattered less to the classification than to the threshold. Canada applied no baseline at all but reconstructed the disturbance, harvest or fire, that initiated every stand from 1889 to 1989 [@kurz2024revised]. Each burned area then stayed on the natural disturbance line for the 60 to 100 years it took to regrow to a harvestable age. Australia's inventory tested fire seasons against a 13 year mean [@bowman2023wildfire]. The European example in the guidance used the 20 years before the base year and assumed 20 years of regrowth [@ogle2019generic]. The three examples thus used three record lengths under guidance that set none.
 
+The statistics of fire regimes set how long such a record had to be. Under random fire the expected distribution of stand ages was the negative exponential, so that "the present age-class structure of such a forest is the key to its past fire history" [@wagner1978class]. The negative exponential and Weibull models became the standard descriptions of fire history [@johnson1985theory]. Fire cycles reported for Canada ran from 50 to 90 years in Alberta to 769 years in Newfoundland [@johnson1991climatically; @arsenault2016unravelling]. Eastern Canada had a cycle of 229 years and central Quebec one of 247 years [@cyr2016quantifying; @belisle2011fire]. In British Columbia the age-class distribution of a sub-boreal landscape gave a stand-replacing fire cycle of 80 to 100 years and lacked stability [@andison2009managing]. In the province's central interior, disturbance by fire and mountain pine beetle on 1 million hectares was less frequent in 1954 to 2004 than in 1904 to 1953 [@campbell2011natural]. A baseline of 13 to 30 years therefore sampled a small part of one fire cycle. The estimates of a fire cycle also depended on the record behind them. Lengthening a Landsat series in Portugal from 22 to 31 years substantially changed the fitted Weibull parameters [@oliveira2011fire]. Parametric estimates of the fire cycle were degraded by short-term variation in fire activity [@cyr2016quantifying]. The accuracy of Weibull fire intervals fell as the record of fire scars degraded [@parsons2007assessing]. A censored tail of old stands, the oldest stands cut off from the record, could falsely suggest that fire frequency had changed [@finney1995missing]. A normal fire year was defined, by analogy with climate normals, from 26-year means around Yosemite [@lutz2011fire]. Charcoal records spanning millennia were proposed as the baseline wherever recent fires were too few [@gavin2007forest].
+
 The balance the disaggregation rested on carried conditions that no crediting standard checked, and choices that moved the annual numbers a standard read. The 2019 Refinement set no time limit on the later removals and held that natural effects averaged out "provided that there are no trends in disturbance rates, such as increased annual area burned as a result of climate change" [@ogle2019generic, pp. 2.68 to 2.69]. The 2013 Supplement had made the same absence of trend the first condition for avoiding net credits [@ipcc2014kp, p. 2.50]. Methane and nitrous oxide were never balanced, because "non-CO2 emissions are not taken up by vegetation", yet the natural disturbance line was reported in carbon dioxide equivalent [@ogle2019generic, p. 2.72; @eccc2026nir]. The Refinement allowed natural emissions to be identified at "the individual (stand-level) disturbed areas or the total (landscape-level) emissions from all disturbances in the year" [@ogle2019generic, pp. 2.71 to 2.72]. The Refinement allowed later removals to be apportioned by the shares of area and stock lost, and held that the choices changed the annual split while "in the long term the totals are the same" [@ogle2019generic, pp. 2.71 to 2.72]. The 2013 Supplement had allowed no apportioning, since every excluded land was identified by "georeferenced location, year and types of disturbances" [@ipcc2014kp, p. 2.38]. The 2013 Supplement kept salvage logging in the account, where the 2019 Refinement disaggregated salvage logging as anthropogenic, with removals split "proportionally to the C stock losses these activities have caused" [@ogle2019generic, p. 2.71]. Emission reductions credited year by year therefore depended on choices the guidance said did not matter in the long run.
 
 The rule that classed a year as natural also decided how much was credited, and the control test behind the rule was met by statement rather than evidence. On Canada's inventory the threshold rule gave larger reductions than the disaggregated account. The rule kept the natural disturbance line in four of the five reference years and then left the whole line out of the crediting years it classed as natural. The 2013 Supplement instead built the background level into the reference level, so that "emissions from natural disturbances up to the background level are already implicitly excluded", excluded only the emissions above that level, and urged "the longest available time series" [@ipcc2014kp, pp. 2.45 to 2.50]. Australia's inventory instead classed "all fire related GHG emissions (excluding prescribed fires) from that state or territory" as natural once a season passed both tests [@bowman2023wildfire]. Canada's natural disturbance line held every wildfire whatever its cause, under a definition that excluded fires "materially influenced by a country" [@eccc2026nir; @ogle2019generic, p. 2.69]. The 2013 Supplement asked for evidence of prevention and suppression effort [@ipcc2014kp, pp. 2.36 to 2.37]. The 2019 Refinement asked for the same evidence, and its European example answered that "All wildfires are considered not materially influenced" [@ogle2019generic, pp. 2.76 and 2.79]. The cause field of the national fire record placed `r round(natural_share_2023)` per cent of the 2023 area under natural ignition, and no inventory read here used it (@tbl-strata).
 
-The fire emissions inside both accounts came from one method, whose fire matrices assumed high severity throughout [@thompson2026incorporating; @eccc2026nir]. The account without the disaggregation carried nearly all those fire emissions, which the existing matrices put typically 10 to 25 per cent above the severity sub-model. FAO applied the savanna and grassland emission factors to Canada's forest, and propagated by Equations 3.1 and 3.2 its estimate was uncertain by `r round(100 * u_forest[1])` per cent or more. The independent estimate was therefore no more certain than the account it checked. Three things the note did not state had to be recovered before FAO's values could be rebuilt. The three things were the land cover year used for the latest years, the Table 2.4 row behind each item, and the savanna emission factor row applied to forest. Everything else the note stated was enough. Rebuilt by zone from the fire points, the same equation gave `r round(sum(zone_2023$co2_mt) / co2_2023, 1)` times FAO's value for 2023. Applied to FAO's own burned area, the zone rows gave `r format(round(rung2_2023$co2_mt), big.mark = ",")` Mt, `r sprintf("%.1f", rung2_2023$co2_mt / co2_2023)` times FAO's value, the part of that gap due to the rows alone. The remaining `r sprintf("%.1f", sum(zone_2023$co2_mt) / rung2_2023$co2_mt)` fold lay in the burned area. Both estimates were uncertain by more than 100 per cent, because the boreal wildfire row of Table 2.4 carried a standard error of 92 per cent of its mean [@aalde2006generic]. The peat term on organic soil added `r round(100 * peat_2023 / veg_2023)` per cent to the vegetation term. The MCD12Q1 classes to which FAO applied savanna fuel values held most of the area burned [@ipcc2014wetlands]. The stratum total of `r format(round(veg_2023 + peat_2023), big.mark = ",")` Mt of carbon dioxide equivalent was set beside the 647 Tg of carbon from inverse modelling of satellite carbon monoxide for the same fires [@byrne2024carbon]. The national layers then divided every term the defaults had treated as one (Online Resource 7). The one boreal row became conifer, mixedwood and deciduous fuel, and the organic soil the third of the mapped peat on which the two layers agreed. The choice of layer therefore moved the estimate as far as the choice of tier, and Canada's inventory used none of the defaults [@eccc2026nir].
+The fire emissions inside both accounts came from one method, whose fire matrices assumed high severity throughout [@thompson2026incorporating; @eccc2026nir]. The account without the disaggregation carried nearly all those fire emissions, which the existing matrices put typically 10 to 25 per cent above the severity sub-model. FAO applied the savanna and grassland emission factors to Canada's forest, and propagated by Equations 3.1 and 3.2 its estimate was uncertain by `r round(100 * u_forest[1])` per cent or more. The independent estimate was therefore no more certain than the account it checked. Three things the note did not state had to be recovered before FAO's values could be rebuilt. The three things were the land cover year used for the latest years, the IPCC Table 2.4 row behind each item, and the savanna emission factor row applied to forest. Everything else the note stated was enough. Rebuilt by zone from the fire points, the same equation gave `r round(sum(zone_2023$co2_mt) / co2_2023, 1)` times FAO's value for 2023. Applied to FAO's own burned area, the zone rows gave `r format(round(rung2_2023$co2_mt), big.mark = ",")` Mt, `r sprintf("%.1f", rung2_2023$co2_mt / co2_2023)` times FAO's value, the part of that gap due to the rows alone. The remaining `r sprintf("%.1f", sum(zone_2023$co2_mt) / rung2_2023$co2_mt)` fold lay in the burned area. Global datasets had underestimated fuel before, coming out 15 to 37 per cent below a fire-by-fire estimate of the Kilmore East fire in Victoria given the same burned area [@surawski2016estimates]. Both estimates were uncertain by over 100 per cent, because the boreal wildfire row of IPCC Table 2.4 carried a standard error of 92 per cent of its mean [@aalde2006generic]. The peat term on organic soil added `r round(100 * peat_2023 / veg_2023)` per cent to the vegetation term. The fires of 2022 in France emitted twice the estimate of the Global Fire Assimilation System once soil smouldering was counted [@vallet2025soil]. The MCD12Q1 classes to which FAO applied savanna fuel values held most of the area burned [@ipcc2014wetlands]. The stratum total of `r format(round(veg_2023 + peat_2023), big.mark = ",")` Mt of carbon dioxide equivalent was set beside the 647 Tg of carbon from inverse modelling of satellite carbon monoxide for the same fires [@byrne2024carbon]. The national layers then divided every term the defaults had treated as one (Online Resource 7). The one boreal row became conifer, mixedwood and deciduous fuel, and the organic soil the third of the mapped peat on which the two layers agreed. The choice of layer therefore moved the estimate as far as the choice of tier, and Canada's inventory used none of the defaults [@eccc2026nir].
 
-A crediting standard found no accounting rules for the exclusion in the 2019 Refinement, and the omission was deliberate. The 2019 Refinement placed its option within reporting, for countries that might otherwise act "outside the inventory process", and its boxes stated that each example "neither adds guidance nor overrules guidance" [@ogle2019generic, pp. 2.67 and 2.73]. The 2024 meeting held that "GHGI does estimation, not accounting" and that a disaggregated estimate "would be difficult to impossible" to verify with observations [@ipcc2024reconciling, pp. 59 and 16]. ART TREES cited the 2019 definition for its exclusion without saying how far back the record must reach [@art2025trees3]. Two countries applying the same clause to the same fire record could therefore report different natural shares. The accounting rule the IPCC had written for that exclusion was in the 2013 Supplement [@ipcc2014kp, p. 2.45]. Five changes would supply the missing rules. The first four were a stated record length, a stated regrowth period, an uncertainty deduction on gross emissions and removals, and buffers set from the regional fire regime [@marinelli2026risk; @wu2026global]. The fifth was to exclude only the emissions above a background level, as the Kyoto Protocol provision did. Two limits qualified these results. The uncertainty analysis applied one published interval to every annual value and treated each year's error as independent. Varying the common share bounded the effect of that independence without removing it. All three accounts used Canada's figures as reported, so the study compared three sums of one inventory's figures, with FAO's estimate as its only independent check.
+A crediting standard found no accounting rules for the exclusion in the 2019 Refinement, and the omission was deliberate. The 2019 Refinement placed its option within reporting, for countries that might otherwise act "outside the inventory process", and its boxes stated that each example "neither adds guidance nor overrules guidance" [@ogle2019generic, pp. 2.67 and 2.73]. The 2024 meeting held that "GHGI does estimation, not accounting" and that a disaggregated estimate "would be difficult to impossible" to verify with observations [@ipcc2024reconciling, pp. 59 and 16]. ART TREES cited the 2019 definition for its exclusion without saying how far back the record must reach [@art2025trees3]. Of the three crediting documents read for this study, only Verra's tool set a record length, 100 years with no fewer than 20 [@verra2024nprt]. The Forest Carbon Partnership Facility capped its uncertainty set-aside at 15 per cent [@fcpf2024buffer]. Two countries applying the same clause to the same fire record could therefore report different natural shares. The accounting rule the IPCC had written for that exclusion was in the 2013 Supplement [@ipcc2014kp, p. 2.45]. The forest reference levels of the European Union, the projected baselines its members were judged against, credited harvest increases that policy assumed and that never took place [@grassi2018science]. A review of disturbance risk to forest carbon in the United States concluded that "disturbance risks must be accounted for in carbon offset protocols" [@dye2024carbon]. Five changes would supply the missing rules. The first four were a stated record length, a stated regrowth period, an uncertainty deduction on gross emissions and removals, and buffers set from the regional fire regime [@marinelli2026risk; @wu2026global]. The fifth was to exclude only the emissions above a background level, as the Kyoto Protocol provision did. Two limits qualified these results. The uncertainty analysis applied one published interval to every annual value and treated each year's error as independent. Varying the common share bounded the effect of that independence without removing it. All three accounts used Canada's figures as reported, so the study compared three sums of one inventory's figures, with FAO's estimate as its only independent check.
 
 # Conclusions
 
-Disaggregating natural disturbance decided whether Canada's managed land showed emission reductions under ART TREES in most crediting years, 2017 to 2024, but did not make those reductions precise. With the disaggregation, Canada's managed land showed emission reductions of `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` Mt of carbon dioxide equivalent against the standard's crediting level. Without the disaggregation the same land fell `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` Mt short in 2023 alone. A country or province in a megafire regime could therefore report emission reductions only by excluding the fires, under guidance that set no record length for doing so. The threshold rule, which excluded natural disturbance only in extreme fire years, gave `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times the disaggregated account because ordinary fire years raised the threshold account's crediting level. The 90 per cent interval of the disaggregated account was wider than the account's reductions in every positive year, with adjustment factors of `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent. Every positive year kept part of its reduction only if more than `r round(100 * rho_needed, 1)` per cent of the error variance was shared between years, a share the inventory did not report. The Tier 1 fire estimate a government would check its inventory against used savanna factors FAO's note did not state, and was uncertain by `r round(100 * u_forest[1])` per cent or more. The estimate's burned area was reproduced from the published method within `r round(100 * max(abs(repro_year$ratio - 1)))` per cent in every year. The reproduction required recovering the land cover year, the Table 2.4 rows and the emission factor row the note did not state. Rebuilt by stratum, the estimate showed `r round(natural_share_2023)` per cent of the 2023 area under natural ignition and `r round(organic_share_2023)` per cent on organic soil. The national layers of fuel, peat and burned area divided every term the defaults had treated as one. Standards that relied on the disaggregation needed a stated record length, a stated regrowth period and the exclusion of only the emissions above a background level. Such standards also needed an uncertainty deduction on gross emissions and removals, and buffers set from regional fire regimes.
-
-# Statements and declarations {.unnumbered}
-
-## Competing interests {.unnumbered}
-
-The author has no competing interests to declare that are relevant to the content of this article.
-
-## Data availability {.unnumbered}
-
-The manuscript is one Quarto document whose code reproduces every number, table and figure. Its code, derived data and input manifest are at https://github.com/seamusrobertmurphy/canada-emissions-disaggregated.
+Disaggregating natural disturbance decided whether Canada's managed land showed emission reductions under ART TREES in most crediting years, 2017 to 2024, but did not make those reductions precise. With the disaggregation, Canada's managed land showed emission reductions of `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` Mt of carbon dioxide equivalent against the standard's crediting level. Without the disaggregation the same land fell `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` Mt short in 2023 alone. A country or province in a megafire regime could therefore report emission reductions only by excluding the fires, under guidance that set no record length for doing so. The threshold rule, which excluded natural disturbance only in extreme fire years, gave `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times the disaggregated account because ordinary fire years raised the threshold account's crediting level. The 90 per cent interval of the disaggregated account was wider than the account's reductions in every positive year, with adjustment factors of `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent. Every positive year kept part of its reduction only if more than `r round(100 * rho_needed, 1)` per cent of the error variance was shared between years, a share the inventory did not report. The Tier 1 fire estimate a government would check its inventory against used savanna factors FAO's note did not state, and was uncertain by `r round(100 * u_forest[1])` per cent or more. The estimate's burned area was reproduced from the published method within `r round(100 * max(abs(repro_year$ratio - 1)))` per cent in every year. The reproduction required recovering the land cover year, the IPCC Table 2.4 rows and the emission factor row the note did not state. Rebuilt by stratum, the estimate showed `r round(natural_share_2023)` per cent of the 2023 area under natural ignition and `r round(organic_share_2023)` per cent on organic soil. The national layers of fuel, peat and burned area divided every term the defaults had treated as one. Standards that relied on the disaggregation needed a stated record length, a stated regrowth period and the exclusion of only the emissions above a background level. Such standards also needed an uncertainty deduction on gross emissions and removals, and buffers set from regional fire regimes.
 
 # References {.unnumbered}
 

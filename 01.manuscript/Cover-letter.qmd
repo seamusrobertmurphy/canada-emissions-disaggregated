@@ -4,22 +4,31 @@ format:
     reference-doc: ../04.references/style-letter.docx
 ---
 
-4 November 2026
+5 November 2026
 
 The Editors, Climatic Change
 
+Submission CLIM-D-26-02264
+
 Dear Editors,
 
-I submit "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances" as an Original Research Article.
+I resubmit "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances" as a Research Article. The corrections the editorial office requested are listed below, and none of them changed a result.
 
-The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. ART TREES, the crediting standard of the Architecture for REDD+ Transactions, accepts the disaggregated account. Whether the disaggregation decides the credit a country can claim had not been tested. The manuscript runs Canada's 2026 inventory through the ART TREES rules for the crediting years 2017 to 2024, with and without the disaggregation and under a threshold rule. With the disaggregation, Canada showed reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without it, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The disaggregated account stayed uncertain by more than its own size. Every positive year kept a credit only when more than 99.6 per cent of the model error was shared between years. A deduction on the period's summed reductions left nothing either. The manuscript also reproduces the burned area behind the fire emissions the Food and Agriculture Organization publishes for Canada from its stated method, within 1 per cent in every year, and recovers the fuel loads and emission factors it applied. Propagated from the IPCC tables' own standard errors, that estimate is uncertain by 175 per cent or more.
+1. Author names and personal information were removed from the document properties of every file, and no file name carries an author's name.
+2. The title page gives the author's affiliation, TUV SUD Canada, with its city, Comox, and its country, Canada.
+3. The title page names Dr. Seamus Murphy as the corresponding author, with the email address seamusrobertmurphy@gmail.com.
+4. The title page carries Ethics Approval, Consent to Participate, Consent for Publication, Competing Interests, Author Contributions, Funding, and Availability of Data and Materials as separate sections. The study involved no human participants, so the first three state "Not applicable". Competing Interests and Funding also state "Not applicable", each with a sentence confirming that there are none.
+5. The Statements and declarations section was removed from the blinded manuscript, which carries no author name, affiliation or repository address.
+6. The title opens the blinded manuscript, and line numbers run continuously through it.
+7. Table 2 was present in the first submission, in Section 3.1 on page 16 of the built PDF. The four tables are numbered and first cited in order, Table 1 in the Methods and Tables 2 to 4 in the Results.
+8. The decimal numbers, such as Table 2.4 and Fig. 2.6, are intentional, because they number tables and a figure in the IPCC Guidelines the manuscript cites. Each decimal number now carries the label IPCC or names its IPCC document, so none can be read as one of the manuscript's own Tables 1 to 4. Table 6-1 is likewise a table of Canada's national inventory report, and equation numbers such as 2.27 follow the IPCC Guidelines.
 
-The work sits where inventory method, crediting policy and fire ecology meet, and so belongs in Climatic Change.
+The 2019 Refinement to the IPCC Guidelines lets a country report the emissions and removals of natural disturbance apart from those of human activity. The ART TREES crediting standard accepts the disaggregated account. No study had measured the effect of the disaggregation on the emission reductions a government could sell. The manuscript applies the ART TREES standard to Canada's 2026 inventory for the crediting years 2017 to 2024, with and without the disaggregation and under a threshold rule. With the disaggregation, Canada showed emission reductions in six of eight crediting years, totalling 85.6 million tonnes of carbon dioxide equivalent. Without the disaggregation, the same land exceeded its crediting level by 853.6 million tonnes in 2023 alone. The 90 per cent confidence interval of the disaggregated account was wider than its reductions in every positive year. Every positive year kept part of its reduction only if more than 99.6 per cent of the error variance was shared between years. The manuscript also rebuilds the Food and Agriculture Organization's Tier 1 fire estimate for Canada from its stated method, reproducing the burned area within 1 per cent in every year. Propagated from the standard errors of the IPCC tables, the Organization's estimate is uncertain by 175 per cent or more.
 
-The manuscript has one figure and four tables, with eight Online Resources. It is original, is not published or under consideration elsewhere, and is not a preprint. I am the sole author, have no competing interests and received no funding. An anonymised manuscript and a separate title page are submitted for double-blind review.
+The work concerns inventory method, crediting policy and fire ecology, all within the scope of Climatic Change.
+
+The manuscript has one figure and four tables, with eight Online Resources, and is original, unpublished, not under consideration elsewhere and not a preprint. I am the sole author, have no competing interests and received no funding.
 
 Yours sincerely,
 
-Seamus Murphy, independent researcher, Vancouver, Canada
-
-ORCID 0000-0002-1792-0351, seamusrobertmurphy@gmail.com
+Dr. Seamus Murphy

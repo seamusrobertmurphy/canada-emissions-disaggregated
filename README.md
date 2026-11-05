@@ -8,9 +8,9 @@ Canada’s managed forest showed emission reductions under a crediting standard 
 
 ![Fig. 1](03.outputs/PNG/fig-zones.png)
 
-*Fig. 1 The global default layers of the Tier 1 fire estimate beside the national datasets of the higher tiers, four maps on one scale in EPSG:3978. (a) The ecological zones of FAO 2010, the default stratification of Table 2.4 of the 2006 Guidelines. (b) The fuel types of the Fire Behaviour Prediction System, 2026 release, grouped by fuel. (c) The IPCC default soil classes at 5 arc minutes. (d) The peatland map of the Canadian Forest Service, bog and fen by canopy. Map lines delineate study areas and do not necessarily depict accepted national boundaries.*
+*Fig. 1 The global default layers of the Tier 1 fire estimate beside the national datasets of the higher tiers, four maps on one scale in EPSG:3978. (a) The ecological zones of FAO 2010, the default stratification of Table 2.4 of the 2006 IPCC Guidelines. (b) The fuel types of the Fire Behaviour Prediction System, 2026 release, grouped by fuel. (c) The IPCC default soil classes at 5 arc minutes. (d) The peatland map of the Canadian Forest Service, bog and fen by canopy. Map lines delineate study areas and do not necessarily depict accepted national boundaries.*
 
-*Table 1 Rows of Tables 2.4 and 2.6 of the 2006 Guidelines for Canada’s vegetation, biomass consumption as mean and standard error, combustion factor as mean and standard deviation, and the Table 2.5 row of their emission factors, with the organic soil rows of the 2013 Wetlands Supplement, mean and 95 per cent interval, whose Table 2.7 gave 362 ± 41 g of carbon dioxide carbon and 9 ± 4 g of methane per kilogram. A blank is a value the table did not print.*
+*Table 1 Rows of Tables 2.4 and 2.6 of the 2006 IPCC Guidelines for Canada’s vegetation, biomass consumption as mean and standard error, combustion factor as mean and standard deviation, and the IPCC Table 2.5 row of their emission factors, with the organic soil rows of the 2013 Wetlands Supplement, mean and 95 per cent interval, whose Table 2.7 gave 362 ± 41 g of carbon dioxide carbon and 9 ± 4 g of methane per kilogram. A blank is a value the table did not print.*
 
 <table>
 <thead>
