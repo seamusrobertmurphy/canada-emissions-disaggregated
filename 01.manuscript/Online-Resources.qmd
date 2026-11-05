@@ -60,7 +60,7 @@ fmt_tbl(read_tbl("tbl-coefficients.csv"))
 
 ![](../03.outputs/PNG/fig-accounts-1.png)
 
-**Online Resource 7** Each term of the Tier 1 fire estimate as the global default supplied it and as the national datasets supply it. The national datasets are the 2026 Fire Behaviour Prediction fuel types and the peatland map of the Canadian Forest Service. The burned areas are from the National Burned Area Composite and the fire points of the Canadian National Fire Database, and the emission factors and natural share from the inventory's own method. Areas are counted on the 2 km grid of Fig. 1 of the article.
+**Online Resource 7** Each term of the Tier 1 fire estimate as the global default supplied it and as the national datasets supply it. The national datasets are the 2026 Fire Behaviour Prediction fuel types and the peatland map of the Canadian Forest Service. The burned areas are from the National Burned Area Composite and the fire points of the Canadian National Fire Database, and the emission factors and natural share from the inventory's own method. Areas are counted on the 2 km grid described in the article's Methods.
 
 ```{r}
 fmt_tbl(read_tbl("tbl-tier2.csv"))

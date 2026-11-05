@@ -691,18 +691,13 @@ category <- dplyr::case_when(is.na(zone_code) ~ NA_character_, cover_code %in% c
 category <- dplyr::if_else(zone_code == "P" & category %in% c("Shrubland", "Grassland"), "Tundra", category)
 fuel <- dplyr::case_when(category == "Forest" & zone_code %in% c(boreal_zones, "P") ~ 52.8, category == "Forest" ~ 19.8, category == "Shrubland" ~ 14.3,
                          category == "Grassland" ~ 4.1, category == "Tundra" ~ 10, .default = NA_real_)
-fuel_labels <- c("4.1, grassland", "10, tundra", "14.3, shrubland", "19.8, temperate forest", "52.8, boreal forest")
 as_layer <- function(x, levels) { r <- terra::rast(grid); terra::values(r) <- factor(x, levels = levels); r }
-category_r <- as_layer(category, c("Forest", "Shrubland", "Grassland", "Tundra", "Cropland", "Other"))
-fuel_r <- as_layer(fuel_labels[match(fuel, c(4.1, 10, 14.3, 19.8, 52.8))], fuel_labels)
-peat_r <- as_layer(dplyr::if_else(!is.na(fuel) & soil_code == 1, "66, organic soil", NA_character_), "66, organic soil")
-# The rows of Table 2 that overlap on each cell, the vegetation row of Table 2.4 and the organic soil row of the Wetlands Supplement
+# The rows of Table 1 that overlap on each cell, the vegetation row of Table 2.4 and the organic soil row of the Wetlands Supplement, for their areas
 row_labels <- c("Boreal forest, mineral soil", "Boreal forest, organic soil", "Temperate forest, mineral soil", "Temperate forest, organic soil",
                 "Shrubland", "Grassland", "Tundra")
 row_class <- dplyr::case_when(is.na(fuel) ~ NA_character_, fuel == 52.8 & soil_code == 1 ~ row_labels[2], fuel == 52.8 ~ row_labels[1],
                               fuel == 19.8 & soil_code == 1 ~ row_labels[4], fuel == 19.8 ~ row_labels[3], fuel == 14.3 ~ row_labels[5],
                               fuel == 4.1 ~ row_labels[6], fuel == 10 ~ row_labels[7])
-row_r <- as_layer(row_class, row_labels)
 row_area <- tibble::tibble(row_class) |> dplyr::filter(!is.na(row_class)) |> dplyr::count(row_class) |> dplyr::mutate(mha = n * 400 / 1e6)
 soil_r <- as_layer(dplyr::if_else(is.na(zone_code) | soil_code == 0, NA_character_, soil_labels[pmax(soil_code, 1)]), soil_labels)
 fuel_area <- tibble::tibble(category, fuel, zone_code) |>
@@ -744,10 +739,6 @@ peat_labels <- c("Open bog and fen", "Treed bog and fen", "Forested bog and fen"
 peat_group <- dplyr::case_when(!inside ~ NA_character_, peat_code %in% 1:3 ~ peat_labels[1], peat_code %in% 4:6 ~ peat_labels[2],
                                peat_code %in% 7:9 ~ peat_labels[3], .default = NA_character_)
 cfs_peat_r <- as_layer(peat_group, peat_labels)
-agree_labels <- c("Both layers", "IPCC default only", "National map only")
-agree_group <- dplyr::case_when(!inside ~ NA_character_, soil_code == 1 & peat_code %in% 1:9 ~ agree_labels[1], soil_code == 1 ~ agree_labels[2],
-                                peat_code %in% 1:9 ~ agree_labels[3], .default = NA_character_)
-agree_r <- as_layer(agree_group, agree_labels)
 mha_of <- function(x) sum(x, na.rm = TRUE) * 400 / 1e6
 ipcc_organic_mha <- mha_of(inside & soil_code == 1); cfs_peat_mha <- mha_of(inside & peat_code %in% 1:9)
 both_peat_mha <- mha_of(inside & soil_code == 1 & peat_code %in% 1:9)
@@ -770,7 +761,7 @@ deciduous_share_2023 <- 100 * sum(points_2023$SIZE_HA[points_2023$fbp %in% c(11,
 
 fbp_mha <- function(label) fbp_area$mha[fbp_area$fbp_group == label]
 tier2_table <- tibble::tribble(~Quantity, ~`Tier 1 global default`, ~`National dataset`,
-  "Forest fuel classes on the map", sprintf("Two Table 2.4 rows, boreal forest %.0f Mha and temperate forest %.0f Mha", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 52.8], fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 19.8]),
+  "Forest fuel classes on the 2 km grid", sprintf("Two Table 2.4 rows, boreal forest %.0f Mha and temperate forest %.0f Mha", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 52.8], fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 19.8]),
     sprintf("FBP fuel types, conifer %.0f Mha, mixedwood %.0f Mha, deciduous %.0f Mha, grass %.0f Mha", fbp_mha(fbp_labels[1]), fbp_mha(fbp_labels[2]), fbp_mha(fbp_labels[3]), fbp_mha(fbp_labels[4])),
   "Fuel burned (t dry matter per ha)", "Table 2.4, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate", "CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026",
   "Organic soil (Mha)", sprintf("IPCC default raster, %.0f", ipcc_organic_mha), sprintf("Peatland map, %.0f, of which %.0f also organic in the default raster", cfs_peat_mha, both_peat_mha),
@@ -948,7 +939,7 @@ ladder_table <- dplyr::transmute(ladder, Estimate, `Burned area`, `Fuel and emis
 
 # Abstract {.unnumbered}
 
-Whether Canada's managed forest showed emission reductions under a crediting standard depended on one accounting choice, the disaggregation of natural disturbances from the reported total. Canada's inventory, submitted to the United Nations Framework Convention on Climate Change, reported the lands dominated by wildfire and insects apart from the remaining managed forest, as the guidelines allowed. What that choice did to the emission reductions a government could sell had not been measured. This study applied the ART TREES standard to Canada's 2026 inventory for 2017 to 2024. The reported account was compared with the same account with natural disturbances included, and with a threshold account excluding only fire years above a 13 year baseline. With natural disturbances disaggregated, the managed forest showed emission reductions in `r sum(split_pos)` of `r nrow(credits)` years, `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` million tonnes of carbon dioxide equivalent. With them included, emissions in `r credits$Year[worst]` alone exceeded the crediting level by `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` million tonnes. The threshold account gave `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]), 1)` million tonnes, `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times the reported account, because ordinary fire years raised its crediting level. The uncertainty deduction on the reported account ran from `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent. The Food and Agriculture Organization's fire emissions for Canada were reproduced from its method within `r round(100 * max(abs(repro_year$ratio - 1)))` per cent. A standard that accepted the disaggregation needed a stated record length and regrowth period. It also needed to exclude only the emissions above a background level and deduct uncertainty from gross emissions and removals.
+Canada's managed forest showed emission reductions under a crediting standard in most years when its national inventory disaggregated natural from anthropogenic disturbances. That inventory, submitted to the United Nations Framework Convention on Climate Change, left emissions and removals of lands affected by wildfire and insects out of its total. No study had measured the effect of the disaggregation on the emission reductions a government could sell. This study applied the ART TREES standard to Canada's 2026 inventory for the crediting years 2017 to 2024 and rebuilt the Food and Agriculture Organization's Tier 1 fire emissions. The disaggregated and undisaggregated accounts were compared with a threshold account excluding natural disturbances only in fire years above a 13 year baseline. The disaggregated account showed emission reductions in `r sum(split_pos)` of `r nrow(credits)` years, `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` million tonnes of carbon dioxide equivalent. Those reductions carried uncertainty adjustment factors of `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent, from the Monte Carlo 90 per cent confidence interval. The undisaggregated account exceeded the crediting level by `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` million tonnes in `r credits$Year[worst]` alone, a reversal larger than the buffer. The threshold account gave `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]), 1)` million tonnes, `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times the disaggregated account, because ordinary fire years raised the threshold account's crediting level. The Tier 1 burned area was reproduced within `r round(100 * max(abs(repro_year$ratio - 1)))` per cent, and the Tier 1 emission factors were recovered. A standard accepting the disaggregation needed a record length and regrowth period, exclusion only of emissions above a background level and uncertainty deducted from gross emissions and removals.
 
 # Introduction
 
@@ -1116,7 +1107,7 @@ Reproduced from Chapter 3 of Volume 1 of the 2019 Refinement, pages 3.18 to 3.19
 
 ## Strata
 
-The defaults were stratified by vegetation. The guidelines took as their default the ecological zones of the Food and Agriculture Organization, listed in Table 4.1 of the forest land chapter [@aalde2006generic]. Canada fell in `r xfun::numbers_to_words(nrow(gez))` ecological zones on land, `r sprintf("%.0f", sum(gez$mha[gez$gez_abbrev %in% c("Ba", "Bb", "BM")]))` Mha of them boreal, and each took the row of Tables 2.4, 2.5 and 2.6 that its vegetation matched (@fig-zones, Online Resource 2). Three more layers stratified the fire record. The soil raster gave eight classes, organic, sandy, wetland, volcanic, spodic, high activity clay, low activity clay and other [@batjes2010ipcc]. The MCD12Q1 map of 2023 kept its IGBP classes as FAO grouped them, forest for classes 1 to 5 and savanna and grassland for 6 to 10 [@fao2025fires]. On the fuel map, forest also took in woody savanna and savanna, classes 8 and 9, whose tree cover exceeded 10 per cent. The fire record supplied each fire's cause, natural, human or unknown, its type, crown, surface or ground where an agency had recorded it, and its month [@cfs2026nfdb].
+The defaults were stratified by vegetation. The guidelines took as their default the ecological zones of the Food and Agriculture Organization, listed in Table 4.1 of the forest land chapter [@aalde2006generic]. Canada fell in `r xfun::numbers_to_words(nrow(gez))` ecological zones on land, `r sprintf("%.0f", sum(gez$mha[gez$gez_abbrev %in% c("Ba", "Bb", "BM")]))` Mha of them boreal, and each took the row of Tables 2.4, 2.5 and 2.6 that its vegetation matched (@fig-zones, Online Resource 2). Three more layers stratified the fire record. The soil raster gave eight classes, organic, sandy, wetland, volcanic, spodic, high activity clay, low activity clay and other [@batjes2010ipcc]. The MCD12Q1 map of 2023 kept its IGBP classes as FAO grouped them, forest for classes 1 to 5 and savanna and grassland for 6 to 10 [@fao2025fires]. The fire record supplied each fire's cause, natural, human or unknown, its type, crown, surface or ground where an agency had recorded it, and its month [@cfs2026nfdb].
 
 ```{r}
 #| label: or-defaults
@@ -1128,9 +1119,9 @@ fmt_tbl(defaults, right = c("Area (Mha)", "Fuel burned (t/ha)", "Combustion fact
 
 ```{r}
 #| label: fig-zones
-#| fig-cap: "Canada's strata for the Tier 1 fire estimate, five maps on one scale in EPSG:3978. (a) The ecological zones of Table 4.1 of the 2006 Guidelines, FAO 2010. (b) The IPCC default soil classes at 5 arc minutes. (c) The fire category from the MCD12Q1 land cover of 2023, forest for IGBP classes 1 to 5, 8 and 9, shrubland for 6 and 7, grassland for 10 and 11, open polar land as tundra. (d) The fuel burned per hectare of Table 2.4 by zone and category. (e) The rows of @tbl-rows that overlap on each cell. Map lines delineate study areas and do not necessarily depict accepted national boundaries."
+#| fig-cap: "The global default layers of the Tier 1 fire estimate beside the national datasets of the higher tiers, four maps on one scale in EPSG:3978. (a) The ecological zones of FAO 2010, the default stratification of Table 2.4 of the 2006 Guidelines. (b) The fuel types of the Fire Behaviour Prediction System, 2026 release, grouped by fuel. (c) The IPCC default soil classes at 5 arc minutes. (d) The peatland map of the Canadian Forest Service, bog and fen by canopy. Map lines delineate study areas and do not necessarily depict accepted national boundaries."
 #| fig-width: 6.5
-#| fig-height: 9.4
+#| fig-height: 6.4
 
 map_theme <- ggplot2::theme_minimal(base_size = 7) + ggplot2::theme(
   panel.grid = ggplot2::element_line(colour = "grey80", linewidth = 0.15), axis.text = ggplot2::element_text(size = 5, colour = "grey30"),
@@ -1148,25 +1139,21 @@ furniture <- function() list(
 outline_layer <- ggplot2::geom_sf(data = canada_outline, fill = NA, colour = "grey40", linewidth = 0.15)
 soil_cols <- c(Organic = "#7B3294", Sandy = "#F2E394", Wetland = "#2C6E49", Volcanic = "#B2456E", Spodic = "#7FB3D5",
                `High activity clay` = "#D8B365", `Low activity clay` = "#F6E8C3", Other = "#BFBFBF")
-category_cols <- c(Forest = "#1B7837", Shrubland = "#A6611A", Grassland = "#DFC27D", Tundra = "#80CDC1", Cropland = "#F7F7F7", Other = "#D9D9D9")
-fuel_cols <- setNames(c("#FEE08B", "#C7EAE5", "#FDAE61", "#F46D43", "#A50026"), fuel_labels)
-row_cols <- setNames(c("#A50026", "#7B3294", "#F46D43", "#C2A5CF", "#FDAE61", "#FEE08B", "#C7EAE5"), row_labels)
+fbp_cols <- setNames(c("#1B7837", "#F4A582", "#D8B365", "#FEE08B", "#C7EAE5", "#D9D9D9"), fbp_labels)
+cfs_peat_cols <- setNames(c("#7B3294", "#C2A5CF", "#2C6E49"), peat_labels)
 p_a <- ggplot2::ggplot() + ggplot2::geom_sf(data = gez, ggplot2::aes(fill = gez_name), colour = NA) + outline_layer +
   ggplot2::scale_fill_brewer(palette = "Set3") + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) + canada_coord + furniture() +
-  ggplot2::labs(title = "(a) Ecological zone, FAO 2010") + map_theme
+  ggplot2::labs(title = "(a) Ecological zones, FAO 2010, the Tier 1 default") + map_theme
+p_b <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = fbp_r, maxcell = 3e5) + outline_layer +
+  ggplot2::scale_fill_manual(values = fbp_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
+  canada_coord + furniture() + ggplot2::labs(title = "(b) Fire Behaviour Prediction fuel types, 2026, national") + map_theme
 p_c <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = soil_r, maxcell = 3e5) + outline_layer +
   ggplot2::scale_fill_manual(values = soil_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(b) IPCC soil class, 5 arc minute default raster") + map_theme
-p_d <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = category_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = category_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(c) Fire category, MCD12Q1 land cover 2023") + map_theme
-p_e <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = fuel_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = fuel_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(d) Fuel burned, t dry matter per ha, Table 2.4") + map_theme
-p_f <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = row_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = row_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(e) Table 2 rows by cell, vegetation and organic soil") + map_theme
-patchwork::wrap_plots(p_a, p_c, p_d, p_e, p_f, ncol = 2)
+  canada_coord + furniture() + ggplot2::labs(title = "(c) IPCC default soil classes, 5 arc minutes") + map_theme
+p_d <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = cfs_peat_r, maxcell = 3e5) + outline_layer +
+  ggplot2::scale_fill_manual(values = cfs_peat_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
+  canada_coord + furniture() + ggplot2::labs(title = "(d) Peatland map of the Canadian Forest Service, national") + map_theme
+patchwork::wrap_plots(p_a, p_b, p_c, p_d, ncol = 2)
 ```
 
 Each fire was placed in the zone, soil class and land cover class at its reported location, and in British Columbia where that fell inside the province. Its fuel burned per hectare was the Table 2.4 row of its zone and fire type (@tbl-rows). Boreal crown and surface fires took their own rows and other boreal fires the general wildfire row. Temperate fires took the wildfire row of other temperate forests and polar fires the tundra row. Grassland fires of April to June took the early dry season row and later fires the mid or late season row. Table 2.4 gave peat a fuel of 41 ± 1.4 tonnes per hectare and no emission factor [@aalde2006generic]. The 2013 Wetlands Supplement supplied both in Equation 2.8 and its Tables 2.6 and 2.7, for fires on undrained as well as drained organic soils [@ipcc2014wetlands, p. 2.39]. A fire on organic soil therefore carried a second term, the undrained peat row of 66 tonnes per hectare with the boreal and temperate emission factors.
@@ -1194,28 +1181,7 @@ readr::write_csv(rows_table, "03.outputs/TBL/tbl-rows.csv")
 fmt_tbl(rows_table, right = c("Fuel burned (t/ha)", "Combustion factor"))
 ```
 
-The estimate was rebuilt by zone, every fire of 2001 to 2024 summed by zone and year and multiplied by the fuel burned and emission factors of its row. Methane and nitrous oxide were converted at the inventory's warming potentials of 28 and 265 [@eccc2026nir]. Zones sharing a row shared its error, so their emissions were summed before the rows were combined in quadrature. It was rebuilt again by stratum for Canada and British Columbia, each fire at the row of its zone and type, with the peat term on organic soil. The area burned was summed by year and cause. The zone rows were also applied to FAO's own burned area, each MCD64A1 pixel at the rows of its zone group. The 2023 estimate thus changed one input at a time, from FAO's method to the strata with the peat term. The map of fuel burned followed the same rows on a 2 km grid from the zone and land cover of each cell, with the organic soil row where the soil raster was organic (@fig-zones). Each default had a national counterpart at a higher tier, so three national layers were set beside the defaults term by term (@fig-national). The fuel types of the Fire Behaviour Prediction System, 2026 release, were grouped into conifer, mixedwood, deciduous, grass and non-fuel from the labels of the catalogue's map service [@cfs2026fbp]. The peatland map of the Canadian Forest Service gave bog and fen by canopy at 250 m [@webster2018spatially]. The National Burned Area Composite, the inventory's source of burned area, gave the national total for each year [@cfs2026nbac; @eccc2026nir]. Each layer was projected to the 2 km grid, and the 2023 fires were placed on the peatland map and the fuel types. The organic soil of the IPCC raster was compared cell by cell with the peatland map.
-
-```{r}
-#| label: fig-national
-#| fig-cap: "The national layers beside the Tier 1 defaults, on the scale of @fig-zones. (a) The Fire Behaviour Prediction fuel types, 2026 release, grouped by fuel. (b) The peatland map of the Canadian Forest Service, bog and fen by canopy. (c) Where that map and the IPCC default soil raster agree on organic soil. Map lines delineate study areas and do not necessarily depict accepted national boundaries."
-#| fig-width: 6.5
-#| fig-height: 6.4
-
-fbp_cols <- setNames(c("#1B7837", "#F4A582", "#D8B365", "#FEE08B", "#C7EAE5", "#D9D9D9"), fbp_labels)
-cfs_peat_cols <- setNames(c("#7B3294", "#C2A5CF", "#2C6E49"), peat_labels)
-agree_cols <- setNames(c("#7B3294", "#F46D43", "#2C6E49"), agree_labels)
-p_nb <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = fbp_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = fbp_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(a) Fire Behaviour Prediction fuel types, 2026") + map_theme
-p_nc <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = cfs_peat_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = cfs_peat_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(b) Peatland map of the Canadian Forest Service") + map_theme
-p_nd <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = agree_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = agree_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(c) Organic soil, national map against the IPCC default") + map_theme
-patchwork::wrap_plots(p_nb, p_nc, p_nd, ncol = 2)
-```
+The estimate was rebuilt by zone, every fire of 2001 to 2024 summed by zone and year and multiplied by the fuel burned and emission factors of its row. Methane and nitrous oxide were converted at the inventory's warming potentials of 28 and 265 [@eccc2026nir]. Zones sharing a row shared its error, so their emissions were summed before the rows were combined in quadrature. It was rebuilt again by stratum for Canada and British Columbia, each fire at the row of its zone and type, with the peat term on organic soil. The area burned was summed by year and cause. The zone rows were also applied to FAO's own burned area, each MCD64A1 pixel at the rows of its zone group. The 2023 estimate thus changed one input at a time, from FAO's method to the strata with the peat term. The rows were also laid on a 2 km grid from the zone and land cover of each cell, with the organic soil row where the soil raster was organic. On that grid forest took in woody savanna and savanna, classes 8 and 9, whose tree cover exceeded 10 per cent. Each default had a national counterpart at a higher tier, so three national layers were set beside the defaults term by term (@fig-zones). The fuel types of the Fire Behaviour Prediction System, 2026 release, were grouped into conifer, mixedwood, deciduous, grass and non-fuel from the labels of the catalogue's map service [@cfs2026fbp]. The peatland map of the Canadian Forest Service gave bog and fen by canopy at 250 m [@webster2018spatially]. The National Burned Area Composite, the inventory's source of burned area, gave the national total for each year [@cfs2026nbac; @eccc2026nir]. Each layer was projected to the 2 km grid, and the 2023 fires were placed on the peatland map and the fuel types. The organic soil of the IPCC raster was compared cell by cell with the peatland map.
 
 # Results
 
@@ -1300,7 +1266,7 @@ readr::write_csv(strata_table, "03.outputs/TBL/tbl-strata.csv")
 fmt_tbl(strata_table, right = names(strata_table)[-(1:2)])
 ```
 
-Of the `r sprintf("%.1f", sum(strata_2023$ha) / 1e6)` Mha that burned in 2023, `r round(natural_share_2023)` per cent was recorded as natural in cause and `r round(human_share_2023)` per cent as human (@tbl-strata). Over 2001 to 2024 the natural share was `r round(natural_share_all)` per cent and no year fell below `r round(min(dplyr::summarise(dplyr::filter(cause_year, region == "Canada"), share = 100 * mha[cause == "Natural"] / sum(mha), .by = year)$share))` per cent (Online Resource 5). Agencies typed `r round(typed_share_2023)` per cent of the 2023 area as crown, surface or ground fire, so the general wildfire row carried the rest. Fires on organic soil covered `r round(organic_share_2023)` per cent of the area burned in Canada and `r round(bc_organic_share_2023)` per cent in British Columbia. The peat term added `r format(round(peat_2023), big.mark = ",")` Mt of carbon dioxide equivalent to the `r format(round(veg_2023), big.mark = ",")` Mt of the vegetation term in Canada, and `r round(bc_peat_2023)` Mt to `r round(bc_veg_2023)` Mt in the province. FAO had computed Canada's organic soil fires at a mean of `r format(round(mean(obs[["CO2 (kt)"]])), big.mark = ",")` kilotonnes of carbon dioxide a year over 2001 to 2021, and published zero. MCD12Q1 placed `r round(forest_share_2023)` per cent of the 2023 area in forest classes and `r round(savanna_share_2023)` per cent in woody savanna and savanna, which FAO burned at savanna fuel values. On the fuel map, `r sprintf("%.0f", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 52.8])` Mha of Canada drew the boreal forest row and `r sprintf("%.0f", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 19.8])` Mha the temperate row, with `r sprintf("%.0f", row_area$mha[row_area$row_class == "Boreal forest, organic soil"])` Mha of boreal forest on organic soil (@fig-zones).
+Of the `r sprintf("%.1f", sum(strata_2023$ha) / 1e6)` Mha that burned in 2023, `r round(natural_share_2023)` per cent was recorded as natural in cause and `r round(human_share_2023)` per cent as human (@tbl-strata). Over 2001 to 2024 the natural share was `r round(natural_share_all)` per cent and no year fell below `r round(min(dplyr::summarise(dplyr::filter(cause_year, region == "Canada"), share = 100 * mha[cause == "Natural"] / sum(mha), .by = year)$share))` per cent (Online Resource 5). Agencies typed `r round(typed_share_2023)` per cent of the 2023 area as crown, surface or ground fire, so the general wildfire row carried the rest. Fires on organic soil covered `r round(organic_share_2023)` per cent of the area burned in Canada and `r round(bc_organic_share_2023)` per cent in British Columbia. The peat term added `r format(round(peat_2023), big.mark = ",")` Mt of carbon dioxide equivalent to the `r format(round(veg_2023), big.mark = ",")` Mt of the vegetation term in Canada, and `r round(bc_peat_2023)` Mt to `r round(bc_veg_2023)` Mt in the province. FAO had computed Canada's organic soil fires at a mean of `r format(round(mean(obs[["CO2 (kt)"]])), big.mark = ",")` kilotonnes of carbon dioxide a year over 2001 to 2021, and published zero. MCD12Q1 placed `r round(forest_share_2023)` per cent of the 2023 area in forest classes and `r round(savanna_share_2023)` per cent in woody savanna and savanna, which FAO burned at savanna fuel values. On the 2 km grid, `r sprintf("%.0f", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 52.8])` Mha of Canada drew the boreal forest row and `r sprintf("%.0f", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 19.8])` Mha the temperate row, with `r sprintf("%.0f", row_area$mha[row_area$row_class == "Boreal forest, organic soil"])` Mha of boreal forest on organic soil.
 
 ```{r}
 #| label: tbl-tier2
@@ -1310,7 +1276,7 @@ readr::write_csv(tier2_table, "03.outputs/TBL/tbl-tier2.csv")
 fmt_tbl(tier2_table)
 ```
 
-The national layers divided the land that the defaults treated as one (Online Resource 7). Where Table 2.4 gave Canada's forest two rows, the fuel types gave conifer `r sprintf("%.0f", fbp_mha(fbp_labels[1]))` Mha, mixedwood `r sprintf("%.0f", fbp_mha(fbp_labels[2]))` Mha and deciduous `r sprintf("%.0f", fbp_mha(fbp_labels[3]))` Mha. The 2023 fires burned `r round(conifer_share_2023)` per cent of their area in conifer, `r round(mixed_share_2023)` per cent in mixedwood and `r round(deciduous_share_2023)` per cent in deciduous fuel (@fig-national). The peatland map held `r sprintf("%.0f", cfs_peat_mha)` Mha of bog and fen against `r sprintf("%.0f", ipcc_organic_mha)` Mha of organic soil in the IPCC raster, and only `r sprintf("%.0f", both_peat_mha)` Mha was organic in both. The 2023 fires therefore fell `r round(cfs_peat_share_2023)` per cent on the peatland map against `r round(organic_share_2023)` per cent on the default raster. The National Burned Area Composite recorded `r sprintf("%.1f", nbac_2023 / 1e6)` Mha for 2023, between FAO's `r sprintf("%.1f", sum(used$ha[used$year == 2023]) / 1e6)` Mha across its items and the `r sprintf("%.1f", sum(strata_2023$ha) / 1e6)` Mha of the fire points. The inventory used none of the defaults, since it held a national dataset for every term [@eccc2026nir].
+The national layers divided the land that the defaults treated as one (Online Resource 7). Where Table 2.4 gave Canada's forest two rows, the fuel types gave conifer `r sprintf("%.0f", fbp_mha(fbp_labels[1]))` Mha, mixedwood `r sprintf("%.0f", fbp_mha(fbp_labels[2]))` Mha and deciduous `r sprintf("%.0f", fbp_mha(fbp_labels[3]))` Mha. The 2023 fires burned `r round(conifer_share_2023)` per cent of their area in conifer, `r round(mixed_share_2023)` per cent in mixedwood and `r round(deciduous_share_2023)` per cent in deciduous fuel (@fig-zones). The peatland map held `r sprintf("%.0f", cfs_peat_mha)` Mha of bog and fen against `r sprintf("%.0f", ipcc_organic_mha)` Mha of organic soil in the IPCC raster, and only `r sprintf("%.0f", both_peat_mha)` Mha was organic in both. The 2023 fires therefore fell `r round(cfs_peat_share_2023)` per cent on the peatland map against `r round(organic_share_2023)` per cent on the default raster. The National Burned Area Composite recorded `r sprintf("%.1f", nbac_2023 / 1e6)` Mha for 2023, between FAO's `r sprintf("%.1f", sum(used$ha[used$year == 2023]) / 1e6)` Mha across its items and the `r sprintf("%.1f", sum(strata_2023$ha) / 1e6)` Mha of the fire points. The inventory used none of the defaults, since it held a national dataset for every term [@eccc2026nir].
 
 # Discussion
 
