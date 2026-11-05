@@ -17,6 +17,10 @@ Independent researcher, Vancouver, Canada.
 
 Seamus Murphy, seamusrobertmurphy@gmail.com.
 
+## Keywords
+
+Natural disturbance, disaggregation, managed forest, greenhouse gas inventory, wildfire, carbon crediting.
+
 ## Author contributions
 
 Seamus Murphy conceived the study, assembled the data, wrote the code, ran the analysis and wrote the manuscript.
