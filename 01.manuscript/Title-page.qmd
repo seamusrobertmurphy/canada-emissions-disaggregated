@@ -1,6 +1,5 @@
 ---
 title: "Reported emissions and removals from Canada's managed forest with and without the disaggregation of natural disturbances"
-subtitle: "Uncertainty deductions under the ART TREES standard and the IPCC Tier 1 forest fire emissions estimate"
 format:
   docx:
     reference-doc: ../04.references/style-letter.docx
