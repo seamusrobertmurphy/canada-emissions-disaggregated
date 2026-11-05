@@ -10,14 +10,14 @@ Canada’s managed forest showed emission reductions under a crediting standard 
 
 *Fig. 1 The global default layers of the Tier 1 fire estimate beside the national datasets of the higher tiers, four maps on one scale in EPSG:3978. (a) The ecological zones of FAO 2010, the default stratification of Table 2.4 of the 2006 Guidelines. (b) The fuel types of the Fire Behaviour Prediction System, 2026 release, grouped by fuel. (c) The IPCC default soil classes at 5 arc minutes. (d) The peatland map of the Canadian Forest Service, bog and fen by canopy. Map lines delineate study areas and do not necessarily depict accepted national boundaries.*
 
-*Table 1 Rows of Tables 2.4 and 2.6 of the 2006 Guidelines for Canada’s vegetation, fuel burned as mean and standard error, combustion factor as mean and standard deviation, and the Table 2.5 row of their emission factors, with the organic soil rows of the 2013 Wetlands Supplement, mean and 95 per cent interval, whose Table 2.7 gave 362 ± 41 g of carbon dioxide carbon and 9 ± 4 g of methane per kilogram. A blank is a value the table did not print.*
+*Table 1 Rows of Tables 2.4 and 2.6 of the 2006 Guidelines for Canada’s vegetation, biomass consumption as mean and standard error, combustion factor as mean and standard deviation, and the Table 2.5 row of their emission factors, with the organic soil rows of the 2013 Wetlands Supplement, mean and 95 per cent interval, whose Table 2.7 gave 362 ± 41 g of carbon dioxide carbon and 9 ± 4 g of methane per kilogram. A blank is a value the table did not print.*
 
 <table>
 <thead>
 <tr>
 <th width="2000" align="left">Vegetation</th>
 <th width="2000" align="left">Subcategory</th>
-<th width="2000" align="left">Fuel burned (t/ha)</th>
+<th width="2000" align="left">Biomass consumption (t/ha)</th>
 <th width="2000" align="left">Combustion factor</th>
 <th width="2000" align="left">Emission factor row</th>
 </tr>
@@ -84,7 +84,7 @@ Canada’s managed forest showed emission reductions under a crediting standard 
 </tbody>
 </table>
 
-*Table 3 The Tier 1 fire estimate for Canada by ecological zone from the fire points, 2023, with each zone’s burned area averaged over 2001 to 2024. Fuel burned and the emission factors are the zone’s rows in Online Resource 2. The uncertainty is the Approach 1 half width of the 95 per cent interval for carbon dioxide, with no error on burned area. The last row is FAO’s published value.*
+*Table 3 The Tier 1 fire estimate for Canada by ecological zone from the fire points, 2023, with each zone’s burned area averaged over 2001 to 2024. Biomass consumption and the emission factors are the zone’s rows in Online Resource 2. The uncertainty is the Approach 1 half width of the 95 per cent interval for carbon dioxide, with no error on burned area. The last row is FAO’s published value.*
 
 <table>
 <thead>
@@ -92,7 +92,7 @@ Canada’s managed forest showed emission reductions under a crediting standard 
 <th width="2000" align="left">Ecological zone</th>
 <th width="2000" align="left">Burned 2001 to 2024 (kha a year)</th>
 <th width="2000" align="left">Burned 2023 (kha)</th>
-<th width="2000" align="left">Fuel burned (t/ha)</th>
+<th width="2000" align="left">Biomass consumption (t/ha)</th>
 <th width="2000" align="left">CO2 (Mt)</th>
 <th width="2000" align="left">CH4 (kt)</th>
 <th width="2000" align="left">N2O (kt)</th>

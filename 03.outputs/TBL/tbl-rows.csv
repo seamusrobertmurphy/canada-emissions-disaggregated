@@ -1,4 +1,4 @@
-Vegetation,Subcategory,Fuel burned (t/ha),Combustion factor,Emission factor row
+Vegetation,Subcategory,Biomass consumption (t/ha),Combustion factor,Emission factor row
 Boreal forest,Wildfire (general),52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest
 Boreal forest,Crown fire,25.1 ± 7.9,0.43 ± 0.21,Extra tropical forest
 Boreal forest,Surface fire,21.6 ± 25.1,0.15 ± 0.08,Extra tropical forest

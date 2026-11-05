@@ -34,7 +34,7 @@ Online Resources for the article submitted to Climatic Change. Each item is cite
 
 ![](../03.outputs/PNG/fig-inventory-1.png)
 
-**Online Resource 2** Tier 1 defaults of the 2006 Guidelines matched to Canada's ecological zones. The zone and its code follow Table 4.1 of Chapter 4, and the area is the zone's extent within Canada. Fuel burned is the product of fuel load and combustion factor in Table 2.4, mean and standard error. The combustion factor is from Table 2.6, mean and standard deviation. Table 2.6 gives no wildfire value for other temperate forests or for grassland, so the values of all other temperate forests and of all savanna grasslands are shown. The emission factors are the Table 2.5 row named, mean and standard deviation. Tundra has no printed error and no combustion factor.
+**Online Resource 2** Tier 1 defaults of the 2006 Guidelines matched to Canada's ecological zones. The zone and its code follow Table 4.1 of Chapter 4, and the area is the zone's extent within Canada. Biomass consumption is the product of fuel load and combustion factor in Table 2.4, mean and standard error. The combustion factor is from Table 2.6, mean and standard deviation. Table 2.6 gives no wildfire value for other temperate forests or for grassland, so the values of all other temperate forests and of all savanna grasslands are shown. The emission factors are the Table 2.5 row named, mean and standard deviation. Tundra has no printed error and no combustion factor.
 
 ```{r}
 fmt_tbl(read_tbl("tbl-defaults.csv"))

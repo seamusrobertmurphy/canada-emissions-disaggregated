@@ -1,4 +1,4 @@
-Ecological zone,Area (Mha),Table 2.4 row,Fuel burned (t/ha),Combustion factor,Table 2.5 row,CO2 (g/kg),CH4 (g/kg),N2O (g/kg)
+Ecological zone,Area (Mha),Table 2.4 row,Biomass consumption (t/ha),Combustion factor,Table 2.5 row,CO2 (g/kg),CH4 (g/kg),N2O (g/kg)
 Polar (P),244,Tundra,10.0,,Savanna and grassland,1613 ± 95,2.3 ± 0.9,0.21 ± 0.10
 Boreal tundra woodland (Bb),223,"Boreal forest, wildfire (general)",52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07
 Boreal coniferous forest (Ba),206,"Boreal forest, wildfire (general)",52.8 ± 48.4,0.40 ± 0.06,Extra tropical forest,1569 ± 131,4.7 ± 1.9,0.26 ± 0.07

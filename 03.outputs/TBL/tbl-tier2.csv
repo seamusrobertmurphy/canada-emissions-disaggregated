@@ -1,6 +1,6 @@
 Quantity,Tier 1 global default,National dataset
 Forest fuel classes on the 2 km grid,"Two Table 2.4 rows, boreal forest 380 Mha and temperate forest 109 Mha","FBP fuel types, conifer 300 Mha, mixedwood 88 Mha, deciduous 198 Mha, grass 76 Mha"
-Fuel burned (t dry matter per ha),"Table 2.4, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate","CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026"
+Biomass consumption (t dry matter per ha),"Table 2.4, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate","CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026"
 Organic soil (Mha),"IPCC default raster, 92","Peatland map, 96, of which 32 also organic in the default raster"
 Area burned in 2023 (Mha),"MODIS MCD64A1 other forest as FAO published it, 2.7","National Burned Area Composite, 14.8; fire points, 17.6"
 Area burned in 2023 on organic soil (%),"IPCC default raster, 27","Peatland map, 21"
