@@ -1,0 +1,34 @@
+---
+format:
+  docx:
+    reference-doc: ../04.references/style-letter.docx
+---
+
+7 November 2026
+
+The Editors, Climatic Change
+
+Submission CLIM-D-26-02264
+
+Dear Editors,
+
+I resubmit "Net emissions and removals from Canada's managed forestland with and without the disaggregation of natural disturbances" as a Research Article. The corrections the editorial office requested are listed below, and none of them changed a result. The manuscript was also revised, with a new title and abstract, rewritten Introduction, Methods, Discussion and Conclusions, extended Results and a comparison of four treatments of natural disturbance.
+
+1. Author names and personal information were removed from the document properties of every file, and no file name carries an author's name.
+2. The title page gives the author's affiliation, TUV SUD Canada, with its city, Comox, and its country, Canada.
+3. The title page names Dr. Seamus Murphy as the corresponding author, with the email address seamusrobertmurphy@gmail.com.
+4. The title page carries Ethics Approval, Consent to Participate, Consent for Publication, Competing Interests, Author Contributions, Funding, and Availability of Data and Materials as separate sections. The study involved no human participants, so the first three state "Not applicable". Competing Interests and Funding also state "Not applicable", each with a sentence confirming that there are none.
+5. The Statements and declarations section was removed from the blinded manuscript, which carries no author name, affiliation or repository address.
+6. The title opens the blinded manuscript, and line numbers run continuously through it.
+7. Table 2 is present, in Section 3.1 of the Results. The five tables are numbered and first cited in order. Table 1 is first cited in Section 2.1, Tables 2 and 3 in Section 3.1, Table 4 in Section 3.2 and Table 5 in Section 3.3.
+8. Numbers with a decimal point, such as 2.4, belonged to tables and a figure of the IPCC Guidelines and of Canada's inventory report, not to this manuscript. Each one is now replaced by the page it is printed on, inside its citation, as in (Ogle et al., 2019, pp. 2.76–2.77). The only table and figure numbers left are the manuscript's own Tables 1 to 5 and Figs. 1 and 2. Equation numbers such as 2.3.1 follow the IPCC Guidelines, and each reproduced equation names its source.
+
+From 2017 to 2024, Canada's reported net emissions and removals fell below their 2012 to 2016 mean in most years, but only with natural disturbances disaggregated. No study found had compared disaggregation methods, or the record lengths behind them, on one national inventory. This study therefore compared four treatments of natural disturbance on Canada's 2026 national inventory, 1990 to 2024. The four were no disaggregation, Canada's approach, the threshold rule of Australia's inventory and the background level method of the 2013 Kyoto Protocol Supplement. The threshold rule and background level ran on baselines, the years setting each test, from 13 years to each record's length, and all four on simulated fire histories. The treatment of natural disturbance changed Canada's expected reductions more than the baseline length did. With each year's model error independent, the half width of the 90 per cent confidence interval ran from 163 to 3,692 per cent of each reported reduction.
+
+The work concerns inventory method, uncertainty and fire ecology, all within the scope of Climatic Change.
+
+The manuscript has two figures and five tables, with six Online Resources, and is original, unpublished and not under consideration elsewhere. I opted in to In Review, so it will be posted as a preprint on Research Square after the journal's quality check. I am the sole author, have no competing interests and received no funding.
+
+Yours sincerely,
+
+Dr. Seamus Murphy

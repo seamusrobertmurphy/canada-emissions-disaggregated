@@ -1,0 +1,18 @@
+---
+title: "References"
+format:
+  docx:
+    reference-doc: ../04.references/style-letter.docx
+bibliography:
+  - ../04.references/references.bib
+  - ../04.references/review/review.json
+csl: ../04.references/apa.csl
+citeproc: true
+nocite: |
+  @aalde2006generic, @alexandrov2004verification, @andison2009managing, @arsenault2016unravelling, @art2026riskrating, @art2026trees3, @batjes2010ipcc, @belisle2011fire, @bottcher2008accounting, @bowman2023wildfire, @byrne2024carbon, @bysouth2024high, @campbell2011natural, @canadell2007factoring, @cfs2026fbp, @cfs2026nbac, @cfs2026nfdb, @chiriaco2013comparison, @cyr2016quantifying, @degroot2009forest, @degroot2022crown, @divittorio2021quantifying, @dye2024carbon, @eccc2026nir, @eu2018regulation, @fao2012gez, @fao2025fires, @fcpf2024buffer, @finney1995missing, @friedl2022mcd12q1, @gavin2007forest, @giglio2021mcd64a1, @grassi2018science, @grassi2022carbon, @hall2020generating, @hanes2021dead, @haverd2013australian, @ipcc2003gpg, @ipcc2010revisiting, @ipcc2014kp, @ipcc2014wetlands, @ipcc2024reconciling, @jain2024drivers, @johnson1985theory, @johnson1991climatically, @krug2018accounting, @kukavskaya2013fire, @kurz2008risk, @kurz2018quantifying, @kurz2024revised, @linscheid2026forest, @lutz2011fire, @metsaranta2010implications, @metsaranta2017uncertainty, @nyawira2024pantropical, @ogle2019generic, @oliveira2011fire, @paciornik2019uncertainties, @parsons2007assessing, @paustian2006introduction, @petrescu2012global, @pilli2013application, @pilli2016modellinga, @pilli2016modellingb, @poulter2026north, @ritter2025alarming, @rosan2023contemporary, @skakun2022extending, @smith2024application, @smyth2024year, @surawski2016estimates, @teobaldelli2008natural, @thompson2026incorporating, @vallet2025soil, @verra2024nprt, @wagner1978class, @webster2018spatially, @woodall2015forest, @wu2026global
+---
+
+Reference list of "Net emissions and removals from Canada's managed forestland with and without the disaggregation of natural disturbances", submitted to Climatic Change.
+
+::: {#refs}
+:::
