@@ -1,0 +1,1429 @@
+---
+title: "Net emissions and removals from Canada's managed forestland with and without the disaggregation of natural disturbances"
+keywords:
+  - natural disturbance
+  - disaggregation
+  - managed forest
+  - greenhouse gas inventory
+  - wildfire
+  - carbon crediting
+author:
+  - name: Seamus Murphy
+    orcid: 0000-0002-1792-0351
+    email: seamusrobertmurphy@gmail.com
+    corresponding: true
+    affiliations:
+      - name: Independent researcher
+        city: Vancouver
+        region: British Columbia
+        country: Canada
+date: today
+
+format:
+  docx:
+    prefer-html: true
+    reference-doc: ../04.references/style-formal.docx
+    highlight-style: pygments
+    number-sections: true
+  html:
+    page-layout: full
+    toc: true
+    toc-title: ""
+    toc-location: right
+    toc-depth: 3
+    number-sections: true
+    embed-resources: true
+    code-fold: false
+    code-tools: true
+    code-link: true
+    theme:
+      - ../04.references/style.scss
+      - cosmo
+
+crossref:
+  fig-title: "Fig."
+  fig-prefix: "Fig."
+  title-delim: ""
+
+execute:
+  eval: true
+  echo: true
+  warning: false
+  message: false
+  error: false
+  comment: NA
+
+engine: knitr
+citeproc: true
+editor: visual
+bibliography:
+  - ../04.references/references.bib
+  - ../04.references/review/review.json
+csl: ../04.references/apa.csl
+---
+
+```{r}
+#| label: setup
+#| output: false
+
+knitr::opts_chunk$set(fig.path = "../03.outputs/PNG/", dpi = 300, dev = "png")
+
+fmt_tbl <- function(df, right = NULL) {
+  df <- dplyr::mutate(df, dplyr::across(dplyr::any_of("Year"), as.integer))
+  right <- union(names(df)[vapply(df, is.numeric, TRUE)], right)
+  flextable::flextable(df) |>
+    flextable::fontsize(size = 9, part = "all") |>
+    flextable::align(align = "center", part = "header") |>
+    flextable::align(j = setdiff(names(df), right), align = "left", part = "body") |>
+    flextable::align(j = right, align = "right", part = "body") |>
+    flextable::colformat_int(big.mark = "") |>
+    flextable::padding(padding.top = 1, padding.bottom = 1, part = "all") |>
+    flextable::set_table_properties(layout = "autofit", width = 1)
+}
+
+th <- ggplot2::theme_bw(base_size = 8) +
+  ggplot2::theme(panel.grid.minor = ggplot2::element_blank())
+```
+
+```{r}
+#| label: analysis
+#| output: false
+
+# FAOSTAT Emissions from Fires (domain GI), FAO, Rome
+# https://www.fao.org/faostat/en/#data/GI
+if (!file.exists("02.inputs/faostat/canada-fires.csv") &&
+    nzchar(Sys.getenv("FAOSTAT_USER")) && nzchar(Sys.getenv("FAOSTAT_PASSWORD"))) {
+  login <- httr2::request("https://faostatservices.fao.org/api/v1/auth/login") |>
+    httr2::req_body_form(username = Sys.getenv("FAOSTAT_USER"),
+                         password = Sys.getenv("FAOSTAT_PASSWORD")) |>
+    httr2::req_perform() |>
+    httr2::resp_body_json()
+  httr2::request("https://faostatservices.fao.org/api/v1/en/data/GI") |>
+    httr2::req_url_query(area = "33", area_cs = "FAO", output_type = "csv") |>
+    httr2::req_auth_bearer_token(login$AuthenticationResult$AccessToken) |>
+    httr2::req_perform(path = "02.inputs/faostat/canada-fires.csv")
+}
+
+fires <- readr::read_csv("02.inputs/faostat/canada-fires.csv", show_col_types = FALSE) |>
+  dplyr::select(item = Item, element = Element, year = Year, source = Source,
+                value = Value, unit = Unit, flag = Flag)
+
+forest_co2 <- fires |>
+  dplyr::filter(item == "Forest fires", element == "Emissions (CO2)", source == "FAO TIER 1") |>
+  dplyr::select(year, co2 = value)
+
+forest <- fires |>
+  dplyr::filter(item == "Forest fires", source == "FAO TIER 1",
+                element %in% c("Burned Area", "Emissions (CO2)", "Emissions (CH4)"), year >= 2001) |>
+  tidyr::pivot_wider(id_cols = year, names_from = element, values_from = value) |>
+  dplyr::rename(Year = year, `Burned area (ha)` = `Burned Area`,
+                `CO2 (kt)` = `Emissions (CO2)`, `CH4 (kt)` = `Emissions (CH4)`)
+
+gap <- fires |>
+  dplyr::filter(item == "Other forest", element == "Emissions (CO2)") |>
+  tidyr::pivot_wider(id_cols = year, names_from = source, values_from = value) |>
+  dplyr::filter(!is.na(`FAO TIER 1`), !is.na(UNFCCC)) |>
+  dplyr::transmute(Year = year, `FAO Tier 1 (kt)` = `FAO TIER 1`, `UNFCCC (kt)` = UNFCCC,
+                   Ratio = round(`FAO TIER 1` / UNFCCC, 1))
+
+# Tables 2.4 and 2.5 of the 2006 IPCC Guidelines, Volume 4, Chapter 2, pages 2.45 to 2.47, the tables the FAOSTAT methodological note cites
+# http://www.ipcc-nggip.iges.or.jp/public/2006gl/index.html
+table_2_4 <- tibble::tribble(~fuel, ~se, ~`IPCC biomass consumption row`,
+  41.0, 36.5, "All boreal forest", 50.4, 53.7, "All other temperate forests", 3.3, NA, "Savanna woodland, mid or late dry season burns",
+  4.1, 3.1, "Grassland, mid or late dry season burns", 14.3, 9.0, "All shrublands", 26.7, 4.2, "Shrubland (general)")
+table_2_5 <- tibble::tribble(~ef_row, ~co2, ~co2_sd, ~ch4, ~ch4_sd, ~n2o, ~n2o_sd,
+  "Savanna and grassland", 1613, 95, 2.3, 0.9, 0.21, 0.10, "Extra tropical forest", 1569, 131, 4.7, 1.9, 0.26, 0.07)
+used <- fires |>
+  dplyr::filter(source == "FAO TIER 1", year >= 2001, item %in% c("Other forest", "Woody savanna", "Savanna", "Grassland", "Open shrubland", "Closed shrubland")) |>
+  dplyr::mutate(element = dplyr::case_match(element, "Burned Area" ~ "ha", "Emissions (CO2)" ~ "co2", "Emissions (CH4)" ~ "ch4", "Emissions (N2O)" ~ "n2o", .default = "dm")) |>
+  tidyr::pivot_wider(id_cols = c(item, year), names_from = element, values_from = value) |>
+  dplyr::filter(ha > 0) |>
+  dplyr::mutate(fuel = dm / ha, dplyr::across(c(co2, ch4, n2o), \(x) x * 1e6 / dm))
+coefficients <- used |>
+  dplyr::summarise(.by = item, years = dplyr::n(), ha = sum(ha) / 24, fuel_min = min(fuel), fuel_max = max(fuel),
+                   co2 = mean(co2), ch4 = mean(ch4), n2o = mean(n2o)) |>
+  dplyr::filter(years == 24) |>
+  dplyr::arrange(item != "Other forest", -ha) |>
+  dplyr::transmute(Item = item,
+    `Burned area (ha a year)` = format(round(ha), big.mark = ",", trim = TRUE),
+    `Fuel (t/ha)` = dplyr::if_else(round(fuel_min, 1) == round(fuel_max, 1), sprintf("%.1f", fuel_min), sprintf("%.1f to %.1f", fuel_min, fuel_max)),
+    `IPCC biomass consumption row` = dplyr::coalesce(table_2_4$`IPCC biomass consumption row`[match(round(fuel_min, 1), table_2_4$fuel)], "Between all boreal forest and all other temperate forests"),
+    `CH4 (g/kg)` = sprintf("%.1f", ch4), `N2O (g/kg)` = sprintf("%.2f", n2o),
+    `CO2 (g/kg)` = dplyr::if_else(is.na(co2), "", format(round(co2), big.mark = ","))) |>
+  dplyr::bind_rows(tibble::tibble(Item = "Emission factor row, extra tropical forest", `Burned area (ha a year)` = "", `Fuel (t/ha)` = "", `IPCC biomass consumption row` = "",
+    `CH4 (g/kg)` = sprintf("%.1f", table_2_5$ch4[2]), `N2O (g/kg)` = sprintf("%.2f", table_2_5$n2o[2]), `CO2 (g/kg)` = format(table_2_5$co2[2], big.mark = ",")))
+savanna_share <- fires |>
+  dplyr::filter(source == "FAO TIER 1", year >= 2001, element == "Burned Area", item %in% c("Forest fires", "Savanna fires")) |>
+  tidyr::pivot_wider(id_cols = year, names_from = item, values_from = value) |>
+  dplyr::mutate(share = 100 * `Savanna fires` / (`Savanna fires` + `Forest fires`))
+
+# FAO AllFires_OrganicSoils, related document of FAOSTAT Emissions from Fires (GI)
+# https://www.fao.org/faostat/en/#data/GI
+if (!file.exists("02.inputs/faostat/organic-soil-fires.csv")) {
+  flat <- gsub("[\n ]+", " ",
+    paste(pdftools::pdf_text("02.inputs/faostat/raw/AllFires_OrganicSoils.pdf"), collapse = "\n"))
+  rx <- paste0("[0-9]+,(?:\"[^\"]*\"|[^,]*),6993,Fires in organic soils,",
+               "(?:CH4 emissions|CO2 emissions|Burned Area|Biomass burned [(]dry matter[)]),",
+               "[0-9]{4},[0-9.eE+-]+,(?:ha|tonnes|kilotonnes)")
+  readr::write_lines(
+    c("area_code,area,item_code,item,element,year,value,unit",
+      regmatches(flat, gregexpr(rx, flat))[[1]]),
+    "02.inputs/faostat/organic-soil-fires.csv")
+}
+
+peat <- readr::read_csv("02.inputs/faostat/organic-soil-fires.csv", show_col_types = FALSE)
+stopifnot(nrow(peat) == dplyr::n_distinct(peat$area) * dplyr::n_distinct(peat$year) * 4)
+
+canada <- peat |>
+  dplyr::filter(area == "Canada", element %in% c("Burned Area", "CO2 emissions", "CH4 emissions")) |>
+  tidyr::pivot_wider(id_cols = year, names_from = element, values_from = value) |>
+  dplyr::rename(Year = year, `Burned area (ha)` = `Burned Area`,
+                `CO2 (kt)` = `CO2 emissions`, `CH4 (kt)` = `CH4 emissions`)
+
+obs  <- canada[canada$Year >= 2001, ]
+post <- canada[canada$Year >= 1996, ]
+fill <- canada[["Burned area (ha)"]][1]
+
+# Table 6-1, Net Greenhouse Gas Flux Estimates in the Land Use, Land-Use Change and Forestry Sector,
+# All Inventory Years, by province and territory, Environment and Climate Change Canada,
+# National Inventory Report 1990-2024
+# https://data-donnees.az.ec.gc.ca/data/substances/monitor/canada-s-official-greenhouse-gas-inventory/E-LULUCF/?lang=en
+if (!file.exists("02.inputs/eccc/lulucf-2026.csv")) {
+  dir.create("02.inputs/eccc/raw", showWarnings = FALSE, recursive = TRUE)
+  download.file(paste0("https://data-donnees.az.ec.gc.ca/api/file?path=", URLencode("/substances/monitor/canada-s-official-greenhouse-gas-inventory/E-LULUCF/NIR2026_Table 6-1_All_Years_PTs.xlsx", reserved = TRUE)), "02.inputs/eccc/raw/table-6-1.xlsx", mode = "wb")
+  sheets <- readxl::excel_sheets("02.inputs/eccc/raw/table-6-1.xlsx")
+  c(Canada = "NATIONAL$", BC = " BC$") |>
+    purrr::map(\(s) readxl::read_excel("02.inputs/eccc/raw/table-6-1.xlsx", sheet = grep(s, sheets, value = TRUE), skip = 3, col_types = "text", .name_repair = "unique_quiet")) |>
+    purrr::list_rbind(names_to = "region") |>
+    dplyr::mutate(component = dplyr::case_when(grepl("TOTAL", ...1) ~ "human", grepl("^Natural disturbances", ...2) ~ "natural")) |>
+    dplyr::filter(!is.na(component)) |>
+    tidyr::pivot_longer(dplyr::matches("^[0-9]{4}$"), names_to = "year", values_to = "kt") |>
+    dplyr::transmute(region, component, year = as.integer(year), mt = as.numeric(kt) / 1000) |>
+    tidyr::pivot_wider(names_from = component, values_from = mt) |>
+    readr::write_csv("02.inputs/eccc/lulucf-2026.csv")
+}
+
+eccc <- readr::read_csv("02.inputs/eccc/lulucf-2026.csv", show_col_types = FALSE) |>
+  dplyr::mutate(net = human + natural)
+stopifnot(nrow(eccc) == 2 * 35, !anyNA(eccc))
+
+national <- dplyr::filter(eccc, region == "Canada")
+
+# Canadian National Fire Database, fire polygons, Natural Resources Canada, Canadian Forest Service
+# https://cwfis.cfs.nrcan.gc.ca/ha/nfdb
+if (!file.exists("02.inputs/nfdb/area-burned-by-province.csv")) {
+  dir.create("02.inputs/nfdb", showWarnings = FALSE, recursive = TRUE)
+  Sys.setenv(GDAL_DISABLE_READDIR_ON_OPEN = "EMPTY_DIR", CPL_VSIL_CURL_USE_HEAD = "NO")
+  zip <- paste0("/vsizip//vsicurl/https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/",
+                "fire_poly/current_version/NFDB_poly.zip")
+  lapply(c("NFDB_poly_1972to2020_20250630", "NFDB_poly_2021to2024_20250630"), function(layer)
+    sf::st_drop_geometry(sf::st_read(zip, quiet = TRUE,
+      query = sprintf('SELECT SRC_AGENCY, YEAR, SIZE_HA FROM "%s"', layer)))) |>
+    dplyr::bind_rows() |>
+    dplyr::filter(YEAR >= 1990, !is.na(SIZE_HA)) |>
+    dplyr::rename(province = SRC_AGENCY, year = YEAR) |>
+    dplyr::summarise(hectares = sum(SIZE_HA), .by = c(province, year)) |>
+    readr::write_csv("02.inputs/nfdb/area-burned-by-province.csv")
+}
+
+burned <- readr::read_csv("02.inputs/nfdb/area-burned-by-province.csv", show_col_types = FALSE)
+
+share <- burned |>
+  dplyr::summarise(bc = sum(hectares[province == "BC"]), canada = sum(hectares), .by = year) |>
+  dplyr::mutate(share = bc / canada)
+
+bc <- eccc |>
+  dplyr::filter(region == "BC") |>
+  dplyr::inner_join(dplyr::select(share, year, share), by = "year")
+
+trees_uncertainty <- function(ci_half_width) 0.524417 / 1.645006 * ci_half_width
+
+buffer_table <- c(none = 0.25, `1` = 0.20, `2` = 0.15, `3` = 0.20,
+                  `1,2` = 0.10, `1,3` = 0.15, `2,3` = 0.10, `1,2,3` = 0.05)
+
+trees_buffer <- function(mitigating = "none", after_reversal = FALSE) {
+  buffer_table[[mitigating]] + if (after_reversal) 0.05 else 0
+}
+
+kept <- function(ci_half_width, mitigating = "none", after_reversal = FALSE) {
+  1 - trees_uncertainty(ci_half_width) - trees_buffer(mitigating, after_reversal)
+}
+
+break_even <- function(...) (1 - trees_buffer(...)) / (0.524417 / 1.645006)
+
+crediting_level <- function(x, years) sum(x[years]) / 5
+
+accounts <- national |>
+  dplyr::filter(year >= 2012) |>
+  dplyr::mutate(reference = year <= 2016)
+
+level_split  <- sum(accounts$human[accounts$reference]) / 5
+level_whole  <- sum(accounts$net[accounts$reference]) / 5
+
+credits <- accounts |>
+  dplyr::filter(!reference) |>
+  dplyr::transmute(Year = year,
+                   `Disaggregated emissions (Mt)` = human,
+                   `Disaggregated reductions (Mt)` = round(level_split - human, 1),
+                   `Undisaggregated emissions (Mt)` = net,
+                   `Undisaggregated reductions (Mt)` = round(level_whole - net, 1))
+
+split_pos <- credits[["Disaggregated reductions (Mt)"]] > 0
+whole_pos <- credits[["Undisaggregated reductions (Mt)"]] > 0
+worst <- which.min(credits[["Undisaggregated reductions (Mt)"]])
+
+bc_accounts <- bc |> dplyr::filter(year >= 2012)
+bc_level_split <- sum(bc_accounts$human[bc_accounts$year <= 2016]) / 5
+bc_level_whole <- sum(bc_accounts$net[bc_accounts$year <= 2016]) / 5
+
+bc_credits <- bc_accounts |>
+  dplyr::filter(year >= 2017) |>
+  dplyr::transmute(Year = year,
+                   `Burned area share (%)` = round(100 * share, 1),
+                   `Disaggregated emissions (Mt)` = round(human, 1),
+                   `Disaggregated reductions (Mt)` = round(bc_level_split - human, 1),
+                   `Undisaggregated emissions (Mt)` = round(net, 1),
+                   `Undisaggregated reductions (Mt)` = round(bc_level_whole - net, 1))
+
+bc_split_pos <- bc_credits[["Disaggregated reductions (Mt)"]] > 0
+bc_whole_pos <- bc_credits[["Undisaggregated reductions (Mt)"]] > 0
+bc_worst <- which.min(bc_credits[["Undisaggregated reductions (Mt)"]])
+
+# The threshold rule on Canada's two lines: the natural disturbance line is left out only in a year whose
+# forest fire emissions exceed by two standard deviations the mean of the 13 years ending in 2016, the last
+# reference year, 13 years being the baseline length Australia's inventory uses
+years13 <- 2004:2016
+base13 <- forest_co2$co2[forest_co2$year %in% years13]
+natural_years <- forest_co2$year[forest_co2$co2 > mean(base13) + 2 * stats::sd(base13)]
+accounts <- dplyr::mutate(accounts, rule = dplyr::if_else(year %in% natural_years, human, net))
+level_rule <- sum(accounts$rule[accounts$reference]) / 5
+credits <- credits |>
+  dplyr::mutate(`Threshold rule emissions (Mt)` = accounts$rule[!accounts$reference],
+                `Threshold rule reductions (Mt)` = round(level_rule - `Threshold rule emissions (Mt)`, 1))
+rule_pos <- credits[["Threshold rule reductions (Mt)"]] > 0
+rule_out <- credits$Year %in% natural_years
+rule_worst <- which.min(credits[["Threshold rule reductions (Mt)"]])
+
+# The threshold rule's second step for British Columbia: a nationally natural year counts as natural in the province only
+# when the province's burned area exceeds its own mean over the same 13 years by one standard deviation
+bc_burned <- dplyr::filter(burned, province == "BC")
+bc_base <- bc_burned$hectares[bc_burned$year %in% years13]
+bc_natural_years <- intersect(natural_years, bc_burned$year[bc_burned$hectares > mean(bc_base) + stats::sd(bc_base)])
+bc_accounts <- dplyr::mutate(bc_accounts, rule = dplyr::if_else(year %in% bc_natural_years, human, net))
+bc_level_rule <- sum(bc_accounts$rule[bc_accounts$year <= 2016]) / 5
+bc_credits <- bc_credits |>
+  dplyr::mutate(`Threshold rule emissions (Mt)` = round(bc_accounts$rule[bc_accounts$year >= 2017], 1),
+                `Threshold rule reductions (Mt)` = round(bc_level_rule - bc_accounts$rule[bc_accounts$year >= 2017], 1))
+bc_rule_pos <- bc_credits[["Threshold rule reductions (Mt)"]] > 0
+bc_rule_worst <- which.min(bc_credits[["Threshold rule reductions (Mt)"]])
+bc_threshold_ha <- mean(bc_base) + stats::sd(bc_base)
+bc_ha <- \(y) bc_burned$hectares[bc_burned$year == y]
+
+ci <- c(0.10, 0.20, 0.30, 0.50, 0.75, 1.00, 1.50, 2.00)
+deductions <- data.frame(
+  `Uncertainty, 90% interval half width (%)` = ci * 100,
+  `Uncertainty deduction (%)` = round(100 * trees_uncertainty(ci), 1),
+  `Kept, 25% buffer (%)` = round(100 * kept(ci), 1),
+  `Kept, 5% buffer (%)` = round(100 * kept(ci, "1,2,3"), 1),
+  `Kept, 30% buffer after a reversal (%)` = round(100 * kept(ci, after_reversal = TRUE), 1),
+  check.names = FALSE)
+
+set.seed(42)
+sd_mt <- 16.6 * (44 / 12) / 1.96
+
+simulate_reductions <- function(reference, emissions, n = 10000) {
+  level <- rowMeans(matrix(rep(reference, each = n) +
+                             stats::rnorm(n * length(reference), 0, sd_mt), nrow = n))
+  level - (emissions + stats::rnorm(n, 0, sd_mt))
+}
+
+monte_carlo <- function(reference, series) {
+  do.call(rbind, lapply(seq_len(nrow(series)), function(k) {
+    draws <- simulate_reductions(reference, series$emissions[k])
+    half <- (stats::quantile(draws, 0.95) - stats::quantile(draws, 0.05)) / 2
+    data.frame(Year = series$year[k], mean = mean(draws), sd = stats::sd(draws), q05 = unname(stats::quantile(draws, 0.05)),
+               q95 = unname(stats::quantile(draws, 0.95)), half = half, ci = half / abs(mean(draws)))
+  }))
+}
+
+reference_split <- accounts$human[accounts$reference]
+reference_whole <- accounts$net[accounts$reference]
+
+mc_split <- monte_carlo(reference_split,
+  data.frame(year = credits$Year, emissions = credits[["Disaggregated emissions (Mt)"]]))
+mc_whole <- monte_carlo(reference_whole,
+  data.frame(year = credits$Year, emissions = credits[["Undisaggregated emissions (Mt)"]]))
+mc_rule <- monte_carlo(accounts$rule[accounts$reference],
+  data.frame(year = credits$Year, emissions = credits[["Threshold rule emissions (Mt)"]]))
+
+blank_if_negative <- function(value, mean_reduction) ifelse(mean_reduction > 0, value, NA)
+
+uncertainty <- data.frame(
+  Year = mc_split$Year,
+  `Disaggregated reductions (Mt)` = round(mc_split$mean, 1),
+  `Disaggregated interval (% of mean)` = blank_if_negative(round(100 * mc_split$ci), mc_split$mean),
+  `Disaggregated deduction (%)` = blank_if_negative(round(100 * trees_uncertainty(mc_split$ci), 1), mc_split$mean),
+  `Undisaggregated reductions (Mt)` = round(mc_whole$mean, 1),
+  `Undisaggregated interval (% of mean)` = blank_if_negative(round(100 * mc_whole$ci), mc_whole$mean),
+  `Threshold rule reductions (Mt)` = round(mc_rule$mean, 1),
+  `Threshold rule interval (% of mean)` = blank_if_negative(round(100 * mc_rule$ci), mc_rule$mean),
+  `Threshold rule deduction (%)` = blank_if_negative(round(100 * trees_uncertainty(mc_rule$ci), 1), mc_rule$mean),
+  check.names = FALSE)
+
+over <- uncertainty[["Disaggregated deduction (%)"]] > 100
+
+# Display tables in the statistical terms of the draws, one row per year and account
+account_levels <- c("Disaggregated", "Undisaggregated", "Threshold")
+credits_table <- dplyr::bind_rows(
+  tibble::tibble(Year = credits$Year, Account = "Disaggregated", E = credits[["Disaggregated emissions (Mt)"]], CL = level_split),
+  tibble::tibble(Year = credits$Year, Account = "Undisaggregated", E = credits[["Undisaggregated emissions (Mt)"]], CL = level_whole),
+  tibble::tibble(Year = credits$Year, Account = "Threshold", E = credits[["Threshold rule emissions (Mt)"]], CL = level_rule)) |>
+  dplyr::arrange(Year, factor(Account, account_levels)) |>
+  dplyr::transmute(Year = as.integer(Year), Account, `Net emissions (Mt CO2e)` = sprintf("%.1f", E), `Five-year mean (Mt CO2e)` = sprintf("%.1f", CL),
+                   `Reduction (Mt CO2e)` = sprintf("%.1f", CL - E))
+bc_table <- dplyr::bind_rows(
+  tibble::tibble(Year = bc_credits$Year, Account = "Disaggregated", E = bc_credits[["Disaggregated emissions (Mt)"]], CL = bc_level_split),
+  tibble::tibble(Year = bc_credits$Year, Account = "Undisaggregated", E = bc_credits[["Undisaggregated emissions (Mt)"]], CL = bc_level_whole),
+  tibble::tibble(Year = bc_credits$Year, Account = "Threshold", E = bc_credits[["Threshold rule emissions (Mt)"]], CL = bc_level_rule)) |>
+  dplyr::arrange(Year, factor(Account, account_levels)) |>
+  dplyr::inner_join(dplyr::select(bc_credits, Year, share = `Burned area share (%)`), by = "Year") |>
+  dplyr::transmute(Year = as.integer(Year), Account, `Burned area share (%)` = sprintf("%.1f", share), `Net emissions (Mt CO2e)` = sprintf("%.1f", E),
+                   `Five-year mean (Mt CO2e)` = sprintf("%.1f", CL), `Reduction (Mt CO2e)` = sprintf("%.1f", CL - E))
+uncertainty_table <- dplyr::bind_rows(dplyr::mutate(mc_split, Account = "Disaggregated"), dplyr::mutate(mc_whole, Account = "Undisaggregated"),
+                                      dplyr::mutate(mc_rule, Account = "Threshold")) |>
+  dplyr::arrange(Year, factor(Account, account_levels)) |>
+  dplyr::transmute(Year = as.integer(Year), Account, `Mean reduction (Mt CO2e)` = sprintf("%.1f", mean), `Standard deviation (Mt CO2e)` = sprintf("%.1f", sd),
+                   `5th percentile (Mt CO2e)` = sprintf("%.0f", q05), `95th percentile (Mt CO2e)` = sprintf("%.0f", q95),
+                   `Relative half width (%)` = ifelse(mean > 0, sprintf("%.0f", 100 * ci), ""),
+                   `Adjustment factor (%)` = ifelse(mean > 0, sprintf("%.1f", 100 * trees_uncertainty(ci)), ""))
+banked <- ifelse(mc_split$mean > 0, 100 * purrr::map2_dbl(mc_split$ci, mc_split$Year > min(credits$Year[!split_pos]), \(ci, after) kept(ci, after_reversal = after)), NA)
+
+msd <- \(x) sprintf("%.1f ± %.1f Mt CO~2~e a year (95 per cent confidence interval %.1f to %.1f)",
+                    mean(x), stats::sd(x), stats::t.test(x)$conf.int[1], stats::t.test(x)$conf.int[2])
+province <- dplyr::filter(eccc, region == "BC")
+
+# Share of the annual error common to the reference years and the crediting year. A shared error cancels in
+# the difference, the ground on which ART TREES excludes model error. The draws above share none. Under the
+# normal model a shared share rho leaves the mean reduction and scales its half width by sqrt(1 - rho).
+after <- credits$Year > min(credits$Year[!split_pos])
+shared <- do.call(rbind, lapply(c(0, 0.5, 0.9, 0.99), function(rho) {
+  ci <- mc_split$ci * sqrt(1 - rho)
+  data.frame(`Shared share` = rho,
+             `Interval, lowest (%)` = round(100 * min(ci[split_pos])),
+             `Interval, highest (%)` = round(100 * max(ci[split_pos])),
+             `Years keeping a credit` = sum(purrr::map2_dbl(ci, after, \(h, a) kept(h, after_reversal = a))[split_pos] > 0),
+             check.names = FALSE)
+}))
+sh <- function(share, column) shared[[column]][shared[["Shared share"]] == share]
+# The shared share at which every positive year keeps a credit, solved from the same scaling
+rho_needed <- max(1 - (purrr::map_dbl(after[split_pos], \(a) break_even(after_reversal = a)) / mc_split$ci[split_pos])^2)
+
+# Deduction the standard allows at the end of a crediting period, on the summed reference emissions minus the
+# summed crediting period emissions, with the same independent draws
+simulate_period <- function(reference, emissions, n = 10000) {
+  level <- rowMeans(matrix(rep(reference, each = n) + stats::rnorm(n * length(reference), 0, sd_mt), nrow = n))
+  total <- length(emissions) * level -
+    rowSums(matrix(rep(emissions, each = n) + stats::rnorm(n * length(emissions), 0, sd_mt), nrow = n))
+  half <- unname((stats::quantile(total, 0.95) - stats::quantile(total, 0.05)) / 2)
+  centre <- length(emissions) * mean(reference) - sum(emissions)
+  c(total = centre, half = half, ci = half / abs(centre))
+}
+period_split <- simulate_period(reference_split, credits[["Disaggregated emissions (Mt)"]])
+period_rule <- simulate_period(accounts$rule[accounts$reference], credits[["Threshold rule emissions (Mt)"]])
+period_deduction <- period_split[["total"]] * trees_uncertainty(period_split[["ci"]])
+yearly_deduction <- sum(mc_split$mean[split_pos] * trees_uncertainty(mc_split$ci[split_pos]))
+
+# Approach 1 of the uncertainty chapter on the Tier 1 forest fire estimate: the relative uncertainty of a product
+# is the square root of the sum of the squared relative uncertainties, each half a 95 per cent interval
+u_term <- function(sd, mean) 1.96 * sd / mean
+u_fuel <- u_term(table_2_4$se[1:2], table_2_4$fuel[1:2])
+u_ef <- u_term(table_2_5$co2_sd[1], table_2_5$co2[1])
+u_forest <- sqrt(u_fuel^2 + u_ef^2)
+co2_2023 <- forest[["CO2 (kt)"]][forest$Year == 2023] / 1000
+burn_2023 <- used[used$item == "Other forest" & used$year == 2023, ]
+# 100 year global warming potentials of Canada's 2026 National Inventory Report, Table 1-1, 28 for CH4 and 265 for N2O
+co2e_forest_row <- burn_2023$fuel * burn_2023$ha *
+  ((table_2_5$ch4[2] - table_2_5$ch4[1]) * 28 + (table_2_5$n2o[2] - table_2_5$n2o[1]) * 265) / 1e9
+```
+
+```{r}
+#| label: treatments
+#| output: false
+
+# National Burned Area Composite (NBAC), summary statistics by year and administrative unit, 1972 to 2025, Canadian Forest Service
+# https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/ and the file https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_summarystats_1972_to_2025_20260513.xlsx
+if (!file.exists("02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx")) {
+  dir.create("02.inputs/nrcan/raw", showWarnings = FALSE, recursive = TRUE)
+  download.file("https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_summarystats_1972_to_2025_20260513.xlsx", "02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx", mode = "wb")
+}
+nbac_years <- readxl::read_excel("02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx", sheet = "sumstats_admin_name", skip = 2) |>
+  dplyr::transmute(year = as.integer(YEAR), ha = as.numeric(CANADA)) |>
+  dplyr::filter(!is.na(year), year <= 2024)
+
+# Default method of the 2013 Kyoto Protocol Supplement, p. 2.49: years above the mean plus twice the standard deviation are removed
+# until none remains, and the final mean and twice the final standard deviation are the background level and the margin
+background_level <- function(x) {
+  repeat {
+    outlier <- x > mean(x) + 2 * stats::sd(x)
+    if (!any(outlier)) return(c(level = mean(x), margin = 2 * stats::sd(x)))
+    x <- x[!outlier]
+  }
+}
+
+# A baseline of n years ends in 2016, the last reference year, and each account is compared with its own 2012 to 2016 mean
+in_window <- function(years, n) years >= 2017 - n & years <= 2016
+reduce <- function(account, years) round(mean(account[years %in% 2012:2016]) - account, 1)[years %in% 2017:2024]
+num <- \(x, d = 1) gsub("-(?=[0-9])", "\u2212", sprintf(paste0("%.", d, "f"), round(x, d) + 0), perl = TRUE)
+
+# The four treatments of the natural disturbance line nd: none, Canada's, the threshold rule on a test series, and the Kyoto
+# background level, applied to the line itself or, through the share of burned area above the background, to a burned area series
+treat <- function(human, nd, years, test, test_years, n, method) {
+  now <- test[match(years, test_years)]
+  base <- test[in_window(test_years, n)]
+  counted <- switch(method,
+    none = nd,
+    canada = 0 * nd,
+    threshold = ifelse(now > mean(base) + 2 * stats::sd(base), 0, nd),
+    kyoto_line = { b <- background_level(nd[in_window(years, n)]); ifelse(nd > b[["level"]] + b[["margin"]], b[["level"]], nd) },
+    kyoto_area = { b <- background_level(base); ifelse(now > b[["level"]] + b[["margin"]], nd * b[["level"]] / now, nd) })
+  list(reductions = reduce(human + counted, years), excluded = sum((nd - counted)[years %in% 2017:2024]))
+}
+
+tests <- list(none = list(national$natural, national$year), canada = list(national$natural, national$year),
+              `FAOSTAT forest fire CO2` = list(forest_co2$co2, forest_co2$year),
+              `Natural disturbance line` = list(national$natural, national$year), `NBAC burned area` = list(nbac_years$ha, nbac_years$year))
+runs <- dplyr::bind_rows(
+  tibble::tibble(method = c("none", "canada"), series = c("none", "canada"), n = 13),
+  tibble::tibble(method = "threshold", series = "FAOSTAT forest fire CO2", n = c(13, 16)),
+  tibble::tibble(method = "threshold", series = "Natural disturbance line", n = c(13, 20, 27)),
+  tibble::tibble(method = "threshold", series = "NBAC burned area", n = c(13, 20, 27, 35, 45)),
+  tibble::tibble(method = "kyoto_line", series = "Natural disturbance line", n = c(13, 20, 27)),
+  tibble::tibble(method = "kyoto_area", series = "NBAC burned area", n = c(13, 20, 27, 35, 45)))
+treatments_observed <- purrr::pmap(runs, function(method, series, n) {
+  out <- treat(national$human, national$natural, national$year, tests[[series]][[1]], tests[[series]][[2]], n, method)
+  tibble::tibble(method, series, n, positive = sum(out$reductions[out$reductions > 0]), years_positive = sum(out$reductions > 0),
+                 net = sum(out$reductions), excluded = out$excluded)
+}) |> purrr::list_rbind()
+readr::write_csv(treatments_observed, "03.outputs/TBL/treatments-observed.csv")
+
+# Simulated fire histories with management fixed: burned area follows the NBAC log-linear trend with resampled residuals, the
+# natural disturbance line follows its regression on burned area and year with resampled residuals, and the rest of the land use
+# sector stays at its 2012 to 2016 mean, so every reduction comes from natural disturbance and from the treatment
+set.seed(2026)
+fit_area <- stats::lm(log(ha) ~ year, nbac_years)
+fit_line <- stats::lm(natural ~ I(ha / 1e6) + year, dplyr::inner_join(national, nbac_years, by = "year"))
+human_flat <- rep(mean(national$human[national$year %in% 2012:2016]), nrow(national))
+sim_runs <- dplyr::bind_rows(tibble::tibble(method = c("none", "canada"), n = 13), tibble::tibble(method = "threshold", n = c(13, 20, 27, 35, 45)),
+                             tibble::tibble(method = "kyoto_line", n = c(13, 20, 27)), tibble::tibble(method = "kyoto_area", n = c(13, 20, 27, 35, 45)))
+# The composite's table runs from 2024 back to 1972, so each simulated year's burned area is matched to the line's year
+# by match(), not by position. year_term = FALSE holds the line's year term at 2014, the middle of the reference period,
+# and area_trend = FALSE holds burned area at the mean of its fitted log values, so the two checks remove each trend in turn
+simulate_histories <- function(year_term = TRUE, area_trend = TRUE, histories = 2000, seed = 2026) {
+  set.seed(seed)
+  area_fit <- if (area_trend) stats::fitted(fit_area) else rep(mean(stats::fitted(fit_area)), nrow(nbac_years))
+  line_year <- if (year_term) national$year else rep(2014, nrow(national))
+  replicate(histories, {
+    ha <- exp(area_fit + sample(stats::residuals(fit_area), replace = TRUE))
+    nd <- stats::predict(fit_line, data.frame(ha = ha[match(national$year, nbac_years$year)], year = line_year)) +
+      sample(stats::residuals(fit_line), replace = TRUE)
+    unlist(purrr::pmap(sim_runs, function(method, n) treat(human_flat, nd, national$year, ha, nbac_years$year, n, method)$reductions))
+  })
+}
+draws <- simulate_histories()
+# The eight crediting years of one history share its reference mean and its baseline, so the 95 per cent interval of
+# each mean and the tests below rest on the history means, one per history, rather than on every year of every history
+hist_means <- t(vapply(seq_len(nrow(sim_runs)), function(i) colMeans(draws[(i - 1) * 8 + 1:8, , drop = FALSE]), numeric(ncol(draws))))
+ci95 <- function(x) if (stats::sd(x) > 0) stats::t.test(x)$conf.int else c(mean(x), mean(x))
+treatments_simulated <- purrr::map(seq_len(nrow(sim_runs)), function(i) {
+  x <- as.vector(draws[(i - 1) * 8 + 1:8, ])
+  tibble::tibble(sim_runs[i, ], bias = mean(x), sd = stats::sd(x), ci_low = ci95(hist_means[i, ])[1], ci_high = ci95(hist_means[i, ])[2],
+                 half_width = unname(stats::quantile(x, 0.95) - stats::quantile(x, 0.05)) / 2)
+}) |> purrr::list_rbind()
+readr::write_csv(treatments_simulated, "03.outputs/TBL/treatments-simulated.csv")
+
+# The two trend checks, summarised like the main run: the line's year term held at 2014, then burned area also held
+# at the mean of its fitted log values
+summarise_runs <- function(d) purrr::map(seq_len(nrow(sim_runs)), function(i) {
+  x <- as.vector(d[(i - 1) * 8 + 1:8, ]); ci <- ci95(colMeans(d[(i - 1) * 8 + 1:8, , drop = FALSE]))
+  tibble::tibble(sim_runs[i, ], bias = mean(x), sd = stats::sd(x), ci_low = ci[1], ci_high = ci[2])
+}) |> purrr::list_rbind()
+treatments_sensitivity <- dplyr::bind_rows(full = summarise_runs(draws),
+                                           no_year_term = summarise_runs(simulate_histories(year_term = FALSE)),
+                                           no_trend = summarise_runs(simulate_histories(year_term = FALSE, area_trend = FALSE)), .id = "check")
+readr::write_csv(treatments_sensitivity, "03.outputs/TBL/treatments-sensitivity.csv")
+
+# Repeated-measures analysis of variance on the history means, with the history as the subject, across the five runs
+# on a 13 year baseline and across the baselines of each treatment that ran on more than one
+rm_anova <- function(rows) {
+  y <- hist_means[rows, , drop = FALSE]
+  k <- nrow(y); h <- ncol(y); g <- mean(y)
+  ss_t <- h * sum((rowMeans(y) - g)^2)
+  ss_e <- sum((y - g)^2) - ss_t - k * sum((colMeans(y) - g)^2)
+  f <- (ss_t / (k - 1)) / (ss_e / ((k - 1) * (h - 1)))
+  tibble::tibble(df1 = k - 1, df2 = (k - 1) * (h - 1), F = f, p = stats::pf(f, k - 1, (k - 1) * (h - 1), lower.tail = FALSE))
+}
+treatment_tests <- dplyr::bind_rows(
+  tibble::tibble(test = "treatments", rm_anova(which(sim_runs$n == 13))),
+  purrr::map(c("threshold", "kyoto_line", "kyoto_area"), \(m) tibble::tibble(test = m, rm_anova(which(sim_runs$method == m)))) |> purrr::list_rbind())
+readr::write_csv(treatment_tests, "03.outputs/TBL/treatments-tests.csv")
+fmt_f <- function(t) with(dplyr::filter(treatment_tests, test == t),
+  paste0("[F(", df1, ", ", df2, ") = ", formatC(F, format = "f", digits = 3, big.mark = ","),
+         ", p ", if (p < 0.001) "< 0.001" else paste("=", formatC(p, format = "f", digits = 3)), "]"))
+# The t statistic of one regression coefficient, in the form the Results print
+fmt_t <- function(fit, term) {
+  s <- summary(fit)$coefficients[term, ]
+  paste0("[t(", stats::df.residual(fit), ") = ", formatC(s[[3]], format = "f", digits = 3), ", p ",
+         if (s[[4]] < 0.001) "< 0.001" else paste("=", formatC(s[[4]], format = "f", digits = 3)), "]")
+}
+baseline_shift <- sapply(split(treatments_simulated$bias, treatments_simulated$method), function(x) diff(range(x)))
+
+treatment_names <- c(none = "No disaggregation", canada = "Canada's approach", threshold = "Threshold rule", kyoto_line = "Background level", kyoto_area = "Background level")
+treatment_series <- c(none = "", canada = "", threshold = "NBAC burned area", kyoto_line = "Natural disturbance line", kyoto_area = "NBAC burned area")
+run_name <- c(none = "no disaggregation", threshold = "the threshold rule", kyoto_line = "the background level on the line", kyoto_area = "the background level on burned area")
+least_shift <- names(which.min(baseline_shift[c("threshold", "kyoto_line", "kyoto_area")]))
+tsens <- \(chk, m) dplyr::filter(treatments_sensitivity, check == chk, method == m, n == 13)
+sens_msd <- \(chk, m) with(tsens(chk, m), paste0(num(bias), " ± ", num(sd), " Mt CO~2~e a year (95 per cent confidence interval ", num(ci_low), " to ", num(ci_high), ")"))
+tested <- c("threshold", "kyoto_line", "kyoto_area")
+# The change in each history's mean annual reduction from the shortest to the longest baseline of each test-based run
+paired_shift <- purrr::map(tested, function(m) {
+  rows <- which(sim_runs$method == m)
+  d <- hist_means[rows[which.max(sim_runs$n[rows])], ] - hist_means[rows[which.min(sim_runs$n[rows])], ]
+  tibble::tibble(method = m, q05 = unname(stats::quantile(d, 0.05)), q95 = unname(stats::quantile(d, 0.95)))
+}) |> purrr::list_rbind()
+pshift <- \(m) with(dplyr::filter(paired_shift, method == m), paste(num(q05), "to", num(q95)))
+treatments_table <- treatments_simulated |>
+  dplyr::mutate(series = unname(treatment_series[method])) |>
+  dplyr::left_join(dplyr::mutate(treatments_observed, series = unname(ifelse(method %in% c("none", "canada"), "", series))), by = c("method", "series", "n")) |>
+  dplyr::left_join(treatments_sensitivity |> dplyr::filter(check != "full") |> dplyr::select(check, method, n, bias) |>
+                     tidyr::pivot_wider(names_from = check, values_from = bias, names_prefix = "mean_"), by = c("method", "n")) |>
+  dplyr::transmute(Treatment = unname(treatment_names[method]), `Test series` = series,
+                   `Baseline (years)` = ifelse(method %in% c("none", "canada"), "", as.character(n)),
+                   `Positive reductions, 2017 to 2024 (Mt CO2e)` = sprintf("%.1f", positive), `Left out, 2017 to 2024 (Mt CO2e)` = format(round(excluded), big.mark = ","),
+                   `Natural disturbance alone, mean ± SD (Mt CO2e a year)` = paste(num(bias), "±", num(sd)), `Natural disturbance alone, 90% half width (Mt CO2e a year)` = num(half_width),
+                   `Without the year term, mean (Mt CO2e a year)` = num(mean_no_year_term), `Without either trend, mean (Mt CO2e a year)` = num(mean_no_trend))
+kyoto_bl <- purrr::map(c(13, 20, 27), \(n) background_level(national$natural[in_window(national$year, n)])) |> stats::setNames(c(13, 20, 27))
+tr <- \(m, n, s = NULL) dplyr::filter(treatments_observed, method == m, n == !!n, if (is.null(s)) TRUE else series == s)
+tsim <- \(m, n) dplyr::filter(treatments_simulated, method == m, n == !!n)
+sim_msd <- \(m, n) with(tsim(m, n), paste0(num(bias), " ± ", num(sd), " Mt CO~2~e a year (95 per cent confidence interval ", num(ci_low), " to ", num(ci_high), ")"))
+```
+
+```{r}
+#| label: zones
+#| output: false
+
+# FAO Global Ecological Zones, second edition (GEZ 2010), the ecological zones of Table 4.1 of Volume 4, Chapter 4 of the 2006 Guidelines
+# https://data.apps.fao.org/catalog/dataset/2fb209d0-fd34-4e5e-a3d8-a13c241eb61b
+# IPCC default soil classes, the 5 arc-minute raster derived from the Harmonized World Soil Database version 1.1 by Batjes (2010), ISRIC Report 2009/02b,
+# legend from its Idrisi sidecar SOIL_TYPE.RDC; 02.inputs/README.md records no retrieval link, so the Canada crop is committed as 02.inputs/ipcc/soil-type-canada.tif
+# MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m SIN Grid, MCD12Q1 version 6.1, band LC_Type1 (IGBP classes), year 2023, read through Google Earth Engine at 2 km
+# https://doi.org/10.5067/MODIS/MCD12Q1.061
+# Canadian National Fire Database, fire points, Natural Resources Canada, Canadian Forest Service
+# https://cwfis.cfs.nrcan.gc.ca/ha/nfdb
+dir.create("02.inputs/ipcc/raw", showWarnings = FALSE, recursive = TRUE)
+dir.create("02.inputs/nfdb/raw", showWarnings = FALSE, recursive = TRUE)
+if (!file.exists("02.inputs/ipcc/raw/gez2010.zip"))
+  download.file("https://storage.googleapis.com/fao-maps-catalog-data/uuid/2fb209d0-fd34-4e5e-a3d8-a13c241eb61b/resources/gez2010.zip",
+                "02.inputs/ipcc/raw/gez2010.zip", mode = "wb")
+if (!file.exists("02.inputs/nfdb/raw/NFDB_point_shp.zip"))
+  download.file("https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_pnt/current_version/NFDB_point_shp.zip",
+                "02.inputs/nfdb/raw/NFDB_point_shp.zip", mode = "wb")
+if (!file.exists("02.inputs/ipcc/soil-type-canada.tif"))
+  terra::crop(terra::rast("02.inputs/ipcc/raw/soil_type.tif"), terra::ext(-141.5, -52, 41, 84)) |>
+    terra::writeRaster("02.inputs/ipcc/soil-type-canada.tif", datatype = "INT1U", gdal = "COMPRESS=DEFLATE")
+if (!file.exists("02.inputs/ipcc/mcd12q1-2023-canada.tif")) {
+  ee <- reticulate::import("ee")
+  ee$Initialize(project = "manuscripts-personal")
+  image <- ee$ImageCollection("MODIS/061/MCD12Q1")$select("LC_Type1")$filterDate("2023-01-01", "2023-12-31")$first()
+  url <- image$getDownloadURL(list(scale = 2000L, crs = "EPSG:4326", format = "GEO_TIFF",
+                                   region = ee$Geometry$Rectangle(list(-141.5, 41, -52, 84), "EPSG:4326", FALSE)))
+  download.file(url, "02.inputs/ipcc/mcd12q1-2023-canada.tif", mode = "wb")
+}
+
+sf::sf_use_s2(FALSE)
+canada_outline <- sf::st_make_valid(rnaturalearth::ne_countries(scale = 50, country = "Canada", returnclass = "sf")["name"])
+if (!file.exists("02.inputs/ipcc/raw/gez-canada.gpkg")) {
+  sf::st_read(paste0("/vsizip/", normalizePath("02.inputs/ipcc/raw/gez2010.zip"), "/gez_2010_wgs84.shp"), quiet = TRUE) |>
+    sf::st_make_valid() |>
+    sf::st_intersection(canada_outline) |>
+    sf::st_transform(3978) |>
+    sf::st_write("02.inputs/ipcc/raw/gez-canada.gpkg", quiet = TRUE)
+}
+gez <- sf::st_read("02.inputs/ipcc/raw/gez-canada.gpkg", quiet = TRUE) |>
+  dplyr::filter(gez_abbrev != "Water")
+gez$mha <- as.numeric(sf::st_area(gez)) / 1e10
+provinces <- rnaturalearth::ne_states(country = "Canada", returnclass = "sf")
+bc <- sf::st_transform(provinces[provinces$name == "British Columbia", "name"], 3978)
+
+soil <- terra::rast("02.inputs/ipcc/soil-type-canada.tif")
+soil_labels <- c("Organic", "Sandy", "Wetland", "Volcanic", "Spodic", "High activity clay", "Low activity clay", "Other")
+land_cover <- terra::rast("02.inputs/ipcc/mcd12q1-2023-canada.tif")
+cover_labels <- c("Forest, IGBP 1 to 5", "Shrubland, IGBP 6 to 7", "Woody savanna, IGBP 8", "Savanna, IGBP 9", "Grassland, IGBP 10", "Wetland, IGBP 11", "Other")
+cover_of <- function(code) dplyr::case_when(code %in% 1:5 ~ cover_labels[1], code %in% 6:7 ~ cover_labels[2], code == 8 ~ cover_labels[3],
+                                            code == 9 ~ cover_labels[4], code == 10 ~ cover_labels[5], code == 11 ~ cover_labels[6], .default = cover_labels[7])
+
+# Every fire of 2001 to 2024 placed in its ecological zone, soil class, land cover class and province, with its cause, fire type and month
+if (!file.exists("02.inputs/ipcc/fires-by-stratum.csv") || !file.exists("02.inputs/ipcc/raw/large-fires.gpkg")) {
+  points <- sf::st_read(paste0("/vsizip/", normalizePath("02.inputs/nfdb/raw/NFDB_point_shp.zip"), "/NFDB_point_20260811.shp"),
+                        query = 'SELECT YEAR, MONTH, SIZE_HA, CAUSE, FIRE_TYPE, PRESCRIBED FROM "NFDB_point_20260811" WHERE YEAR >= 2001 AND YEAR <= 2024',
+                        quiet = TRUE) |>
+    sf::st_transform(3978) |>
+    dplyr::mutate(cause = dplyr::case_when(CAUSE == "N" ~ "Natural", CAUSE == "H" ~ "Human", .default = "Unknown"),
+                  type = dplyr::case_when(FIRE_TYPE == "Crown" ~ "Crown", FIRE_TYPE == "Surface" ~ "Surface", FIRE_TYPE == "Ground" ~ "Ground",
+                                          FIRE_TYPE %in% c("Prescribed Burn", "PB") | PRESCRIBED == "PB" ~ "Prescribed", .default = "Unspecified"),
+                  season = dplyr::case_when(MONTH %in% 4:5 ~ "April to May", MONTH == 6 ~ "June", MONTH == 7 ~ "July",
+                                            MONTH %in% 8:10 ~ "August to October", .default = "Other months")) |>
+    sf::st_join(gez[, "gez_abbrev"], join = sf::st_intersects, left = FALSE)
+  wgs <- terra::vect(sf::st_transform(points, 4326))
+  points$soil <- c("Unclassified", soil_labels)[dplyr::coalesce(terra::extract(soil, wgs)[, 2], 0) + 1]
+  points$cover <- cover_of(terra::extract(land_cover, wgs)[, 2])
+  points$bc <- lengths(sf::st_intersects(points, bc)) > 0
+  sf::st_write(points[points$SIZE_HA >= 1000, c("YEAR", "SIZE_HA", "cause")], "02.inputs/ipcc/raw/large-fires.gpkg", quiet = TRUE, delete_dsn = TRUE)
+  points |>
+    sf::st_drop_geometry() |>
+    dplyr::summarise(ha = sum(SIZE_HA), fires = dplyr::n(), .by = c(YEAR, gez_abbrev, soil, cover, cause, type, season, bc)) |>
+    dplyr::rename(year = YEAR) |>
+    readr::write_csv("02.inputs/ipcc/fires-by-stratum.csv")
+}
+strata <- readr::read_csv("02.inputs/ipcc/fires-by-stratum.csv", show_col_types = FALSE)
+burned_zone <- dplyr::summarise(strata, ha = sum(ha), fires = sum(fires), .by = c(year, gez_abbrev))
+large_fires <- sf::st_read("02.inputs/ipcc/raw/large-fires.gpkg", quiet = TRUE) |>
+  sf::st_crop(sf::st_bbox(gez))
+
+pm <- function(x, s, digits) dplyr::case_when(is.na(x) ~ "", is.na(s) ~ formatC(x, format = "f", digits = digits),
+                                              .default = paste0(formatC(x, format = "f", digits = digits), " ± ", formatC(s, format = "f", digits = digits)))
+# Rows of Table 2.4 (biomass consumption, mean and standard error) and Table 2.6 (combustion factor, mean and standard deviation) of the 2006 Guidelines,
+# Volume 4, Chapter 2, pages 2.45 to 2.49, for the vegetation of Canada, with the row of Table 2.5 that holds their emission factors
+# http://www.ipcc-nggip.iges.or.jp/public/2006gl/index.html
+rows_2_4 <- tibble::tribble(~vegetation, ~subcategory, ~mb_cf, ~mb_cf_se, ~cf, ~cf_sd, ~ef_row,
+  "Boreal forest", "Wildfire (general)", 52.8, 48.4, 0.40, 0.06, "Extra tropical forest",
+  "Boreal forest", "Crown fire", 25.1, 7.9, 0.43, 0.21, "Extra tropical forest",
+  "Boreal forest", "Surface fire", 21.6, 25.1, 0.15, 0.08, "Extra tropical forest",
+  "Boreal forest", "Post logging slash burn", 69.6, 44.8, 0.33, 0.13, "Extra tropical forest",
+  "Boreal forest", "Land clearing fire", 87.5, 35.0, 0.59, NA, "Extra tropical forest",
+  "Boreal forest", "All boreal forest", 41.0, 36.5, 0.34, 0.17, "Extra tropical forest",
+  "Other temperate forests", "Wildfire", 19.8, 6.3, NA, NA, "Extra tropical forest",
+  "Other temperate forests", "Post logging slash burn", 77.5, 65.0, 0.62, 0.12, "Extra tropical forest",
+  "Other temperate forests", "Felled and burned (land clearing fire)", 48.4, 62.7, 0.51, NA, "Extra tropical forest",
+  "Other temperate forests", "All other temperate forests", 50.4, 53.7, 0.45, 0.16, "Extra tropical forest",
+  "Shrublands", "Shrubland (general)", 26.7, 4.2, 0.95, NA, "Savanna and grassland",
+  "Shrublands", "All shrublands", 14.3, 9.0, 0.72, 0.25, "Savanna and grassland",
+  "Savanna grasslands and pastures", "All savanna grasslands (early dry season burns)", 2.1, NA, 0.74, NA, "Savanna and grassland",
+  "Savanna grasslands and pastures", "Grassland (mid or late dry season burns)", 4.1, 3.1, 0.77, 0.26, "Savanna and grassland",
+  "Other vegetation types", "Peatland", 41, 1.4, NA, NA, NA,
+  "Other vegetation types", "Tundra", 10, NA, NA, NA, "Savanna and grassland") |>
+  dplyr::mutate(row = paste(vegetation, subcategory, sep = ", "))
+# Table 2.6 (fuel consumption, mean and 95 per cent confidence interval) and Table 2.7 (emission factors, mean and 95 per cent interval) of
+# Chapter 2 of the 2013 Wetlands Supplement, pages 2.40 and 2.41, boreal and temperate rows, carbon dioxide carbon converted to carbon dioxide at 44/12
+peat_fuel <- c(mean = 66, lower = 46, upper = 86)
+peat_ef <- tibble::tibble(co2_c = 362, co2_c_ci = 41, co = 207, co_ci = 70, ch4 = 9, ch4_ci = 4) |>
+  dplyr::mutate(co2 = co2_c * 44 / 12, co2_ci = co2_c_ci * 44 / 12)
+rows_table <- rows_2_4 |>
+  dplyr::transmute(Vegetation = vegetation, Subcategory = subcategory, `Biomass consumption (t/ha)` = pm(mb_cf, mb_cf_se, 1),
+                   `Combustion factor` = pm(cf, cf_sd, 2), `Emission factor row` = dplyr::coalesce(ef_row, "")) |>
+  dplyr::bind_rows(tibble::tibble(Vegetation = "Organic soil, boreal and temperate", Subcategory = c("Wildfire (undrained peat)", "Wildfire (drained peat)"),
+                                  `Biomass consumption (t/ha)` = c("66 (46 to 86)", "336 ± 4"), `Combustion factor` = c("1", "1"),
+                                  `Emission factor row` = c("Wetlands Supplement, boreal and temperate", "Wetlands Supplement, boreal and temperate")))
+
+# Tables 2.4, 2.5 and 2.6 matched to the ecological zones of Table 4.1 of Chapter 4, page 4.46
+zone_defaults <- tibble::tribble(~gez_abbrev, ~gez_name, ~row_2_4, ~mb_cf, ~mb_cf_se, ~cf, ~cf_sd, ~ef_row,
+  "Ba", "Boreal coniferous forest", "Boreal forest, wildfire (general)", 52.8, 48.4, 0.40, 0.06, "Extra tropical forest",
+  "Bb", "Boreal tundra woodland", "Boreal forest, wildfire (general)", 52.8, 48.4, 0.40, 0.06, "Extra tropical forest",
+  "BM", "Boreal mountain system", "Boreal forest, wildfire (general)", 52.8, 48.4, 0.40, 0.06, "Extra tropical forest",
+  "TeDc", "Temperate continental forest", "Other temperate forests, wildfire", 19.8, 6.3, 0.45, 0.16, "Extra tropical forest",
+  "TeDo", "Temperate oceanic forest", "Other temperate forests, wildfire", 19.8, 6.3, 0.45, 0.16, "Extra tropical forest",
+  "TeM", "Temperate mountain system", "Other temperate forests, wildfire", 19.8, 6.3, 0.45, 0.16, "Extra tropical forest",
+  "TeBSk", "Temperate steppe", "Grassland, mid or late dry season burns", 4.1, 3.1, 0.77, 0.26, "Savanna and grassland",
+  "TeBWk", "Temperate desert", "Grassland, mid or late dry season burns", 4.1, 3.1, 0.77, 0.26, "Savanna and grassland",
+  "P", "Polar", "Tundra", 10, NA, NA, NA, "Savanna and grassland") |>
+  dplyr::inner_join(table_2_5, by = "ef_row")
+defaults <- zone_defaults |>
+  dplyr::inner_join(sf::st_drop_geometry(gez)[, c("gez_abbrev", "mha")], by = "gez_abbrev") |>
+  dplyr::arrange(-mha) |>
+  dplyr::transmute(`Ecological zone` = paste0(gez_name, " (", gez_abbrev, ")"), `Area (Mha)` = sprintf("%.0f", mha), `IPCC biomass consumption row` = row_2_4,
+                   `Biomass consumption (t/ha)` = pm(mb_cf, mb_cf_se, 1), `Combustion factor` = pm(cf, cf_sd, 2), `IPCC emission factor row` = ef_row,
+                   `CO2 (g/kg)` = pm(co2, co2_sd, 0), `CH4 (g/kg)` = pm(ch4, ch4_sd, 1), `N2O (g/kg)` = pm(n2o, n2o_sd, 2))
+
+# Equation 2.27 by zone and year, with methane and nitrous oxide converted at the inventory's warming potentials of 28 and 265
+tier1_zone <- burned_zone |>
+  dplyr::inner_join(zone_defaults, by = "gez_abbrev") |>
+  dplyr::mutate(dm_mt = ha * mb_cf / 1e6, co2_mt = dm_mt * co2 / 1e3, ch4_kt = dm_mt * ch4, n2o_kt = dm_mt * n2o,
+                co2e_mt = co2_mt + (ch4_kt * 28 + n2o_kt * 265) / 1e3,
+                u_zone = sqrt(u_term(mb_cf_se, mb_cf)^2 + u_term(co2_sd, co2)^2))
+zone_2023 <- dplyr::filter(tier1_zone, year == 2023)
+zone_mean <- dplyr::summarise(burned_zone, ha_year = sum(ha) / 24, .by = gez_abbrev)
+# Zones sharing a row of Table 2.4 share its error, so each row is summed before the rows combine in quadrature
+u_2023 <- zone_2023 |>
+  dplyr::filter(!is.na(u_zone)) |>
+  dplyr::summarise(co2_mt = sum(co2_mt), u = dplyr::first(u_zone), .by = row_2_4) |>
+  dplyr::summarise(u = sqrt(sum((u * co2_mt)^2)) / sum(co2_mt)) |>
+  dplyr::pull(u)
+fao_2023 <- tibble::tibble(`Ecological zone` = "FAOSTAT, other forest, one coefficient",
+  `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", mean(used$ha[used$item == "Other forest"]) / 1e3),
+  `Burned 2023 (kha)` = sprintf("%.0f", burn_2023$ha / 1e3), `Biomass consumption (t/ha)` = sprintf("%.1f", burn_2023$fuel),
+  `CO2 (Mt)` = sprintf("%.1f", co2_2023), `CH4 (kt)` = sprintf("%.0f", burn_2023$dm * burn_2023$ch4 / 1e6),
+  `N2O (kt)` = sprintf("%.1f", burn_2023$dm * burn_2023$n2o / 1e6),
+  `CO2e (Mt)` = sprintf("%.1f", co2_2023 + (burn_2023$dm * burn_2023$ch4 * 28 + burn_2023$dm * burn_2023$n2o * 265) / 1e9),
+  `Uncertainty (%)` = sprintf("%.0f", 100 * u_forest[1]))
+zones_table <- zone_2023 |>
+  dplyr::inner_join(zone_mean, by = "gez_abbrev") |>
+  dplyr::arrange(-ha) |>
+  dplyr::transmute(`Ecological zone` = gez_name, `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", ha_year / 1e3),
+                   `Burned 2023 (kha)` = sprintf("%.0f", ha / 1e3), `Biomass consumption (t/ha)` = sprintf("%.1f", mb_cf),
+                   `CO2 (Mt)` = sprintf("%.1f", co2_mt), `CH4 (kt)` = sprintf("%.0f", ch4_kt), `N2O (kt)` = sprintf("%.1f", n2o_kt),
+                   `CO2e (Mt)` = sprintf("%.1f", co2e_mt), `Uncertainty (%)` = dplyr::if_else(is.na(u_zone), "", sprintf("%.0f", 100 * u_zone))) |>
+  dplyr::bind_rows(tibble::tibble(`Ecological zone` = "All zones",
+    `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", sum(zone_mean$ha_year) / 1e3), `Burned 2023 (kha)` = sprintf("%.0f", sum(zone_2023$ha) / 1e3),
+    `Biomass consumption (t/ha)` = sprintf("%.1f", sum(zone_2023$dm_mt) * 1e6 / sum(zone_2023$ha)), `CO2 (Mt)` = sprintf("%.1f", sum(zone_2023$co2_mt)),
+    `CH4 (kt)` = sprintf("%.0f", sum(zone_2023$ch4_kt)), `N2O (kt)` = sprintf("%.1f", sum(zone_2023$n2o_kt)),
+    `CO2e (Mt)` = sprintf("%.1f", sum(zone_2023$co2e_mt)), `Uncertainty (%)` = sprintf("%.0f", 100 * u_2023)), fao_2023)
+boreal_share_2023 <- 100 * sum(zone_2023$ha[zone_2023$gez_abbrev %in% c("Ba", "Bb", "BM")]) / sum(zone_2023$ha)
+
+# Equation 2.27 by stratum, each fire at the Table 2.4 row of its zone, fire type and month, and Equation 2.8 of the Wetlands Supplement added on organic soil
+boreal_zones <- c("Ba", "Bb", "BM"); temperate_zones <- c("TeDc", "TeDo", "TeM"); grassland_zones <- c("TeBSk", "TeBWk")
+row_of <- function(zone, type, season) dplyr::case_when(
+  zone %in% boreal_zones & type == "Crown" ~ "Boreal forest, Crown fire",
+  zone %in% boreal_zones & type == "Surface" ~ "Boreal forest, Surface fire",
+  zone %in% boreal_zones ~ "Boreal forest, Wildfire (general)",
+  zone %in% temperate_zones ~ "Other temperate forests, Wildfire",
+  zone %in% grassland_zones & season %in% c("April to May", "June") ~ "Savanna grasslands and pastures, All savanna grasslands (early dry season burns)",
+  zone %in% grassland_zones ~ "Savanna grasslands and pastures, Grassland (mid or late dry season burns)",
+  zone == "P" ~ "Other vegetation types, Tundra")
+tier1_strata <- strata |>
+  dplyr::mutate(row = row_of(gez_abbrev, type, season),
+                soil_group = dplyr::case_when(soil == "Organic" ~ "Organic", soil %in% c("Other", "Unclassified") ~ "Other", .default = "Mineral")) |>
+  dplyr::inner_join(rows_2_4[, c("row", "mb_cf", "ef_row")], by = "row") |>
+  dplyr::inner_join(table_2_5, by = "ef_row") |>
+  dplyr::mutate(dm_mt = ha * mb_cf / 1e6, co2_mt = dm_mt * co2 / 1e3, ch4_kt = dm_mt * ch4, n2o_kt = dm_mt * n2o,
+                co2e_mt = co2_mt + (ch4_kt * 28 + n2o_kt * 265) / 1e3,
+                peat_mt = dplyr::if_else(soil == "Organic", ha * peat_fuel[["mean"]] / 1e6, 0),
+                peat_co2_mt = peat_mt * peat_ef$co2 / 1e3, peat_ch4_kt = peat_mt * peat_ef$ch4,
+                peat_co2e_mt = peat_co2_mt + peat_ch4_kt * 28 / 1e3)
+strata_2023 <- dplyr::filter(tier1_strata, year == 2023)
+bc_2023_strata <- dplyr::filter(strata_2023, bc)
+blocks <- c(cause = "Ignition", type = "Fire type", season = "Month", soil_group = "Soil class", cover = "Land cover")
+summarise_strata <- function(d) {
+  rows <- lapply(names(blocks), function(v) d |>
+    dplyr::summarise(ha = sum(ha), co2e = sum(co2e_mt), peat = sum(peat_co2e_mt), .by = dplyr::all_of(v)) |>
+    dplyr::rename(class = dplyr::all_of(v)) |>
+    dplyr::mutate(block = blocks[[v]]) |>
+    dplyr::arrange(-ha))
+  dplyr::bind_rows(rows, tibble::tibble(block = "All fires", class = "", ha = sum(d$ha), co2e = sum(d$co2e_mt), peat = sum(d$peat_co2e_mt)))
+}
+strata_table <- summarise_strata(strata_2023) |>
+  dplyr::left_join(summarise_strata(bc_2023_strata), by = c("block", "class"), suffix = c("", "_bc")) |>
+  dplyr::mutate(dplyr::across(c(ha_bc, co2e_bc, peat_bc), \(x) dplyr::coalesce(x, 0))) |>
+  dplyr::transmute(Stratum = dplyr::if_else(duplicated(block), "", block), Class = class,
+                   `Canada burned (kha)` = sprintf("%.0f", ha / 1e3), `Canada vegetation CO2e (Mt)` = sprintf("%.1f", co2e),
+                   `Canada organic soil CO2e (Mt)` = sprintf("%.1f", peat), `BC burned (kha)` = sprintf("%.0f", ha_bc / 1e3),
+                   `BC vegetation CO2e (Mt)` = sprintf("%.1f", co2e_bc), `BC organic soil CO2e (Mt)` = sprintf("%.1f", peat_bc))
+share <- function(d, var, levels) 100 * sum(d$ha[d[[var]] %in% levels]) / sum(d$ha)
+natural_share_2023 <- share(strata_2023, "cause", "Natural"); human_share_2023 <- share(strata_2023, "cause", "Human")
+natural_share_all <- share(tier1_strata, "cause", "Natural"); bc_natural_share_2023 <- share(bc_2023_strata, "cause", "Natural")
+typed_share_2023 <- share(strata_2023, "type", c("Crown", "Surface", "Ground"))
+organic_share_2023 <- share(strata_2023, "soil_group", "Organic"); bc_organic_share_2023 <- share(bc_2023_strata, "soil_group", "Organic")
+forest_share_2023 <- share(strata_2023, "cover", cover_labels[1]); savanna_share_2023 <- share(strata_2023, "cover", cover_labels[3:4])
+spring_share_2023 <- share(strata_2023, "season", "April to May")
+veg_2023 <- sum(strata_2023$co2e_mt); peat_2023 <- sum(strata_2023$peat_co2e_mt)
+bc_veg_2023 <- sum(bc_2023_strata$co2e_mt); bc_peat_2023 <- sum(bc_2023_strata$peat_co2e_mt)
+cause_year <- dplyr::bind_rows(dplyr::mutate(strata, region = "Canada"), dplyr::mutate(dplyr::filter(strata, bc), region = "British Columbia")) |>
+  dplyr::summarise(mha = sum(ha) / 1e6, .by = c(region, year, cause)) |>
+  dplyr::mutate(region = factor(region, c("Canada", "British Columbia")), cause = factor(cause, c("Natural", "Human", "Unknown")))
+
+# Biomass consumption on a 2 km grid, the Table 2.4 row of each cell's ecological zone and land cover class, with organic soil from the soil raster
+grid <- terra::rast(terra::ext(sf::st_bbox(gez)), resolution = 2000, crs = "EPSG:3978")
+zone_r <- terra::rasterize(terra::vect(gez), grid, field = "gez_abbrev")
+zone_code <- terra::levels(zone_r)[[1]]$gez_abbrev[match(terra::values(zone_r)[, 1], terra::levels(zone_r)[[1]]$ID)]
+cover_code <- terra::values(terra::project(land_cover, grid, method = "near"))[, 1]
+soil_code <- terra::values(terra::project(soil, grid, method = "near"))[, 1]
+category <- dplyr::case_when(is.na(zone_code) ~ NA_character_, cover_code %in% c(1:5, 8, 9) ~ "Forest", cover_code %in% 6:7 ~ "Shrubland",
+                             cover_code %in% 10:11 ~ "Grassland", cover_code %in% c(12, 14) ~ "Cropland", cover_code == 16 & zone_code == "P" ~ "Tundra",
+                             .default = "Other")
+category <- dplyr::if_else(zone_code == "P" & category %in% c("Shrubland", "Grassland"), "Tundra", category)
+fuel <- dplyr::case_when(category == "Forest" & zone_code %in% c(boreal_zones, "P") ~ 52.8, category == "Forest" ~ 19.8, category == "Shrubland" ~ 14.3,
+                         category == "Grassland" ~ 4.1, category == "Tundra" ~ 10, .default = NA_real_)
+as_layer <- function(x, levels) { r <- terra::rast(grid); terra::values(r) <- factor(x, levels = levels); r }
+# The rows of Table 1 that overlap on each cell, the vegetation row of Table 2.4 and the organic soil row of the Wetlands Supplement, for their areas
+row_labels <- c("Boreal forest, mineral soil", "Boreal forest, organic soil", "Temperate forest, mineral soil", "Temperate forest, organic soil",
+                "Shrubland", "Grassland", "Tundra")
+row_class <- dplyr::case_when(is.na(fuel) ~ NA_character_, fuel == 52.8 & soil_code == 1 ~ row_labels[2], fuel == 52.8 ~ row_labels[1],
+                              fuel == 19.8 & soil_code == 1 ~ row_labels[4], fuel == 19.8 ~ row_labels[3], fuel == 14.3 ~ row_labels[5],
+                              fuel == 4.1 ~ row_labels[6], fuel == 10 ~ row_labels[7])
+row_area <- tibble::tibble(row_class) |> dplyr::filter(!is.na(row_class)) |> dplyr::count(row_class) |> dplyr::mutate(mha = n * 400 / 1e6)
+soil_r <- as_layer(dplyr::if_else(is.na(zone_code) | soil_code == 0, NA_character_, soil_labels[pmax(soil_code, 1)]), soil_labels)
+fuel_area <- tibble::tibble(category, fuel, zone_code) |>
+  dplyr::filter(!is.na(zone_code)) |>
+  dplyr::summarise(mha = dplyr::n() * 400 / 1e6, .by = c(category, fuel)) |>
+  dplyr::arrange(-mha)
+organic_mha <- sum(!is.na(fuel) & soil_code == 1, na.rm = TRUE) * 400 / 1e6
+```
+
+```{r}
+#| label: national
+#| output: false
+
+# CFFDRS FBP Fuel Types, Canada, 250 m, 2026 release, Canadian Forest Service, codes read from the catalogue's map service
+# https://cwfis.cfs.nrcan.gc.ca/en/catalogue/results/b7cc58d4-4b16-4a3a-8131-3ae370d4d6e6 and the file https://cwfis.cfs.nrcan.gc.ca/downloads/fuels/current/FBP_FuelTypes_Canada_2026_250m.tiff
+# Classified peatland map of Canada, 250 m, Webster et al. (2018), Canadian Forest Service
+# https://open.canada.ca/data/en/dataset/62d63169-7739-4515-9178-8f628c32a9d4 and the file http://ftp.maps.canada.ca/pub/nrcan_rncan/Forestry-industry_Industrie-forestiere/peatlands/ClassPeatMap_2020_EPSG_3978.tif
+# National Burned Area Composite, summary statistics by year and administrative unit, version of 13 May 2026, Canadian Forest Service
+# https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/ and the file https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_summarystats_1972_to_2025_20260513.xlsx
+dir.create("02.inputs/nrcan/raw", showWarnings = FALSE, recursive = TRUE)
+fetch <- function(url, file) if (!file.exists(file)) download.file(url, file, mode = "wb")
+fetch("https://cwfis.cfs.nrcan.gc.ca/downloads/fuels/current/FBP_FuelTypes_Canada_2026_250m.tiff", "02.inputs/nrcan/raw/FBP_FuelTypes_Canada_2026_250m.tiff")
+fetch("http://ftp.maps.canada.ca/pub/nrcan_rncan/Forestry-industry_Industrie-forestiere/peatlands/ClassPeatMap_2020_EPSG_3978.tif", "02.inputs/nrcan/raw/ClassPeatMap_2020_EPSG_3978.tif")
+fetch("https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_summarystats_1972_to_2025_20260513.xlsx", "02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx")
+
+inside <- !is.na(zone_code)
+# Codes of the 2026 fuel type raster as its map service labels them, grouped to the fuel of the FBP System
+fbp_code <- terra::values(terra::project(terra::rast("02.inputs/nrcan/raw/FBP_FuelTypes_Canada_2026_250m.tiff"), grid, method = "near"))[, 1]
+fbp_labels <- c("Conifer, C-1 to C-7", "Mixedwood, M-1 and M-2", "Deciduous, D-1 and D-2", "Grass, O-1", "Vegetated non-fuel", "Non-fuel")
+fbp_group <- dplyr::case_when(!inside ~ NA_character_, fbp_code %in% 1:7 ~ fbp_labels[1], fbp_code %in% c(415, 625, 650, 675) ~ fbp_labels[2],
+                              fbp_code %in% c(11, 13) ~ fbp_labels[3], fbp_code %in% c(31, 32) ~ fbp_labels[4], fbp_code == 105 ~ fbp_labels[5],
+                              fbp_code == 101 ~ fbp_labels[6], .default = NA_character_)
+fbp_r <- as_layer(fbp_group, fbp_labels)
+fbp_area <- tibble::tibble(fbp_group) |> dplyr::filter(!is.na(fbp_group)) |> dplyr::count(fbp_group) |> dplyr::mutate(mha = n * 400 / 1e6) |> dplyr::arrange(-mha)
+
+# Classes 1 to 9 of the peatland map are bog and fen, open, treed and forested; 0 is not peat
+peat_code <- terra::values(terra::project(terra::rast("02.inputs/nrcan/raw/ClassPeatMap_2020_EPSG_3978.tif"), grid, method = "near"))[, 1]
+peat_labels <- c("Open bog and fen", "Treed bog and fen", "Forested bog and fen")
+peat_group <- dplyr::case_when(!inside ~ NA_character_, peat_code %in% 1:3 ~ peat_labels[1], peat_code %in% 4:6 ~ peat_labels[2],
+                               peat_code %in% 7:9 ~ peat_labels[3], .default = NA_character_)
+cfs_peat_r <- as_layer(peat_group, peat_labels)
+mha_of <- function(x) sum(x, na.rm = TRUE) * 400 / 1e6
+ipcc_organic_mha <- mha_of(inside & soil_code == 1); cfs_peat_mha <- mha_of(inside & peat_code %in% 1:9)
+both_peat_mha <- mha_of(inside & soil_code == 1 & peat_code %in% 1:9)
+
+nbac <- readxl::read_excel("02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx", sheet = "sumstats_admin_name", skip = 2) |>
+  dplyr::transmute(year = as.integer(YEAR), ha = as.numeric(CANADA)) |>
+  dplyr::filter(!is.na(year))
+nbac_2023 <- nbac$ha[nbac$year == 2023]
+
+# The 2023 fires on the national peatland map and in the national fuel types
+points_2023 <- sf::st_read(paste0("/vsizip/", normalizePath("02.inputs/nfdb/raw/NFDB_point_shp.zip"), "/NFDB_point_20260811.shp"),
+                           query = 'SELECT YEAR, SIZE_HA FROM "NFDB_point_20260811" WHERE YEAR = 2023', quiet = TRUE) |>
+  sf::st_transform(3978)
+points_2023$peat <- terra::extract(terra::rast("02.inputs/nrcan/raw/ClassPeatMap_2020_EPSG_3978.tif"), terra::vect(points_2023))[, 2]
+points_2023$fbp <- terra::extract(terra::rast("02.inputs/nrcan/raw/FBP_FuelTypes_Canada_2026_250m.tiff"), terra::vect(points_2023))[, 2]
+cfs_peat_share_2023 <- 100 * sum(points_2023$SIZE_HA[points_2023$peat %in% 1:9]) / sum(points_2023$SIZE_HA)
+conifer_share_2023 <- 100 * sum(points_2023$SIZE_HA[points_2023$fbp %in% 1:7]) / sum(points_2023$SIZE_HA)
+mixed_share_2023 <- 100 * sum(points_2023$SIZE_HA[points_2023$fbp %in% c(415, 625, 650, 675)]) / sum(points_2023$SIZE_HA)
+deciduous_share_2023 <- 100 * sum(points_2023$SIZE_HA[points_2023$fbp %in% c(11, 13)]) / sum(points_2023$SIZE_HA)
+
+fbp_mha <- function(label) fbp_area$mha[fbp_area$fbp_group == label]
+tier2_table <- tibble::tribble(~Quantity, ~`Tier 1 global default`, ~`National dataset`,
+  "Forest fuel classes on the 2 km grid", sprintf("Two IPCC biomass consumption rows, boreal forest %.0f Mha and temperate forest %.0f Mha", fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 52.8], fuel_area$mha[fuel_area$category == "Forest" & fuel_area$fuel == 19.8]),
+    sprintf("FBP fuel types, conifer %.0f Mha, mixedwood %.0f Mha, deciduous %.0f Mha, grass %.0f Mha", fbp_mha(fbp_labels[1]), fbp_mha(fbp_labels[2]), fbp_mha(fbp_labels[3]), fbp_mha(fbp_labels[4])),
+  "Biomass consumption (t dry matter per ha)", "IPCC biomass consumption table, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate", "CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026",
+  "Organic soil (Mha)", sprintf("IPCC default raster, %.0f", ipcc_organic_mha), sprintf("Peatland map, %.0f, of which %.0f also organic in the default raster", cfs_peat_mha, both_peat_mha),
+  "Area burned in 2023 (Mha)", sprintf("MODIS MCD64A1 other forest as FAO published it, %.1f", burn_2023$ha / 1e6), sprintf("National Burned Area Composite, %.1f; fire points, %.1f", nbac_2023 / 1e6, sum(strata_2023$ha) / 1e6),
+  "Area burned in 2023 on organic soil (%)", sprintf("IPCC default raster, %.0f", organic_share_2023), sprintf("Peatland map, %.0f", cfs_peat_share_2023),
+  "Area burned in 2023 by fuel (%)", sprintf("MCD12Q1 forest %.0f, woody savanna and savanna %.0f", forest_share_2023, savanna_share_2023), sprintf("FBP conifer %.0f, mixedwood %.0f, deciduous %.0f", conifer_share_2023, mixed_share_2023, deciduous_share_2023),
+  "Emission factors (g per kg)", "IPCC emission factor table, 1,569 carbon dioxide, 4.7 methane, 0.26 nitrous oxide", "Inventory split of combusted carbon, 90 per cent carbon dioxide, 9 per cent carbon monoxide, 1 per cent methane",
+  "Natural share", "None", sprintf("Fire points cause field, %.0f per cent natural in 2023; inventory rule, every wildfire", natural_share_2023))
+```
+
+```{r}
+#| label: faostat-burned
+#| output: false
+
+# MODIS/Terra+Aqua Burned Area Monthly L3 Global 500m SIN Grid, MCD64A1 version 6.1, bands BurnDate and Uncertainty, 2001 to 2024, read through Google Earth Engine
+# https://doi.org/10.5067/MODIS/MCD64A1.061
+# MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m SIN Grid, MCD12Q1 version 6.1, band LC_Type1 (IGBP classes), 2001 to 2023, read through Google Earth Engine
+# https://doi.org/10.5067/MODIS/MCD12Q1.061
+# FAO Global Administrative Unit Layers 2015, level 0, the country boundary FAO's note names, Earth Engine collection FAO/GAUL/2015/level0
+# https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2015_level0
+# The burned area of FAO's method rebuilt as its note describes it: burned pixels of MCD64A1 with uncertainty below 20 per cent, the IGBP class
+# of the yearly MCD12Q1 map (the 2022 map for 2023 and the 2023 map for 2024, the latest FAO had, which the rebuild showed), counted within the GAUL boundary, with every pixel also keyed by the ecological zone group of its Table 2.4 row
+# and by whether the IPCC default soil raster calls its soil organic, so that the zone rows and the peat term can be applied to FAO's own burned area
+if (!file.exists("02.inputs/faostat/mcd64a1-burned-by-stratum.csv")) {
+  zone_groups <- gez |>
+    dplyr::mutate(group = dplyr::case_when(gez_abbrev %in% boreal_zones ~ 1L, gez_abbrev == "P" ~ 3L, .default = 2L)) |>
+    dplyr::group_by(group) |>
+    dplyr::summarise(.groups = "drop") |>
+    sf::st_make_valid() |>
+    sf::st_simplify(dTolerance = 2000) |>
+    sf::st_make_valid() |>
+    sf::st_transform(4326)
+  geojson <- tempfile(fileext = ".geojson")
+  sf::st_write(zone_groups, geojson, quiet = TRUE)
+  organic_cells <- sf::st_as_sf(terra::as.polygons(soil == 1, dissolve = TRUE))
+  organic_cells <- sf::st_set_crs(sf::st_make_valid(organic_cells[organic_cells[[1]] == 1, 1]), 4326)
+  organic_geojson <- tempfile(fileext = ".geojson")
+  sf::st_write(organic_cells, organic_geojson, quiet = TRUE)
+  py <- reticulate::import_main()
+  py$GEOJSON <- geojson
+  py$ORGANIC <- organic_geojson
+  py$CSV <- "02.inputs/faostat/mcd64a1-burned-by-stratum.csv"
+  py$UNC_MAX <- 20L
+  py$TILES <- "02.inputs/faostat/raw/mcd64a1-tiles"
+  reticulate::py_run_string(r"(
+import ee, json, csv, os, time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+ee.Initialize(project='manuscripts-personal')
+# The country, the zone groups and the organic soil enter as painted masks on plain rectangles, because a country polygon used as the
+# reduction region is clipped against every tile and never returned for Canada, where the same polygon painted as a mask takes seconds
+gaul = ee.FeatureCollection('FAO/GAUL/2015/level0').filter(ee.Filter.eq('ADM0_NAME', 'Canada'))
+canada_mask = ee.Image().byte().paint(gaul, 1)
+zones = ee.FeatureCollection([ee.Feature(ee.Geometry(f['geometry'], 'EPSG:4326', False), {'group': f['properties']['group']}) for f in json.load(open(GEOJSON))['features']])
+organic = ee.FeatureCollection([ee.Feature(ee.Geometry(f['geometry'], 'EPSG:4326', False)) for f in json.load(open(ORGANIC))['features']])
+base = ee.Image().byte().paint(zones, 'group').unmask(0).multiply(100).add(ee.Image().byte().paint(organic, 1).unmask(0).multiply(1000))
+# Counted in the MODIS sinusoidal grid, where every pixel has the same area, so a pixel count times that area is the burned area exactly
+modis = ee.ImageCollection('MODIS/061/MCD12Q1').first().select('LC_Type1').projection()
+scale = 463.3127165275
+pixel_ha = scale * scale / 1e4
+def year_key(year):
+    lc_year = 2022 if year == 2023 else min(year, 2023)
+    monthly = ee.ImageCollection('MODIS/061/MCD64A1').filterDate(f'{year}-01-01', f'{year + 1}-01-01')
+    burned = monthly.map(lambda i: i.select('BurnDate').gt(0).And(i.select('Uncertainty').lt(UNC_MAX))).max()
+    cover = ee.ImageCollection('MODIS/061/MCD12Q1').filterDate(f'{lc_year}-01-01', f'{lc_year + 1}-01-01').first().select('LC_Type1')
+    return cover.add(base).updateMask(burned).updateMask(canada_mask).rename(f'y{year}')
+stack = ee.Image.cat([year_key(year) for year in range(2001, 2025)])
+# Canada's extent in 96 boxes of 7.5 by 5.4 degrees, each a direct call holding all 24 years, six calls at a time, each box cached as it lands
+os.makedirs(TILES, exist_ok=True)
+lons = [-141.5 + i * 7.5 for i in range(13)]
+lats = [41 + j * 5.4 for j in range(9)]
+boxes = [(f'b{i:02d}{j:02d}', ee.Geometry.Rectangle([lons[i], lats[j], lons[i + 1], lats[j + 1]], 'EPSG:4326', False)) for i in range(12) for j in range(8)]
+def run_box(name, box, depth=0):
+    path = f'{TILES}/{name}.json'
+    if os.path.exists(path):
+        return name
+    try:
+        hist = stack.reduceRegion(reducer=ee.Reducer.frequencyHistogram(), geometry=box, crs=modis, scale=scale, maxPixels=1e11).getInfo()
+    except Exception as e:
+        if depth >= 2 or 'time' not in str(e).lower():
+            raise
+        c = box.coordinates().getInfo()[0]
+        x0, y0 = c[0]; x1, y1 = c[2]; xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
+        hist = {}
+        for k, (p, q, r, s) in enumerate(((x0, y0, xm, ym), (xm, y0, x1, ym), (x0, ym, xm, y1), (xm, ym, x1, y1))):
+            run_box(f'{name}_{k}', ee.Geometry.Rectangle([p, q, r, s], 'EPSG:4326', False), depth + 1)
+            for band, h in json.load(open(f'{TILES}/{name}_{k}.json')).items():
+                for key, n in (h or {}).items():
+                    hist.setdefault(band, {})
+                    hist[band][key] = hist[band].get(key, 0) + n
+    json.dump(hist, open(path, 'w'))
+    return name
+with ThreadPoolExecutor(max_workers=6) as pool:
+    for done in as_completed([pool.submit(run_box, name, box) for name, box in boxes]):
+        done.result()
+counts = {}
+for name, _ in boxes:
+    for band, h in json.load(open(f'{TILES}/{name}.json')).items():
+        for key, n in (h or {}).items():
+            counts[(int(band[1:]), int(float(key)))] = counts.get((int(band[1:]), int(float(key))), 0) + n
+with open(CSV, 'w', newline='') as f:
+    w = csv.DictWriter(f, fieldnames=['year', 'land_cover_year', 'organic', 'zone_group', 'igbp', 'ha'])
+    w.writeheader()
+    for (year, k), n in sorted(counts.items()):
+        w.writerow({'year': year, 'land_cover_year': 2022 if year == 2023 else min(year, 2023), 'organic': k // 1000, 'zone_group': (k // 100) % 10, 'igbp': k % 100, 'ha': n * pixel_ha})
+)")
+}
+mcd <- readr::read_csv("02.inputs/faostat/mcd64a1-burned-by-stratum.csv", show_col_types = FALSE)
+stopifnot(all(2001:2024 %in% mcd$year))
+
+# FAO's items from the IGBP classes, forest as classes 1 to 5, and its fuel as the Table 2.4 rows its recovered coefficients matched
+item_of <- function(igbp) dplyr::case_when(igbp %in% 1:5 ~ "Other forest", igbp == 8 ~ "Woody savanna", igbp == 9 ~ "Savanna", igbp == 10 ~ "Grassland",
+                                           igbp == 7 ~ "Open shrubland", igbp == 6 ~ "Closed shrubland")
+rebuilt <- mcd |>
+  dplyr::mutate(item = item_of(igbp)) |>
+  dplyr::filter(!is.na(item)) |>
+  dplyr::mutate(fuel = dplyr::case_when(item == "Other forest" & zone_group == 2 ~ table_2_4$fuel[2], item == "Other forest" ~ table_2_4$fuel[1],
+                                        item == "Woody savanna" ~ table_2_4$fuel[3], item %in% c("Savanna", "Grassland") ~ table_2_4$fuel[4],
+                                        item == "Open shrubland" ~ table_2_4$fuel[5], item == "Closed shrubland" ~ table_2_4$fuel[6])) |>
+  dplyr::summarise(ha = sum(ha), dm = sum(ha * fuel), .by = c(year, item)) |>
+  dplyr::mutate(co2_kt = dplyr::if_else(item == "Other forest", dm * table_2_5$co2[1] / 1e6, NA_real_),
+                ch4_kt = dm * table_2_5$ch4[1] / 1e6, n2o_kt = dm * table_2_5$n2o[1] / 1e6)
+published <- fires |>
+  dplyr::filter(source == "FAO TIER 1", year >= 2001, item %in% unique(rebuilt$item)) |>
+  dplyr::mutate(element = dplyr::case_match(element, "Burned Area" ~ "ha", "Biomass burned (dry matter)" ~ "dm", "Emissions (CO2)" ~ "co2_kt",
+                                            "Emissions (CH4)" ~ "ch4_kt", "Emissions (N2O)" ~ "n2o_kt")) |>
+  dplyr::filter(!is.na(element)) |>
+  tidyr::pivot_wider(id_cols = c(year, item), names_from = element, values_from = value)
+check <- dplyr::inner_join(rebuilt, published, by = c("year", "item"), suffix = c("_rebuilt", "_fao"))
+# How closely the rerun reproduced the published hectares, by year over the five items and by item and year, and the forest fuel it implies
+repro_year <- dplyr::summarise(check, ratio = sum(ha_rebuilt) / sum(ha_fao), .by = year)
+repro_item <- dplyr::mutate(dplyr::filter(check, ha_fao > 0), ratio = ha_rebuilt / ha_fao)
+repro_within_2 <- 100 * mean(abs(repro_item$ratio - 1) <= 0.02)
+forest_2023 <- dplyr::filter(mcd, year == 2023, igbp %in% 1:5)
+fao_fuel_2023 <- sum(forest_2023$ha * dplyr::if_else(forest_2023$zone_group == 2, table_2_4$fuel[2], table_2_4$fuel[1])) / sum(forest_2023$ha)
+
+# The guidelines' own Tier 1 on FAO's burned area: every burned pixel at the Table 2.4 row and the Table 2.5 row of its ecological zone group, as the zone
+# rebuild applied them to the fire points, and the peat term of Equation 2.8 on the pixels the soil raster calls organic, with the built up, snow, barren,
+# water and unclassified pixels left out as FAO's note excludes them
+group_rows <- zone_defaults |>
+  dplyr::filter(gez_abbrev %in% c("Ba", "TeDc", "P")) |>
+  dplyr::mutate(zone_group = c(Ba = 1L, TeDc = 2L, P = 3L)[gez_abbrev]) |>
+  dplyr::select(zone_group, row_2_4, mb_cf, co2, ch4, n2o)
+tier1_fao_area <- mcd |>
+  dplyr::filter(zone_group %in% 1:3, !igbp %in% c(0, 13, 15, 16, 17)) |>
+  dplyr::summarise(ha = sum(ha), organic_ha = sum(ha[organic == 1]), .by = c(year, zone_group)) |>
+  dplyr::inner_join(group_rows, by = "zone_group") |>
+  dplyr::mutate(dm_mt = ha * mb_cf / 1e6, co2_mt = dm_mt * co2 / 1e3, ch4_kt = dm_mt * ch4, n2o_kt = dm_mt * n2o,
+                co2e_mt = co2_mt + (ch4_kt * 28 + n2o_kt * 265) / 1e3,
+                peat_mt = organic_ha * peat_fuel[["mean"]] / 1e6, peat_co2_mt = peat_mt * peat_ef$co2 / 1e3, peat_ch4_kt = peat_mt * peat_ef$ch4,
+                peat_co2e_mt = peat_co2_mt + peat_ch4_kt * 28 / 1e3)
+rung2_2023 <- dplyr::filter(tier1_fao_area, year == 2023) |>
+  dplyr::summarise(ha = sum(ha), organic_ha = sum(organic_ha), co2_mt = sum(co2_mt), ch4_kt = sum(ch4_kt), n2o_kt = sum(n2o_kt), co2e_mt = sum(co2e_mt),
+                   peat_co2_mt = sum(peat_co2_mt), peat_ch4_kt = sum(peat_ch4_kt), peat_co2e_mt = sum(peat_co2e_mt))
+
+# The 2023 estimate rung by rung, each rung replacing one input of the rung above, carbon dioxide equivalent at the inventory's warming potentials
+co2e_of <- function(co2_kt, ch4_kt, n2o_kt) (sum(co2_kt, na.rm = TRUE) + 28 * sum(ch4_kt) + 265 * sum(n2o_kt)) / 1e3
+fao_2023_items <- dplyr::filter(published, year == 2023)
+rebuilt_2023 <- dplyr::filter(rebuilt, year == 2023)
+ladder <- tibble::tribble(~Estimate, ~`Burned area`, ~`Fuel and emission factors`, ~ha, ~co2_mt, ~ch4_kt, ~co2e_mt,
+  "FAO as published", "MCD64A1 by MCD12Q1 class", "One fuel value per item, savanna factors",
+    sum(fao_2023_items$ha), sum(fao_2023_items$co2_kt, na.rm = TRUE) / 1e3, sum(fao_2023_items$ch4_kt), co2e_of(fao_2023_items$co2_kt, fao_2023_items$ch4_kt, fao_2023_items$n2o_kt),
+  "FAO rebuilt from its note", "MCD64A1 by MCD12Q1 class", "The same",
+    sum(rebuilt_2023$ha), sum(rebuilt_2023$co2_kt, na.rm = TRUE) / 1e3, sum(rebuilt_2023$ch4_kt), co2e_of(rebuilt_2023$co2_kt, rebuilt_2023$ch4_kt, rebuilt_2023$n2o_kt),
+  "Tier 1 by zone on FAO's area", "MCD64A1 by ecological zone", "IPCC rows of the zone",
+    rung2_2023$ha, rung2_2023$co2_mt, rung2_2023$ch4_kt, rung2_2023$co2e_mt,
+  "Tier 1 by zone and soil on FAO's area", "MCD64A1 by zone and soil class", "The same, with the peat term on organic soil",
+    rung2_2023$ha, rung2_2023$co2_mt + rung2_2023$peat_co2_mt, rung2_2023$ch4_kt + rung2_2023$peat_ch4_kt, rung2_2023$co2e_mt + rung2_2023$peat_co2e_mt,
+  "Tier 1 by zone on the fire points", "Fire points by ecological zone", "The same",
+    sum(zone_2023$ha), sum(zone_2023$co2_mt), sum(zone_2023$ch4_kt), sum(zone_2023$co2e_mt),
+  "Tier 1 by stratum with the peat term", "Fire points by zone, fire type and soil", "Rows by fire type and the Wetlands Supplement",
+    sum(strata_2023$ha), sum(strata_2023$co2_mt + strata_2023$peat_co2_mt), sum(strata_2023$ch4_kt + strata_2023$peat_ch4_kt), veg_2023 + peat_2023)
+ladder_table <- dplyr::transmute(ladder, Estimate, `Burned area`, `Fuel and emission factors`, `Burned (Mha)` = sprintf("%.1f", ha / 1e6),
+                                 `CO2 (Mt)` = sprintf("%.0f", co2_mt), `CH4 (kt)` = sprintf("%.0f", ch4_kt), `CO2e (Mt)` = sprintf("%.0f", co2e_mt))
+```
+
+# Abstract {.unnumbered}
+
+From 2017 to 2024, Canada's reported net emissions and removals fell below their 2012 to 2016 mean in most years, but only with natural disturbances disaggregated. No study found had measured the disaggregation's effect on emission reductions. This study compared four treatments of natural disturbance on the inventory's land use, land-use change and forestry totals for 1990 to 2024. The four were no disaggregation, Canada's approach, the threshold rule of Australia's inventory and the background level method of the 2013 Kyoto Protocol Supplement. The threshold rule and background level ran on baselines, the years setting each test, from 13 years to each record's length, and all four on simulated fire histories. Emission reductions for 2017 to 2024 were taken against a fixed 2012 to 2016 mean, with Monte Carlo 90 per cent confidence intervals. Disaggregation cut the annual totals' standard deviation from `r round(stats::sd(national$net))` to `r round(stats::sd(national$human))` million tonnes of carbon dioxide equivalent. Canada's approach showed reductions in `r sum(split_pos)` of `r nrow(credits)` years, `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` million tonnes, and no disaggregation in `r sum(whole_pos)`. In the simulated histories, the baseline moved each treatment's mean annual reduction from natural disturbance alone by at most `r num(max(sapply(split(treatments_simulated$bias, treatments_simulated$method), function(x) diff(range(x)))))` million tonnes a year. The treatments differed by up to `r num(diff(range(treatments_simulated$bias)))` million tonnes a year. With each year's model error independent, the half width of the 90 per cent confidence interval ran from `r format(round(100 * min(mc_split$ci[mc_split$mean > 0])), big.mark = ",")` to `r format(round(100 * max(mc_split$ci[mc_split$mean > 0])), big.mark = ",")` per cent of each reported reduction. Whether Canada showed reductions depended more on how natural disturbance was treated than on the length of the baseline.
+
+# Introduction
+
+The IPCC's 2006 Guidelines counted as anthropogenic all emissions and removals "occurring on 'managed land'", which the 2019 Refinement named the Managed Land Proxy [@paustian2006introduction, p. 1.5; @ogle2019generic, p. 2.67]. @kurz2018quantifying wrote that in Canada natural disturbances in managed forests "can result in large and highly variable emissions and subsequent removals that mask the impacts of management activities". In Europe, natural disturbance was lowering the forest sink [@ritter2025alarming; @linscheid2026forest]. Canada's 2017 inventory divided its managed forest into lands dominated by natural disturbance and the remaining forest, two components that summed to the total [@kurz2018quantifying]. The 2026 inventory labelled them the "Total Anthropogenic Component; Reported" and the "Natural Disturbance Component; Tracked but Not Reported" [@eccc2026nir]. The United States also divided its forest carbon change among growth, land use change and natural disturbances such as fire [@woodall2015forest]. The 2019 Refinement offered the same division to every country as a voluntary option, and a 2024 IPCC expert meeting recorded that the total "must be reported" [@ogle2019generic, p. 2.68; @ipcc2024reconciling, p. 59].
+
+Guidance from 2003 asked inventories to report every disturbance on managed land [@ipcc2003gpg, pp. 1.11, 3.27]. Later studies examined how natural and indirect effects could be factored out, or separated from direct human effects [@alexandrov2004verification; @canadell2007factoring; @bottcher2008accounting; @teobaldelli2008natural]. The 2013 Kyoto Protocol Supplement addressed natural disturbance because "The ‘signal’ of the impact of human activities ... may not be discernible against the ‘noise’ of large interannual variability" [@ipcc2014kp, p. 2.31]. The Supplement set natural disturbance emissions against a background level, for which countries were "encouraged to use the longest available time series" [@ipcc2014kp, p. 2.46]. Only the emissions above the background level were excluded, and only in a year above the background level plus a margin of twice the standard deviation [@ipcc2014kp, pp. 2.49, 2.50]. The Supplement's first condition for a background level was that "There is no observed trend in natural disturbance emissions during the calibration period that is not considered in the background level estimation, or expected during the commitment period" [@ipcc2014kp, p. 2.50].
+
+Before the 2019 Refinement, projections under future disturbance regimes showed that Canada's managed forest could be a net source [@kurz2008risk; @metsaranta2010implications]. In the inventory, a burned stand stayed in the natural disturbance component until it had wood worth cutting, at 60 to 100 years by region [@kurz2018quantifying; @kurz2024revised]. A revised harvest record for 1889 to 1989 cut the 1990 reported sink by 113 Mt CO~2~e, or 56 per cent [@kurz2024revised]. The fire matrices of CBM-CFS3, the Carbon Budget Model of the Canadian Forest Sector, assumed every fire burned at high severity [@thompson2026incorporating].
+
+Where natural disturbances were disaggregated, the record behind the test differed in length. Australia's inventory classed a fire season as anomalous when national fire emissions exceeded the mean of a 2000 to 2012 baseline by two standard deviations [@bowman2023wildfire]. The European Union set its background level for 2021 to 2030 on the mean of 2001 to 2020, "excluding statistical outliers" [@eu2018regulation]. The European example in the 2019 Refinement, which "has not yet been implemented", started its series in 1971 and assumed recovery within 20 years [@ogle2019generic, pp. 2.76-2.77]. A footnote to that example noted that twice the standard deviation was "an approximation of Student’s t value for data series with number of data >= 30" [@ogle2019generic, p. 2.77]. In 2023, Canada's fire season burned `r sprintf("%.1f", nbac_2023 / 1e6)` Mha on the National Burned Area Composite and emitted 647 Tg of carbon [@cfs2026nbac; @byrne2024carbon]. The season's May to October temperature was 2.2 °C above the 1991 to 2020 average [@jain2024drivers]. The length of the record behind the test set the threshold such a year had to pass.
+
+The 2019 uncertainty chapter advised caution "in cases where the point estimate is very small when compared with the size of the confidence interval" [@paciornik2019uncertainties, p. 3.19]. The interval of Canada's own model was 32.2 Tg C a year wide, which @metsaranta2017uncertainty stated "cannot be meaningfully expressed in percentage terms because its range of possible values contains zero". Regional carbon budgets for Australia, the Brazilian Amazon and California met the same difficulty [@haverd2013australian; @rosan2023contemporary; @divittorio2021quantifying]. ART TREES, the REDD+ Environmental Excellence Standard of the Architecture for REDD+ Transactions, credited national and subnational emission reductions against the mean emissions of five historical years [@art2026trees3, pp. 13, 33]. The standard stated that "Only anthropogenic emissions shall be considered", and its footnote tied the exclusion of non-anthropogenic emissions to the 2019 Refinement's definition of natural disturbance [@art2026trees3, p. 43; @ogle2019generic, p. 2.69].
+
+Fire emission estimates began from burned area, which different sources mapped in different ways. The MCD64A1 product mapped burned area each month from November 2000 at 500 m, from the Moderate Resolution Imaging Spectroradiometer on the Terra and Aqua satellites [@giglio2021mcd64a1]. Canada's National Burned Area Composite drew its fire polygons from 30 m Landsat mapping and agency polygons, with coarser satellite data for fires neither mapped [@hall2020generating]. The composite was extended from 2004 back to 1986, with 81 per cent of the burned area from Landsat change detection [@skakun2022extending], and its 2026 release ran from 1972 [@cfs2026nbac]. In Siberia, four satellite burned area datasets differed up to fivefold, and official Russian data were typically less than 10 per cent of the satellite estimates [@kukavskaya2013fire].
+
+A review of 426 articles on Canada's forest carbon placed the inventory's treatment of natural disturbance at the centre of that research [@smyth2024year]. The 2019 Refinement set no length for the record behind a natural disturbance test [@ogle2019generic]. Background papers to a 2009 IPCC expert meeting warned that short base periods "have the capacity to be unduly influenced by variability that diverges from trend" [@ipcc2010revisiting, p. 37]. The same papers stated that a longer accounting period "is by itself not sufficient to address temporal variability in natural disturbance regimes" [@ipcc2010revisiting, p. 43]. A review of forest accounting from Kyoto to Paris found factoring out natural effects "not sufficiently secured by currently discussed accounting rules" [@krug2018accounting]. No study found had compared disaggregation methods, or the record lengths behind them, on one national inventory. The nearest work compared Canada's reported series under different divisions of the managed forest [@kurz2024revised; @bysouth2024high], or applied the same model to European forests [@pilli2013application; @pilli2016modellingb]. Other work compared national inventories with independent estimates [@grassi2022carbon; @nyawira2024pantropical; @pilli2016modellinga], or mapped reversal risk without reference to an inventory [@wu2026global]. This study therefore compared four treatments of natural disturbance on Canada's 2026 national inventory, 1990 to 2024. The four were no disaggregation, Canada's approach, the threshold rule of Australia's inventory and the background level method of the 2013 Kyoto Protocol Supplement. The threshold rule and background level were run on baselines, the years whose mean and spread set each test. Every baseline ended in 2016 and ran from 13 years to the full length of each of three records, 16, 27 and 45 years. Fire histories were also simulated with management fixed, keeping Canada's trend and year-to-year variation in burned area. Each treatment was judged against the Supplement's two aims [@ipcc2014kp, pp. 2.31, 2.50]. A treatment's mean annual reduction from natural disturbance alone measured any expected net credit or debit. The half width of its 90 per cent range measured the year-to-year variation of natural disturbance. The uncertainty deduction of ART TREES was applied to each account only to show how a percentage interval behaved when emission reductions were small.
+
+# Materials and Methods
+
+The disaggregation followed the 2019 Refinement, which made it "good practice that subsequent removals are also disaggregated until the balance has been reached" [@ogle2019generic, p. 2.72]. The land use sector table of Canada's 2026 national inventory report to the United Nations Framework Convention on Climate Change gave the sector as seven categories and their total [@eccc2026nir, p. 195]. Beneath the total, the table gave one more line, natural disturbances, marked "Not a reporting category" and "provided solely for transparency purposes" [@eccc2026nir, p. 195]. The line gave the net balance of emissions and removals from natural disturbances in the managed forest, and the total above it left that balance out. @fig-accounts showed the sector's net emissions by category for Canada and British Columbia between 1990 and 2024. Every wildfire in the managed forest went to the line, whatever its cause. Disturbances that killed a fifth or less of a mature stand's biomass, slash burning and prescribed burning stayed in the total [@eccc2026nir]. The forest values came from CBM-CFS3, which grew each stand along a yield curve and moved its carbon through a disturbance matrix [@kurz2018quantifying]. The total and the line were read for Canada and for British Columbia for every year from 1990 to 2024.
+
+```{r}
+#| label: fig-inventory
+#| output: false
+
+# Table 6-1, Net Greenhouse Gas Flux Estimates in the Land Use, Land-Use Change and Forestry Sector,
+# All Inventory Years, by province and territory, Environment and Climate Change Canada,
+# National Inventory Report 1990-2024
+# https://data-donnees.az.ec.gc.ca/data/substances/monitor/canada-s-official-greenhouse-gas-inventory/E-LULUCF/?lang=en
+if (!file.exists("02.inputs/eccc/lulucf-2026-categories.csv")) {
+  if (!file.exists("02.inputs/eccc/raw/table-6-1.xlsx")) {
+    dir.create("02.inputs/eccc/raw", showWarnings = FALSE, recursive = TRUE)
+    download.file(paste0("https://data-donnees.az.ec.gc.ca/api/file?path=", URLencode("/substances/monitor/canada-s-official-greenhouse-gas-inventory/E-LULUCF/NIR2026_Table 6-1_All_Years_PTs.xlsx", reserved = TRUE)), "02.inputs/eccc/raw/table-6-1.xlsx", mode = "wb")
+  }
+  sheets <- readxl::excel_sheets("02.inputs/eccc/raw/table-6-1.xlsx")
+  readxl::read_excel("02.inputs/eccc/raw/table-6-1.xlsx", sheet = grep("NATIONAL$", sheets, value = TRUE), skip = 3, col_types = "text", .name_repair = "unique_quiet") |>
+    dplyr::transmute(category = dplyr::case_when(grepl("TOTAL", ...1) ~ "Sector total", grepl("^Natural disturbances", ...2) ~ "Natural disturbances", grepl("^[a-g]\\.$", ...1) ~ ...2),
+                     dplyr::across(dplyr::matches("^[0-9]{4}$"), as.numeric)) |>
+    dplyr::filter(!is.na(category)) |>
+    tidyr::pivot_longer(-category, names_to = "year", values_to = "kt", names_transform = as.integer) |>
+    readr::write_csv("02.inputs/eccc/lulucf-2026-categories.csv", na = "")
+}
+
+categories <- readr::read_csv("02.inputs/eccc/lulucf-2026-categories.csv", show_col_types = FALSE) |>
+  dplyr::filter(!is.na(kt)) |>
+  dplyr::mutate(mt = kt / 1000,
+                panel = factor(dplyr::if_else(category == "Natural disturbances", "Natural disturbances, shown beside the total and left out of it", "Reported categories and their total"), levels = c("Reported categories and their total", "Natural disturbances, shown beside the total and left out of it")),
+                category = factor(category, levels = c("Forest Land", "Cropland", "Grassland", "Wetlands", "Settlements", "Harvested Wood Products", "Sector total", "Natural disturbances")))
+
+ggplot2::ggplot(categories, ggplot2::aes(year, mt, colour = category)) +
+  ggplot2::geom_hline(yintercept = 0, linewidth = 0.3, colour = "grey60") +
+  ggplot2::geom_line() +
+  ggplot2::facet_wrap(~panel, ncol = 1, scales = "free_y") +
+  ggplot2::scale_colour_manual(values = unname(grDevices::palette.colors(8, "Okabe-Ito"))) +
+  ggplot2::labs(x = NULL, y = expression("Net emissions (Mt CO"[2]*"e)"), colour = NULL) +
+  th +
+  ggplot2::theme(legend.position = "bottom")
+```
+
+Four treatments of the natural disturbance line were compared on the national accounts. No disaggregation counted the line in every year, and Canada's approach counted it in none [@eccc2026nir]. No disaggregation gave the undisaggregated account, the reported total plus the line, and Canada's approach gave the disaggregated account, the total Canada reported. The threshold rule left the whole line out of any year whose test series exceeded the baseline mean by two standard deviations, the form of test Australia's inventory applied [@bowman2023wildfire]. On the forest fire carbon dioxide for Canada in the estimates generated by the FAOSTAT algorithm, the rule gave the third account, the threshold account [@fao2025fires]. That series gave the carbon dioxide of Canada's forest fires each year, the kind of national fire emissions Australia's test used [@bowman2023wildfire]. A year counted as natural when its emissions exceeded by two standard deviations the mean of the 13 years ending in 2016. The threshold account was built from the two inventory lines, leaving the natural disturbance line out in a natural year and keeping it in every other. Canada published the line once a year with the regrowth of earlier disturbances inside it, so the threshold account left out that regrowth in a natural year. Australia's inventory instead tracked the land of an excluded fire "until the time forest carbon has returned to its original state" [@bowman2023wildfire, p. 4]. For British Columbia, a natural season also had to pass the rule's second step, on burned area from the Canadian National Fire Database for the same 13 years [@bowman2023wildfire, p. 4; @cfs2026nfdb].
+
+The background level method of the 2013 Kyoto Protocol Supplement removed every year above the baseline mean plus twice the standard deviation of Equation 2.3.1, recomputing both until none remained [@ipcc2014kp, p. 2.49]. The final mean was the background level and twice the final standard deviation the margin [@ipcc2014kp, p. 2.49]. A year above the background level plus the margin counted only the background level, and every other year counted the line as reported [@ipcc2014kp, p. 2.50]. On a burned area series, such a year kept the share of its line equal to the background area over the year's burned area. The Supplement built its background level from the annual emissions of natural disturbances, whereas the line also held the removals of their regrowth [@ipcc2014kp, p. 2.46]. On the line, the method therefore set its background level on a net balance rather than on emissions alone.
+
+::: {custom-style="IPCC Equation"}
+**EQUATION 2.3.1** [Calculation of the standard deviation for the annual emissions for the calibration period]{.smallcaps}
+
+$$SD = \sqrt{\sum_{i=1}^{N}\left(x_{i} - \bar{X}\right)^{2} \Big/ \left(N - 1\right)}$$
+
+Where\
+$x_{i}$ = the emission estimate for year $i$, $i$ = 1, 2…, $N$ where $N$ is the number of years in the calibration period for which emission estimates are available.\
+$\bar{X}$ = the arithmetic mean of all $x_{i}$, i.e. $\bar{X} = \sum_{i=1}^{N} x_{i} / N$.
+
+Reproduced from Chapter 2 of the 2013 Revised Supplementary Methods and Good Practice Guidance Arising from the Kyoto Protocol, page 2.49 [@ipcc2014kp].
+:::
+
+Each baseline ended in 2016, the last reference year. The test series were the FAOSTAT algorithm's estimates of forest fire carbon dioxide from 2001, the natural disturbance line from 1990 and the National Burned Area Composite from 1972 [@fao2025fires; @eccc2026nir; @cfs2026nbac]. Their baselines ran from 13 years, the length of the 2000 to 2012 baseline of Australia's test, to 16, 27 and 45 years, the longest each record allowed before 2017 [@bowman2023wildfire, p. 4]. The threshold rule ran at 13 and 16 years on the forest fire series and at 13, 20 and 27 years on the line. On burned area, the rule ran at 13, 20, 27, 35 and 45 years. The background level ran on the line and on burned area at the same lengths. The 30 years at which twice the standard deviation approximated Student's t served only as a rule of thumb [@ogle2019generic, p. 2.77]. Annual fire emissions were skewed and trending, so mean plus two standard deviations had no fixed chance of being exceeded at any record length. The burned area composite and the forest fire series covered all of Canada, while the line covered only the managed forest. A year could therefore pass a test on fire outside the managed forest. The composite's 2026 release ran from 1972, while its documented extension reached back only to 1986 [@skakun2022extending]. Each account was compared with its own mean over the five years 2012 to 2016, the length of the reference period in ART TREES [@art2026trees3, p. 33]. This reference period stayed the same for every treatment and baseline. The reduction in each year of 2017 to 2024 was the five-year mean minus the year's net emissions, the form of Equation 10 of ART TREES [@art2026trees3, p. 61]. The undisaggregated and disaggregated accounts were also compared over 1990 to 2024 by the mean and standard deviation of their annual net emissions, extending the averages @kurz2018quantifying reported.
+
+Fire histories were then simulated with management fixed. Burned area followed the log-linear trend of the National Burned Area Composite for 1972 to 2024, with residuals resampled with replacement [@cfs2026nbac]. The natural disturbance line followed its regression on burned area and year for 1990 to 2024, also with resampled residuals. The rest of the land use sector was held at its 2012 to 2016 mean, so every reduction came from natural disturbance and from the treatment. Canada's approach therefore gave zero by construction and served as the reference. The simulated line had no lagged regrowth, since each year's value followed only that year's burned area and the year. The histories held no forest fire series, so the threshold rule ran in them on burned area alone. The residuals were resampled independently by year, so the histories held no runs of high fire years, and the fitted trends and slopes carried no uncertainty of their own. In `r format(ncol(draws), big.mark = ",")` histories, the threshold rule and the background level on burned area ran on baselines of 13 to 45 years. The background level on the natural disturbance line ran on 13 to 27 years. Each treatment was judged by two measures taken from the 2013 Kyoto Protocol Supplement [@ipcc2014kp, pp. 2.31, 2.50]. The first was the mean annual reduction from natural disturbance alone, which was zero where a treatment avoided "the expectation of net credits or net debits" [@ipcc2014kp, p. 2.50]. The second was the half width of the 90 per cent range of annual reductions, the smallest change in management one year could show against natural disturbance. Two checks then removed the trends of the histories in turn. The first held the line's year term at 2014, the middle of the reference period. The second also held burned area at the mean of its fitted log values. Each mean was given with the standard deviation of the annual reductions over all histories and years. The eight years of one history shared its reference mean, so the 95 per cent confidence interval of each mean came from the `r format(ncol(draws), big.mark = ",")` history means. The mean annual reduction was compared across the five runs on a 13 year baseline by repeated-measures analysis of variance, with the history as the subject. The same test compared the baselines within each treatment that ran on more than one. The histories were drawn in R `r as.character(getRversion())` with the seed 2026.
+
+To show how a percentage deduction behaved, the uncertainty deduction of ART TREES, Equations 8 and 27 reproduced below, was applied to each reduction. The standard's buffer withheld between 5 and 25 per cent of the reductions, as set by its risk rating tool [@art2026trees3, pp. 55-56; @art2026riskrating, p. 3]. After a reversal, a year above the five-year mean that followed a year below it, the buffer was 30 per cent for five calendar years [@art2026trees3, pp. 55-56].
+
+::: {custom-style="IPCC Equation"}
+**EQUATION 8** [Emission Reduction Uncertainty Adjustment Factor]{.smallcaps}
+
+$$UA_{ER,t} = 0.524417 \times \frac{90\%\ CI_{ER,t}}{1.645006}$$
+
+**EQUATION 27** [Emission Reduction Uncertainty Deduction]{.smallcaps}
+
+$$UNC_{ER,t} = GHG\ ER_{t} \times UA_{ER,t}$$
+
+Where\
+$UA_{ER,t}$ = TREES emission reduction uncertainty adjustment factor in calendar year t\
+0.524417 = t value at ART allowable risk\
+$90\%\ CI_{ER,t}$ = Half width of 90% confidence interval for emission reductions expressed as a percent of the mean emission reductions in calendar year t; %\
+1.645006 = t value at 90% confidence level\
+$UNC_{ER,t}$ = TREES emission reduction uncertainty deduction in calendar year t; tCO2e\
+$GHG\ ER_{t}$ = GHG ERs in calendar year t; tCO2e
+
+Reproduced from ART TREES version 3.0, pages 58, 59 and 69 [@art2026trees3].
+:::
+
+The uncertainty of each account followed Approach 2 of the Refinement's uncertainty chapter, Monte Carlo simulation, which ART TREES also required with 10,000 runs [@paciornik2019uncertainties; @art2026trees3, p. 58]. The published uncertainty of CBM-CFS3 was a 95 per cent interval 16.6 Tg C a year above its median and 15.6 below [@metsaranta2017uncertainty]. The larger side over 1.96 gave a standard deviation that was applied to every annual value of every account. The single standard deviation assumed the model was as certain of a year of extreme fire as of a year with little fire. Each run drew the five reference years and each year of 2017 to 2024 from normal distributions with the same standard deviation. Half the distance between the 5th and 95th percentiles of the distribution, over its mean, was the 90 per cent confidence interval of Equation 8. The draws treated the error of each year as independent, whereas ART TREES excluded model error as "consistent between emissions in the reference period and crediting period" [@art2026trees3, p. 58]. The share of error variance common to all years, the common share, was therefore varied. Under the normal model, the common share left the mean unchanged and scaled the half width by the square root of one minus that share. The common share at which every positive year kept part of its reduction was solved from the same square root relation. ART TREES also allowed an uncertainty "across the crediting period based on the summed gross emission reductions or removals" [@art2026trees3, p. 58]. The period uncertainty was simulated with the same draws for the disaggregated and the threshold account.
+
+```{r}
+#| label: or-defaults
+#| output: false
+
+readr::write_csv(defaults, "03.outputs/TBL/tbl-defaults.csv")
+fmt_tbl(defaults, right = c("Area (Mha)", "Biomass consumption (t/ha)", "Combustion factor", "CO2 (g/kg)", "CH4 (g/kg)", "N2O (g/kg)"))
+```
+
+```{r}
+#| label: tier1-zones-map
+#| output: false
+#| fig-width: 6.5
+#| fig-height: 6.4
+
+map_theme <- ggplot2::theme_minimal(base_size = 7) + ggplot2::theme(
+  panel.grid = ggplot2::element_line(colour = "grey80", linewidth = 0.15), axis.text = ggplot2::element_text(size = 5, colour = "grey30"),
+  legend.position = "bottom", legend.key.size = ggplot2::unit(0.3, "cm"), legend.text = ggplot2::element_text(size = 5.5),
+  legend.title = ggplot2::element_blank(), legend.margin = ggplot2::margin(0, 0, 0, 0), legend.location = "plot",
+  plot.title = ggplot2::element_text(size = 7.5, hjust = 0), plot.caption = ggplot2::element_text(size = 5, colour = "grey30"),
+  plot.background = ggplot2::element_rect(fill = "white", colour = NA))
+bb <- sf::st_bbox(gez)
+canada_coord <- ggplot2::coord_sf(crs = 3978, expand = FALSE, xlim = bb[c("xmin", "xmax")], ylim = bb[c("ymin", "ymax")])
+furniture <- function() list(
+  ggspatial::annotation_scale(location = "br", width_hint = 0.22, height = ggplot2::unit(0.12, "cm"), text_cex = 0.45, line_width = 0.3),
+  ggspatial::annotation_north_arrow(location = "br", pad_y = ggplot2::unit(0.45, "cm"), height = ggplot2::unit(0.45, "cm"), width = ggplot2::unit(0.3, "cm"),
+                                    style = ggspatial::north_arrow_minimal(text_size = 5, line_width = 0.5)),
+  ggplot2::labs(caption = "EPSG:3978, Canada Atlas Lambert"))
+outline_layer <- ggplot2::geom_sf(data = canada_outline, fill = NA, colour = "grey40", linewidth = 0.15)
+soil_cols <- c(Organic = "#7B3294", Sandy = "#F2E394", Wetland = "#2C6E49", Volcanic = "#B2456E", Spodic = "#7FB3D5",
+               `High activity clay` = "#D8B365", `Low activity clay` = "#F6E8C3", Other = "#BFBFBF")
+fbp_cols <- setNames(c("#1B7837", "#F4A582", "#D8B365", "#FEE08B", "#C7EAE5", "#D9D9D9"), fbp_labels)
+cfs_peat_cols <- setNames(c("#7B3294", "#C2A5CF", "#2C6E49"), peat_labels)
+p_a <- ggplot2::ggplot() + ggplot2::geom_sf(data = gez, ggplot2::aes(fill = gez_name), colour = NA) + outline_layer +
+  ggplot2::scale_fill_brewer(palette = "Set3") + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) + canada_coord + furniture() +
+  ggplot2::labs(title = "(a) Ecological zones, FAO 2010, the Tier 1 default") + map_theme
+p_b <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = fbp_r, maxcell = 3e5) + outline_layer +
+  ggplot2::scale_fill_manual(values = fbp_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) +
+  canada_coord + furniture() + ggplot2::labs(title = "(b) Fire Behaviour Prediction fuel types, 2026") + map_theme
+p_c <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = soil_r, maxcell = 3e5) + outline_layer +
+  ggplot2::scale_fill_manual(values = soil_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
+  canada_coord + furniture() + ggplot2::labs(title = "(c) IPCC default soil classes") + map_theme
+p_d <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = cfs_peat_r, maxcell = 3e5) + outline_layer +
+  ggplot2::scale_fill_manual(values = cfs_peat_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
+  canada_coord + furniture() + ggplot2::labs(title = "(d) Peatland map of the Canadian Forest Service") + map_theme
+patchwork::wrap_plots(p_a, p_b, p_c, p_d, ncol = 2)
+```
+
+```{r}
+#| label: tier1-rows
+#| output: false
+
+readr::write_csv(rows_table, "03.outputs/TBL/tbl-rows.csv")
+fmt_tbl(rows_table, right = c("Biomass consumption (t/ha)", "Combustion factor"))
+```
+
+# Results
+
+## Accounts and reductions
+
+Between 1990 and 2024, disaggregating natural disturbance cut the standard deviation of Canada's annual net emissions from `r round(stats::sd(national$net))` to `r round(stats::sd(national$human))` Mt CO~2~e, a factor of `r round(stats::sd(national$net) / stats::sd(national$human), 1)`. @fig-accounts plotted the undisaggregated and disaggregated accounts for Canada and British Columbia over the same years. The account Canada reported averaged `r msd(national$human)`. Without the disaggregation, the same land averaged `r msd(national$net)`. In 2023, Canada reported `r num(national$human[national$year == 2023])` Mt where the undisaggregated account showed `r format(round(national$net[national$year == 2023]), big.mark = ",")` Mt. British Columbia's reported account averaged `r msd(province$human)`. Without the disaggregation, the province's account averaged `r msd(province$net)`, a standard deviation `r round(stats::sd(province$net) / stats::sd(province$human), 1)` times larger. In 2023, the province reported `r province$human[province$year == 2023]` Mt against `r round(province$net[province$year == 2023])` Mt. On the forest fire series, the 13 year baseline of the threshold rule classed `r sub(", ([0-9]+)$", " and \\1", paste(natural_years, collapse = ", "))` as natural.
+
+```{r}
+#| label: fig-accounts
+#| fig-cap: "Net emissions of the land use sector for Canada and British Columbia, 1990 to 2024, by inventory category, with the natural disturbance line that the reported total left out. The lines give the disaggregated account, the total Canada reported, and the undisaggregated account, that total plus the natural disturbance line."
+#| fig-height: 8
+
+# Table 6-1, Net Greenhouse Gas Flux Estimates in the Land Use, Land-Use Change and Forestry Sector,
+# All Inventory Years, by province and territory, Environment and Climate Change Canada,
+# National Inventory Report 1990-2024, the sheet for British Columbia
+# https://data-donnees.az.ec.gc.ca/data/substances/monitor/canada-s-official-greenhouse-gas-inventory/E-LULUCF/?lang=en
+if (!file.exists("02.inputs/eccc/lulucf-2026-categories-bc.csv")) {
+  readxl::read_excel("02.inputs/eccc/raw/table-6-1.xlsx", sheet = "Table 6-1 BC", skip = 3, col_types = "text", .name_repair = "unique_quiet") |>
+    dplyr::transmute(category = dplyr::case_when(grepl("TOTAL", ...1) ~ "Sector total", grepl("^Natural disturbances", ...2) ~ "Natural disturbances", grepl("^[a-g]\\.$", ...1) ~ ...2),
+                     dplyr::across(dplyr::matches("^[0-9]{4}$"), as.numeric)) |>
+    dplyr::filter(!is.na(category)) |>
+    tidyr::pivot_longer(-category, names_to = "year", values_to = "kt", names_transform = as.integer) |>
+    readr::write_csv("02.inputs/eccc/lulucf-2026-categories-bc.csv", na = "")
+}
+
+# Categories as stacked bars, with the natural disturbance line as one more bar, and the two accounts as lines.
+# The eight colours are the validated categorical order, accounts first, and Grassland is left out at zero throughout
+regions <- c("Canada", "British Columbia")
+cats <- c("Forest Land", "Cropland", "Wetlands", "Settlements", "Harvested Wood Products", "Natural disturbances")
+bars <- dplyr::bind_rows(Canada = readr::read_csv("02.inputs/eccc/lulucf-2026-categories.csv", show_col_types = FALSE),
+                         `British Columbia` = readr::read_csv("02.inputs/eccc/lulucf-2026-categories-bc.csv", show_col_types = FALSE), .id = "region") |>
+  dplyr::filter(!is.na(kt), category %in% cats) |>
+  dplyr::mutate(mt = kt / 1000, region = factor(region, levels = regions), category = factor(category, levels = cats))
+lines <- eccc |>
+  dplyr::mutate(region = factor(dplyr::if_else(region == "BC", "British Columbia", region), levels = regions)) |>
+  tidyr::pivot_longer(c(human, net), names_to = "account", values_to = "mt") |>
+  dplyr::mutate(account = factor(dplyr::if_else(account == "human", "Disaggregated account, as reported", "Undisaggregated account"),
+                                 levels = c("Disaggregated account, as reported", "Undisaggregated account")))
+
+ggplot2::ggplot() +
+  ggplot2::geom_col(data = bars, ggplot2::aes(year, mt, fill = category), width = 0.85, colour = "white", linewidth = 0.15) +
+  ggplot2::geom_hline(yintercept = 0, linewidth = 0.3, colour = "grey40") +
+  ggplot2::geom_line(data = lines, ggplot2::aes(year, mt, colour = account), linewidth = 0.8) +
+  ggplot2::facet_wrap(~region, ncol = 1, scales = "free_y") +
+  ggplot2::scale_fill_manual(values = c("#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948")) +
+  ggplot2::scale_colour_manual(values = c("#2a78d6", "#eb6834")) +
+  ggplot2::labs(x = NULL, y = expression("Net emissions (Mt CO"[2]*"e)"), fill = NULL, colour = NULL) +
+  th +
+  ggplot2::theme(legend.position = "bottom", legend.box = "vertical") +
+  ggplot2::guides(colour = ggplot2::guide_legend(order = 1, nrow = 1), fill = ggplot2::guide_legend(order = 2, nrow = 2))
+```
+
+```{r}
+#| label: tbl-credits
+#| tbl-cap: "Net emissions, five-year mean and reduction for Canada's managed land under three accounts, 2017 to 2024. The five-year mean was that of 2012 to 2016, and the reduction was the mean minus the year's net emissions. The threshold account left out the natural disturbance line only in years its 13 year baseline classed as natural."
+
+readr::write_csv(credits_table, "03.outputs/TBL/tbl-credits.csv")
+fmt_tbl(credits_table)
+```
+
+On the account Canada reported, reductions were positive in `r sum(split_pos)` of the `r nrow(credits)` years from 2017 to 2024 and summed to `r round(sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` Mt CO~2~e. Without the disaggregation, reductions were positive in only `r sum(whole_pos)` years. In `r credits$Year[worst]` alone, the undisaggregated account's net emissions rose `r format(abs(credits[["Undisaggregated reductions (Mt)"]][worst]), big.mark = ",")` Mt above its five-year mean, `r round(abs(credits[["Undisaggregated reductions (Mt)"]][worst]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]))` times the reductions of the account Canada reported (@tbl-credits). The threshold account gave larger reductions than either, because its five-year mean kept the natural disturbance line in every reference year but `r paste(natural_years[natural_years <= 2016], collapse = " and ")`. The account then left the line out of `r sub(", ([0-9]+)$", " and \\1", paste(natural_years[natural_years >= 2017], collapse = ", "))`, the later years the rule classed as natural. The threshold account's five-year mean was `r round(level_rule, 1)` Mt, against `r round(level_split, 1)` Mt for the account Canada reported and `r round(level_whole, 1)` Mt for the undisaggregated account. The threshold account's reductions were positive in `r sum(rule_pos)` of the `r nrow(credits)` years and summed to `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]), 1)` Mt, `r round(sum(credits[["Threshold rule reductions (Mt)"]][rule_pos]) / sum(credits[["Disaggregated reductions (Mt)"]][split_pos]), 1)` times those of the account Canada reported (@tbl-credits). British Columbia, with `r bc_credits[["Burned area share (%)"]][bc_credits$Year == 2023]` per cent of the area burned in Canada in 2023, showed the same pattern more strongly. Online Resource 1 gave the province's net emissions, five-year mean and reduction for each account and year. The province's reported reductions were positive in `r sum(bc_split_pos)` of `r nrow(bc_credits)` years and summed to `r round(sum(bc_credits[["Disaggregated reductions (Mt)"]][bc_split_pos]), 1)` Mt, while its undisaggregated net emissions rose `r format(abs(bc_credits[["Undisaggregated reductions (Mt)"]][bc_worst]), big.mark = ",")` Mt above their five-year mean in `r bc_credits$Year[bc_worst]`. Under the threshold rule, the province's net emissions rose most above their five-year mean in `r bc_credits$Year[bc_rule_worst]`. The national test classed `r bc_credits$Year[bc_rule_worst]` as ordinary, although the province burned `r format(round(bc_ha(bc_credits$Year[bc_rule_worst])), big.mark = ",")` hectares, `r round(bc_ha(bc_credits$Year[bc_rule_worst]) / bc_threshold_ha, 1)` times its own threshold.
+
+```{r}
+#| label: or-bc
+#| output: false
+
+readr::write_csv(bc_table, "03.outputs/TBL/tbl-bc.csv")
+fmt_tbl(bc_table)
+```
+
+## Treatment comparison
+
+On Canada's record, the positive reductions over 2017 to 2024 depended on the treatment and, for the threshold rule and the background level, on the baseline (@tbl-treatments). Canada's approach gave positive reductions of `r num(tr("canada", 13)$positive)` Mt CO~2~e and no disaggregation `r num(tr("none", 13)$positive)` Mt. The threshold rule gave `r num(tr("threshold", 13, "FAOSTAT forest fire CO2")$positive)` Mt on the forest fire series at 13 years and `r num(tr("threshold", 16, "FAOSTAT forest fire CO2")$positive)` Mt at 16 years. On the line, it gave `r num(tr("threshold", 13, "Natural disturbance line")$positive)`, `r num(tr("threshold", 20, "Natural disturbance line")$positive)` and `r num(tr("threshold", 27, "Natural disturbance line")$positive)` Mt at 13, 20 and 27 years. On burned area, its positive reductions fell from `r num(tr("threshold", 13, "NBAC burned area")$positive)` to `r num(tr("threshold", 27, "NBAC burned area")$positive)` Mt once the baseline reached 27 years. The background level on the line fell as its baseline lengthened, from `r num(kyoto_bl[["13"]][["level"]])` Mt CO~2~e a year on 13 years to `r num(kyoto_bl[["27"]][["level"]])` on 27 years. The natural disturbance line had been a net sink in most years from 1990 to 2001, so a longer baseline held a lower mean. The positive reductions under the background level on the line therefore rose with the baseline, from `r num(tr("kyoto_line", 13)$positive)` to `r num(tr("kyoto_line", 27)$positive)` Mt. Every treatment except no disaggregation left emissions out of the accounts. Canada's approach left out `r format(round(tr("canada", 13)$excluded), big.mark = ",")` Mt, and the background level on the line `r format(round(tr("kyoto_line", 13)$excluded), big.mark = ",")` to `r format(round(tr("kyoto_line", 27)$excluded), big.mark = ",")` Mt.
+
+```{r}
+#| label: tbl-treatments
+#| tbl-cap: "Emission reductions under four treatments of the natural disturbance line on Canada's record, and the annual reductions that natural disturbance alone produced in simulated histories with management fixed. Positive reductions summed the positive differences between each account's 2012 to 2016 mean and its emissions of 2017 to 2024. Left out was the natural disturbance line each treatment excluded over those years. The half width was half the range from the 5th to the 95th percentile of annual reductions. The last two columns held the line's year term at 2014, then also held burned area at the mean of its fitted log values."
+
+readr::write_csv(treatments_table, "03.outputs/TBL/tbl-treatments.csv")
+fmt_tbl(treatments_table, right = names(treatments_table)[3:9])
+```
+
+Burned area in the composite rose `r num(100 * (exp(10 * coef(fit_area)[["year"]]) - 1))` per cent a decade from 1972 to 2024 (95 per cent confidence interval `r num(100 * (exp(10 * confint(fit_area)["year", 1]) - 1))` to `r num(100 * (exp(10 * confint(fit_area)["year", 2]) - 1))`). The trend `r if (summary(fit_area)$coefficients["year", 4] < 0.05) "was significant" else "fell short of significance"` at the 5 per cent level `r fmt_t(fit_area, "year")`. The natural disturbance line rose `r num(coef(fit_line)[[2]])` Mt CO~2~e for each million hectares burned (95 per cent confidence interval `r num(confint(fit_line)[2, 1])` to `r num(confint(fit_line)[2, 2])`) `r fmt_t(fit_line, 2)`. The line also rose `r num(coef(fit_line)[["year"]])` Mt a year besides (95 per cent confidence interval `r num(confint(fit_line)["year", 1])` to `r num(confint(fit_line)["year", 2])`) `r fmt_t(fit_line, "year")`, with R² = `r num(summary(fit_line)$r.squared, 2)`.
+
+With management fixed, natural disturbance alone gave every treatment but Canada's an expected net debit on a 13 year baseline, a mean annual reduction below zero (@tbl-treatments). On a 13 year baseline, the mean annual reduction differed by treatment `r fmt_f("treatments")`. It was lowest with no disaggregation, at `r sim_msd("none", 13)`. It was highest under Canada's approach, zero by construction, because the approach left the whole line out. The threshold rule on burned area averaged `r sim_msd("threshold", 13)`. The background level on burned area averaged `r sim_msd("kyoto_area", 13)`. On the line, the background level averaged `r sim_msd("kyoto_line", 13)`. The narrowest 90 per cent half width of an annual reduction was `r with(dplyr::slice_min(dplyr::filter(treatments_simulated, method != "canada"), half_width, n = 1), paste0(num(half_width, 0), " Mt, for ", run_name[[method]], " on ", n, " years"))`. On a 13 year baseline, the half width was `r num(tsim("kyoto_line", 13)$half_width, 0)` Mt for the background level on the line and `r num(tsim("kyoto_area", 13)$half_width, 0)` Mt on burned area. The threshold rule's half width was `r num(tsim("threshold", 13)$half_width, 0)` Mt, and that of no disaggregation `r num(tsim("none", 13)$half_width, 0)` Mt.
+
+Lengthening the baseline moved each treatment's mean annual reduction by at most `r num(max(baseline_shift))` Mt CO~2~e a year, against `r num(diff(range(treatments_simulated$bias)))` Mt between treatments. The baseline changed the mean of the threshold rule `r fmt_f("threshold")`. The mean of the background level also changed with the baseline, on burned area `r fmt_f("kyoto_area")` and on the line `r fmt_f("kyoto_line")`. The largest shift was that of the background level on the line, between 13 and 27 years. On 27 years, the background level on the line averaged `r sim_msd("kyoto_line", 27)``r if (tsim("kyoto_line", 27)$bias > 0) ", an expected net credit" else ""`. Of the three test-based runs, `r run_name[[least_shift]]` moved least, by `r num(baseline_shift[[least_shift]])` Mt a year across its baselines. Within single histories, moving from the shortest to the longest baseline changed the threshold rule's mean annual reduction by `r pshift("threshold")` Mt a year, the 5th to 95th percentiles. The same change was `r pshift("kyoto_area")` Mt for the background level on burned area and `r pshift("kyoto_line")` Mt on the line. Only the burned area composite allowed a baseline of 30 years or more before 2017, at 35 and 45 years.
+
+The expected net debits came from the trends of the histories (@tbl-treatments). Without the line's year term, no disaggregation averaged `r sens_msd("no_year_term", "none")` on a 13 year baseline. The three test-based treatments then expected `r if (all(sapply(tested, \(m) tsens("no_year_term", m)$bias > 0))) "net credits" else "mixed results"`. The largest was that of `r run_name[[tested[which.max(sapply(tested, \(m) tsens("no_year_term", m)$bias))]]]`, at `r sens_msd("no_year_term", tested[which.max(sapply(tested, \(m) tsens("no_year_term", m)$bias))])`. Without either trend, no disaggregation averaged `r sens_msd("no_trend", "none")`. The test-based treatments then averaged `r num(min(sapply(tested, \(m) tsens("no_trend", m)$bias)))` to `r num(max(sapply(tested, \(m) tsens("no_trend", m)$bias)))` Mt CO~2~e a year`r if (all(sapply(tested, \(m) tsens("no_trend", m)$bias > 0))) ", all expected net credits" else ""`.
+
+
+## Reduction uncertainty
+
+```{r}
+#| label: or-uncertainty
+#| output: false
+
+readr::write_csv(uncertainty_table, "03.outputs/TBL/tbl-uncertainty.csv")
+fmt_tbl(uncertainty_table)
+```
+
+Each reduction on the account Canada reported was smaller than half its 90 per cent interval. Across the `r sum(!is.na(uncertainty[["Disaggregated interval (% of mean)"]]))` years with a positive mean reduction, the half width ran from `r format(min(uncertainty[["Disaggregated interval (% of mean)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated interval (% of mean)"]], na.rm = TRUE), big.mark = ",")` per cent of the mean. The adjustment factor of Equation 8 ran from `r format(min(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` to `r format(max(uncertainty[["Disaggregated deduction (%)"]], na.rm = TRUE), big.mark = ",")` per cent, and Online Resource 2 gave the draws' mean, spread and interval for every account and year. In 2023, the mean reduction of `r round(mc_split$mean[mc_split$Year == 2023], 1)` Mt had a standard deviation of `r round(mc_split$sd[mc_split$Year == 2023], 1)` Mt and a 90 per cent interval of `r num(mc_split$q05[mc_split$Year == 2023], 0)` to `r num(mc_split$q95[mc_split$Year == 2023], 0)` Mt. On the threshold account, the adjustment factor ran from `r min(uncertainty[["Threshold rule deduction (%)"]], na.rm = TRUE)` to `r max(uncertainty[["Threshold rule deduction (%)"]], na.rm = TRUE)` per cent, because its reductions were larger, not because its emissions were more certain.
+
+The Monte Carlo draws gave each year its own model error, independent of every other year. Model error that was the same in every year would drop out when a year was compared with the five-year mean, and the interval would narrow. With half of the error variance shared in this way, the half width on the account Canada reported ran from `r sh(0.5, "Interval, lowest (%)")` to `r format(sh(0.5, "Interval, highest (%)"), big.mark = ",")` per cent of the mean. The buffer was `r 100 * trees_buffer()` per cent, and `r 100 * trees_buffer(after_reversal = TRUE)` per cent after `r min(credits$Year[!split_pos])`, when the account first rose above its mean. After the deduction and the buffer, `r sh(0.5, "Years keeping a credit")` of the `r sum(split_pos)` positive years kept some of their reduction. With 90 per cent shared, the half width ran from `r sh(0.9, "Interval, lowest (%)")` to `r format(sh(0.9, "Interval, highest (%)"), big.mark = ",")` per cent and `r sh(0.9, "Years keeping a credit")` years kept some. All `r sum(split_pos)` years kept some only when more than `r round(100 * rho_needed, 1)` per cent of the error variance was shared. Each year's own error was then `r round(100 * sqrt(1 - rho_needed), 1)` per cent of the published standard deviation. Nothing was kept above a half width of `r round(100 * break_even())` per cent with a `r 100 * trees_buffer()` per cent buffer, `r round(100 * break_even("1,2,3"))` with `r 100 * trees_buffer("1,2,3")` per cent and `r round(100 * break_even(after_reversal = TRUE))` with `r 100 * trees_buffer(after_reversal = TRUE)` per cent. Summed over the eight years, the reductions of the account Canada reported came to `r round(period_split[["total"]], 1)` Mt with a half width of `r round(100 * period_split[["ci"]])` per cent. The deduction was then `r round(100 * trees_uncertainty(period_split[["ci"]]))` per cent, so nothing was kept. The threshold account's summed reductions of `r round(period_rule[["total"]], 1)` Mt had a half width of `r round(100 * period_rule[["ci"]])` per cent. With a `r 100 * trees_buffer()` per cent buffer, `r round(100 * kept(period_rule[["ci"]]))` per cent of them, `r round(period_rule[["total"]] * kept(period_rule[["ci"]]), 1)` Mt, was kept.
+
+```{r}
+#| label: tier1-zones
+#| output: false
+
+readr::write_csv(zones_table, "03.outputs/TBL/tbl-zones.csv")
+fmt_tbl(zones_table, right = names(zones_table)[-1])
+```
+
+```{r}
+#| label: fig-cause
+#| output: false
+#| fig-width: 6.5
+#| fig-height: 4.4
+
+ggplot2::ggplot(cause_year, ggplot2::aes(year, mha, fill = cause)) +
+  ggplot2::geom_col(width = 0.8) +
+  ggplot2::facet_wrap(~region, ncol = 1, scales = "free_y") +
+  ggplot2::scale_fill_manual(values = c(Natural = "#D7301F", Human = "#0570B0", Unknown = "grey60"), name = NULL) +
+  ggplot2::scale_x_continuous(breaks = seq(2001, 2024, 2)) +
+  ggplot2::labs(x = NULL, y = "Area burned (Mha)") +
+  th + ggplot2::theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: tier1-strata
+#| output: false
+
+readr::write_csv(strata_table, "03.outputs/TBL/tbl-strata.csv")
+fmt_tbl(strata_table, right = names(strata_table)[-(1:2)])
+```
+
+```{r}
+#| label: tbl-tier2
+#| output: false
+
+readr::write_csv(tier2_table, "03.outputs/TBL/tbl-tier2.csv")
+fmt_tbl(tier2_table)
+```
+
+```{r}
+#| label: or-coefficients
+#| output: false
+
+readr::write_csv(coefficients, "03.outputs/TBL/tbl-coefficients.csv")
+fmt_tbl(coefficients, right = c("Burned area (ha a year)", "Fuel (t/ha)", "CH4 (g/kg)", "N2O (g/kg)", "CO2 (g/kg)"))
+```
+
+# Discussion
+
+On Canada's 2026 national greenhouse gas inventory, the treatment of the natural disturbance line decided whether net emissions and removals fell below their 2012 to 2016 mean. Canada's inventory kept the line out of the account it reported so that the effect of human activities on the trend would be better understood [@kurz2018quantifying]. Between 2017 and 2024, net emissions and removals fell below the mean in `r tr("none", 13)$years_positive` of the `r nrow(credits)` years with no disaggregation and in `r tr("canada", 13)$years_positive` under Canada's approach. Every treatment added none, part or all of the line to the account Canada reported, so the differences between treatments came from the line alone (@tbl-treatments). The revised harvest record moved 34 million hectares between the two components, with "a compensating change in the natural disturbance component resulting in a small change in the total emissions" [@kurz2024revised, p. 1381].
+
+Lengthening the baseline changed the reductions on the observed record (@tbl-treatments), but it changed the expected reductions far less than the choice of treatment did (Section 3.2). Fire regime studies described fire over periods longer than any of these baselines. Under random fire, the expected distribution of stand ages was the negative exponential, so that "the present age-class structure of such a forest is the key to its past fire history" [@wagner1978class]. The negative exponential and Weibull models became the standard descriptions of fire history [@johnson1985theory]. Fire cycles reported for Canada ran from 50 to 90 years in Alberta to 769 years in Newfoundland [@johnson1991climatically; @arsenault2016unravelling]. Eastern Canada had a cycle of 229 years and central Quebec one of 247 years [@cyr2016quantifying; @belisle2011fire]. In British Columbia, the age-class distribution of a sub-boreal landscape gave a stand-replacing fire cycle of 80 to 100 years and lacked stability [@andison2009managing]. In the province's central interior, disturbance by fire and mountain pine beetle on 1 million hectares was less frequent in 1954 to 2004 than in 1904 to 1953 [@campbell2011natural]. Only the burned area composite reached the 30 years of the rule of thumb for Student's t [@ogle2019generic, p. 2.77]. The composite's 45 years before 2017 were still shorter than the shortest of these cycles.
+
+The estimates of a fire cycle also depended on the record behind them, as the background level on the line depended on the length of its baseline (Section 3.2). Lengthening a Landsat series in Portugal from 22 to 31 years substantially changed the fitted Weibull parameters [@oliveira2011fire]. Parametric estimates of the fire cycle were degraded by short-term variation in fire activity [@cyr2016quantifying]. The accuracy of Weibull fire intervals fell as the record of fire scars degraded [@parsons2007assessing]. A censored tail of old stands, the oldest stands cut off from the record, could falsely suggest that fire frequency had changed [@finney1995missing]. A normal fire year was defined, by analogy with climate normals, from 26-year means around Yosemite [@lutz2011fire]. Charcoal records spanning millennia were proposed as the baseline wherever recent fires were too few [@gavin2007forest].
+
+The natural disturbance line rose over the record (Section 3.2), so a longer baseline gave a lower background level. The line was a net sink in `r sum(national$natural[national$year <= 2001] < 0)` of the `r sum(national$year <= 2001)` years from 1990 to 2001 and a net source in every year from 2002. The early sink came from the regrowth of stands burned before 1990, which Canada's inventory kept on the line until they were old enough to harvest [@ogle2019generic, p. 2.74]. The 2013 Kyoto Protocol Supplement built its background level from the annual emissions of natural disturbances, whereas the line also included the removals of their regrowth [@ipcc2014kp, p. 2.46]. The Supplement encouraged "the longest available time series", and its default method removed only high years, because removing low ones "would lead to the expectation of net credits" [@ipcc2014kp, pp. 2.46, 2.49]. On Canada's record, lengthening the baseline as the Supplement encouraged took in more of the trend that its first condition required to be absent. Without the trend, the three test-based treatments expected net credits instead (Section 3.2), the outcome the Supplement's conditions were set to avoid [@ipcc2014kp, p. 2.50].
+
+On burned area, leaving out only the excess above a background level did better on both measures than leaving out whole years (@tbl-treatments). In a natural year, Australia's inventory moved all wildfire emissions of each state that passed its test out of the human-induced total [@bowman2023wildfire, p. 4]. With a 13 year baseline, the background level gave a smaller expected net debit and a narrower half width on the natural disturbance line than on burned area. The test series therefore moved both measures more than the choice between excluding the excess and excluding the whole year. On the observed record, the threshold rule gave the larger positive reductions, `r num(tr("threshold", 13, "NBAC burned area")$positive)` Mt against `r num(tr("kyoto_area", 13)$positive)` Mt on 13 years, despite its larger expected net debit and half width.
+
+Canada's approach was the only treatment with neither an expected net debit nor an expected net credit, because it left the whole line out of every year. Between 2017 and 2024, the approach left out `r format(round(tr("canada", 13)$excluded), big.mark = ",")` Mt CO~2~e of the line (@tbl-treatments). The line included every wildfire in the managed forest whatever its ignition [@eccc2026nir], and `r round(natural_share_2023)` per cent of the area burned in Canada in 2023 had a natural cause [@cfs2026nfdb]. Canada's approach depended on the 2019 Refinement's expectation that the carbon dioxide of natural disturbances would be "balanced by subsequent removals" with "no established time limit" [@ogle2019generic, p. 2.69]. The Refinement expected natural effects to average out only "provided that there are no trends in disturbance rates, such as increased annual area burned as a result of climate change" [@ogle2019generic, p. 2.68]. On Canada's record, the line rose and was a net source in every year from 2002, although the rise in burned area fell short of significance (Section 3.2). The methane and nitrous oxide of wildfires on the line could not balance, because "non-CO~2~ emissions are not taken up by vegetation" [@eccc2026nir, p. 203; @ogle2019generic, p. 2.72]. Canada's inventory returned a stand to the anthropogenic component at the end of a recovery period of 60 to 100 years, as the Refinement allowed [@kurz2024revised, p. 1377; @ogle2019generic, p. 2.72]. Between 2005 and 2021, harvest, regrowth after harvest and wood products were a net source of 90.8 Mt CO~2~e a year, against a reported net sink of 4.7 Mt [@bysouth2024high]. @bysouth2024high explained the difference by the removals of stands of natural disturbance origin after their return to the anthropogenic component.
+
+The disaggregation cut the standard deviation of annual net emissions (Section 3.1) but did not make the reductions of the account Canada reported precise (Section 3.3). Canada's inventory gave the carbon dioxide of forest land remaining forest land in 2024 as −1.9 Mt, with 2.5th and 97.5th percentiles of −63 and 19 Mt [@eccc2026nir, p. 206]. Under Equations 8 and 27 of ART TREES, the adjustment factor exceeded 100 per cent in `r sum(over, na.rm = TRUE)` of the `r sum(!is.na(over))` positive years, so the deduction was larger than the reduction [@art2026trees3, pp. 58, 69]. The interval on the reductions came from the published uncertainty of CBM-CFS3 alone, so it included only model error [@metsaranta2017uncertainty]. The draws also treated each year's error as independent, and varying the common share bounded that assumption without removing it. Every positive year kept part of its reduction only when more than `r round(100 * rho_needed, 1)` per cent of the error variance was common to all years.
+
+The 2019 Refinement left four choices to each country [@ogle2019generic, pp. 2.67-2.78]. The first was the record behind the test, which the European Union set at 2001 to 2020 for its background level [@eu2018regulation]. Verra's risk tool for land use projects counted natural events over the last 100 years and extrapolated from records of 20 years or more [@verra2024nprt, p. 17]. The European Union's earlier reference levels, projected rather than drawn from a record, had counted removals "mostly" from "policy-assumed harvest increases that never materialized" [@grassi2018science]. The second was the regrowth period, which was 60 to 100 years in Canada, typically 11 years in Australia and 20 years in the European example [@kurz2024revised; @ogle2019generic, pp. 2.73, 2.77]. The third was the form of the exclusion, the excess above a background level or the whole year [@ipcc2014kp, p. 2.50]. The fourth was whether the split was made by stand or by landscape, which affected "the annual disaggregation" while "in the long term the totals are the same" [@ogle2019generic, p. 2.72]. A reduction against a five year mean depended on the annual split, not on the long-term total.
+
+Where removals equalled emissions, the uncertainty chapter noted that "the denominator in the Equation 3.2 is equal to '0' and the formula has no sense" [@paciornik2019uncertainties, p. 3.19]. The numerator of Equation 3.2, the combined uncertainty in tonnes, stayed finite, as did a percentage of gross emissions or of gross removals. The Forest Carbon Partnership Facility set its deduction for uncertainty in steps, from none at 15 per cent or less to 15 per cent above 100 per cent [@fcpf2024buffer, p. 7]. The 2024 IPCC expert meeting raised concerns that a disaggregated estimate would be "difficult to impossible" for countries to verify with observations [@ipcc2024reconciling, p. 16]. A review for the United States concluded that "disturbance risks must be accounted for in carbon offset protocols, carbon management practices, and carbon mapping and modeling techniques" [@dye2024carbon]. Every treatment used the inventory's figures as reported, so the comparison tested the treatments rather than the model behind the line.
+
+# Conclusions
+
+The treatment of natural disturbance changed Canada's expected reductions more than the baseline length did. In the simulated histories, the choice between treatments moved the mean annual reduction from natural disturbance alone `r round(diff(range(treatments_simulated$bias)) / max(baseline_shift))` times as far as any change of baseline. Among the three test-based treatments alone, the ratio was `r num(diff(range(sapply(tested, \(m) tsim(m, 13)$bias))) / max(baseline_shift))`. On a 13 year baseline, every treatment that counted any of the natural disturbance line had an expected net debit, which came from the line's trend. Without that trend, the test-based treatments expected net credits instead. Canada's approach, which counted none of the line, depended on a balance between emissions and later removals that had no set time limit. On a 13 year baseline, the background level on the line had the smallest expected net debit and the narrowest range of the treatments that counted the line. Even so, a one-year change in management smaller than about `r num(tsim("kyoto_line", 13)$half_width, 0)` Mt CO~2~e could not be told apart from natural disturbance at the 90 per cent level. The records set the limit on baseline length, since only the burned area composite reached the 30 years of the rule of thumb for Student's t. A percentage uncertainty on a reduction near zero was not informative, while the same interval in tonnes remained finite.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

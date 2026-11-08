@@ -1,0 +1,21 @@
+method,series,n,positive,years_positive,net,excluded
+none,none,13,111.7,2,-1430.7000000000003,0
+canada,canada,13,85.6,6,65,2391.7
+threshold,FAOSTAT forest fire CO2,13,396.19999999999993,5,161.3,1960
+threshold,FAOSTAT forest fire CO2,16,396.19999999999993,5,161.3,1960
+threshold,Natural disturbance line,13,468.9,6,361.29999999999995,2160
+threshold,Natural disturbance line,20,396.19999999999993,5,161.3,1960
+threshold,Natural disturbance line,27,468.9,6,361.29999999999995,2160
+threshold,NBAC burned area,13,391.5,4,-0.7000000000000455,1430
+threshold,NBAC burned area,20,391.5,4,-0.7000000000000455,1430
+threshold,NBAC burned area,27,258.1,3,-430.70000000000005,1000
+threshold,NBAC burned area,35,258.1,3,-430.70000000000005,1000
+threshold,NBAC burned area,45,258.1,3,-430.70000000000005,1000
+kyoto_line,Natural disturbance line,13,232.8,6,150,1849.375
+kyoto_line,Natural disturbance line,20,356.3,6,260.5,2011.7105263157896
+kyoto_line,Natural disturbance line,27,466.5,6,359.1,2156.8269230769233
+kyoto_area,NBAC burned area,13,111.7,2,-344.00000000000006,1086.7143925026344
+kyoto_area,NBAC burned area,20,120.10000000000001,3,-317.30000000000007,1113.427522362112
+kyoto_area,NBAC burned area,27,64.8,1,-326.5,1457.981019413035
+kyoto_area,NBAC burned area,35,68,2,-295.5,1535.0714448657568
+kyoto_area,NBAC burned area,45,68.9,2,-290.8,1546.2634191584575

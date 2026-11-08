@@ -1,9 +1,9 @@
 Quantity,Tier 1 global default,National dataset
-Forest fuel classes on the 2 km grid,"Two Table 2.4 rows, boreal forest 380 Mha and temperate forest 109 Mha","FBP fuel types, conifer 300 Mha, mixedwood 88 Mha, deciduous 198 Mha, grass 76 Mha"
-Biomass consumption (t dry matter per ha),"Table 2.4, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate","CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026"
+Forest fuel classes on the 2 km grid,"Two IPCC biomass consumption rows, boreal forest 380 Mha and temperate forest 109 Mha","FBP fuel types, conifer 300 Mha, mixedwood 88 Mha, deciduous 198 Mha, grass 76 Mha"
+Biomass consumption (t dry matter per ha),"IPCC biomass consumption table, 52.8 ± 48.4 boreal and 19.8 ± 6.3 temperate","CBM-CFS3 disturbance matrices on the pools of each stand, with a burn severity sub-model from 2026"
 Organic soil (Mha),"IPCC default raster, 92","Peatland map, 96, of which 32 also organic in the default raster"
 Area burned in 2023 (Mha),"MODIS MCD64A1 other forest as FAO published it, 2.7","National Burned Area Composite, 14.8; fire points, 17.6"
 Area burned in 2023 on organic soil (%),"IPCC default raster, 27","Peatland map, 21"
 Area burned in 2023 by fuel (%),"MCD12Q1 forest 15, woody savanna and savanna 79","FBP conifer 39, mixedwood 24, deciduous 27"
-Emission factors (g per kg),"Table 2.5, 1,569 carbon dioxide, 4.7 methane, 0.26 nitrous oxide","Inventory split of combusted carbon, 90 per cent carbon dioxide, 9 per cent carbon monoxide, 1 per cent methane"
+Emission factors (g per kg),"IPCC emission factor table, 1,569 carbon dioxide, 4.7 methane, 0.26 nitrous oxide","Inventory split of combusted carbon, 90 per cent carbon dioxide, 9 per cent carbon monoxide, 1 per cent methane"
 Natural share,None,"Fire points cause field, 92 per cent natural in 2023; inventory rule, every wildfire"

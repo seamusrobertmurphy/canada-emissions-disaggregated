@@ -8,6 +8,11 @@ Wired into _quarto.yml as a post-render step, and runnable by hand:
 
     python3 01.manuscript/_tools/build-readme.py
 
+A dated manuscript, such as Manuscript-20261107.qmd, is named by its source, and the
+HTML render beside it is read:
+
+    python3 01.manuscript/_tools/build-readme.py 01.manuscript/Manuscript-20261107.qmd
+
 Two things this script exists to handle:
 
 1. GitHub does not render the Pandoc grid tables Quarto produces, so a paste of
@@ -22,11 +27,12 @@ import base64
 import html
 import re
 import struct
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-HTML = ROOT / "01.manuscript" / "Manuscript.html"
-QMD = ROOT / "01.manuscript" / "Manuscript.qmd"
+QMD = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 and sys.argv[1].endswith(".qmd") else ROOT / "01.manuscript" / "Manuscript.qmd"
+HTML = QMD.with_suffix(".html")
 FIGDIR = ROOT / "03.outputs" / "PNG"
 OUT = ROOT / "README.md"
 

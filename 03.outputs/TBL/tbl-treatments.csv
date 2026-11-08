@@ -1,0 +1,16 @@
+Treatment,Test series,Baseline (years),"Positive reductions, 2017 to 2024 (Mt CO2e)","Left out, 2017 to 2024 (Mt CO2e)","Natural disturbance alone, mean ± SD (Mt CO2e a year)","Natural disturbance alone, 90% half width (Mt CO2e a year)","Without the year term, mean (Mt CO2e a year)","Without either trend, mean (Mt CO2e a year)"
+No disaggregation,,,111.7,    0,−79.5 ± 177.1,293.8,−14.9,0.0
+Canada's approach,,,85.6,"2,392",0.0 ± 0.0,0.0,0.0,0.0
+Threshold rule,NBAC burned area,13,391.5,"1,430",−53.4 ± 126.8,200.4,4.2,7.9
+Threshold rule,NBAC burned area,20,391.5,"1,430",−56.5 ± 122.6,197.4,1.2,4.8
+Threshold rule,NBAC burned area,27,258.1,"1,000",−57.0 ± 119.1,194.7,0.4,4.0
+Threshold rule,NBAC burned area,35,258.1,"1,000",−58.8 ± 117.1,192.2,−1.7,2.6
+Threshold rule,NBAC burned area,45,258.1,"1,000",−60.4 ± 115.1,190.2,−3.6,3.7
+Background level,Natural disturbance line,13,232.8,"1,849",−12.6 ± 82.0,129.0,8.2,11.7
+Background level,Natural disturbance line,20,356.3,"2,012",−4.6 ± 82.6,126.8,4.2,6.9
+Background level,Natural disturbance line,27,466.5,"2,157",4.6 ± 91.5,139.7,1.0,4.9
+Background level,NBAC burned area,13,111.7,"1,087",−43.4 ± 88.6,146.2,10.6,11.7
+Background level,NBAC burned area,20,120.1,"1,113",−46.5 ± 79.9,131.1,5.6,7.1
+Background level,NBAC burned area,27,64.8,"1,458",−46.2 ± 74.3,120.4,3.9,4.9
+Background level,NBAC burned area,35,68.0,"1,535",−45.4 ± 70.5,113.6,2.8,3.4
+Background level,NBAC burned area,45,68.9,"1,546",−43.6 ± 67.4,107.7,2.4,3.1
