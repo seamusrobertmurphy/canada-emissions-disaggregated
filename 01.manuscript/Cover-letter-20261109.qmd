@@ -1,0 +1,25 @@
+---
+format:
+  docx:
+    reference-doc: ../04.references/style-letter.docx
+---
+
+9 November 2026
+
+The Editors, Climatic Change
+
+Submission CLIM-D-26-02264
+
+Dear Editors,
+
+I resubmit "Net emissions and removals from Canada's managed forestland with and without the disaggregation of natural disturbances" as a Research Article. The manuscript was revised, with a new title and abstract, rewritten Introduction, Methods, Discussion and Conclusions, extended Results and a comparison of four treatments of natural disturbance.
+
+From 2017 to 2024, Canada's reported net emissions and removals fell below their 2012 to 2016 mean in most years, but only with natural disturbances disaggregated. No study found had measured the disaggregation's effect on emission reductions, or the record length it needs. This study rebuilt Canada's natural disturbance emissions with the IPCC Tier 1 method, on the National Burned Area Composite from 1972 and a global satellite product from 2001. Four treatments of natural disturbance were compared on the two rebuilt lines and on Canada's own, with baselines of 13 to 45 years. A longer baseline excluded no more fire years under Australia's threshold method, because the early record held large fire years as well as quiet ones. In simulated fire histories under the Kyoto Protocol method, a baseline of 45 years instead of 13 halved the 90 per cent range of annual reductions. It fell from 111 to 58 Mt CO2e a year, with the expected reduction near zero.
+
+The work concerns inventory method, uncertainty and fire ecology, all within the scope of Climatic Change.
+
+The manuscript has three figures and five tables, with eight Online Resources, and is original, unpublished and not under consideration elsewhere. I opted in to In Review, so it will be posted as a preprint on Research Square after the journal's quality check. I am the sole author, have no competing interests and received no funding.
+
+Yours sincerely,
+
+Dr. Seamus Murphy

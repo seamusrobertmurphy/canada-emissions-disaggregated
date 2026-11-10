@@ -28,7 +28,7 @@ Each source takes one entry in this form.
 | Licence | Open Government Licence, Canada |
 | Retrieved | 2026-10-21 |
 | Local path | `02.inputs/eccc/raw/table-6-1.xlsx` |
-| Read by | `analysis` |
+| Read by | `inventory` |
 
 ### FAO global ecological zones
 
@@ -40,7 +40,7 @@ Each source takes one entry in this form.
 | Licence | FAO catalogue entry states "copyright"; used here for the map and the burned area by zone only |
 | Retrieved | 2026-11-03 |
 | Local path | `02.inputs/ipcc/raw/gez2010.zip` |
-| Read by | `zones` |
+| Read by | `layers` |
 
 ### Canadian National Fire Database polygons
 
@@ -51,8 +51,8 @@ Each source takes one entry in this form.
 | Link | https://cwfis.cfs.nrcan.gc.ca/ha/nfdb and the file https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip |
 | Licence | Open Government Licence, Canada |
 | Retrieved | 2026-10-21, streamed through GDAL's vsicurl without a local copy, 778 MB on the server |
-| Local path | none, the `analysis` chunk reads the two layers' attribute tables over the network and caches `02.inputs/nfdb/area-burned-by-province.csv` |
-| Read by | `analysis` for the area burned by province |
+| Local path | none, the `fire-points` chunk reads the two layers' attribute tables over the network and caches `02.inputs/nfdb/area-burned-by-province.csv` |
+| Read by | `fire-points` for the area burned by province |
 
 ### Canadian National Fire Database points
 
@@ -64,7 +64,7 @@ Each source takes one entry in this form.
 | Licence | Open Government Licence, Canada |
 | Retrieved | 2026-11-03, 42 MB; metadata PDF and README read 2026-11-04 |
 | Local path | `02.inputs/nfdb/raw/NFDB_point_shp.zip` |
-| Read by | `zones`, which places every fire of 2001 to 2024 in its ecological zone, soil class, land cover class and province and caches the sums by year, zone, soil, cover, cause, type, month and province as `02.inputs/ipcc/fires-by-stratum.csv`, and keeps the fires of 1,000 ha or more with their cause for the map |
+| Read by | `fire-points`, which places every fire of 2001 to 2024 in its ecological zone, soil class, land cover class and province and caches the sums by year, zone, soil, cover, cause, type, month and province as `02.inputs/ipcc/fires-by-stratum.csv`, writes the Landsat seeds `02.inputs/landsat/raw/seeds-1972-2025.csv`, keeps the wildfires inside the managed boreal forest as `02.inputs/ipcc/fires-managed-1987-2024.csv`, and caches the fires and area each agency reported in each year as `02.inputs/nfdb/fires-by-agency.csv` and starts the Tier 1 record in 1987, the first year from which every province and territory in the database except Prince Edward Island reported fires each year |
 
 ### IPCC default soil classes
 
@@ -76,7 +76,7 @@ Each source takes one entry in this form.
 | Licence | Not recorded |
 | Retrieved | Copied 2026-11-04 |
 | Local path | `02.inputs/ipcc/raw/soil_type.tif` and `SOIL_TYPE.RDC`, with the Canada crop committed as `02.inputs/ipcc/soil-type-canada.tif` (34 kB) because the raw file has no public link |
-| Read by | `zones` for the soil class of every fire and for panels (c) and (f) of the strata map |
+| Read by | `layers`, and `fire-points` for the soil class of every fire |
 
 ### MODIS land cover
 
@@ -87,8 +87,8 @@ Each source takes one entry in this form.
 | Link | https://doi.org/10.5067/MODIS/MCD12Q1.061 and https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1 |
 | Licence | NASA data, no restriction on use |
 | Retrieved | 2026-11-04 through the Earth Engine Python API, project `manuscripts-personal` |
-| Local path | `02.inputs/ipcc/mcd12q1-2023-canada.tif` (709 kB), committed because a rebuild needs an Earth Engine account; the `zones` chunk rebuilds it through `reticulate` only when it is missing |
-| Read by | `zones` for the land cover class of every fire and for panels (c) to (e) of the strata map |
+| Local path | `02.inputs/ipcc/mcd12q1-2023-canada.tif` (709 kB), committed because a rebuild needs an Earth Engine account; the `layers` chunk rebuilds it through `reticulate` only when it is missing |
+| Read by | `layers`, and `fire-points` for the land cover class of every fire |
 
 ### MODIS burned area
 
@@ -99,8 +99,10 @@ Each source takes one entry in this form.
 | Link | https://doi.org/10.5067/MODIS/MCD64A1.061 and https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD64A1 |
 | Licence | NASA data, no restriction on use |
 | Retrieved | 2026-11-04 through the Earth Engine Python API, project `manuscripts-personal`, as direct calls on 96 boxes with all 24 years per call, each box cached under `02.inputs/faostat/raw/mcd64a1-tiles/` |
-| Local path | `02.inputs/faostat/mcd64a1-burned-by-class.csv`, committed because a rebuild needs an Earth Engine account; the `faostat-burned` chunk rebuilds it through `reticulate` only when it is missing |
-| Read by | `faostat-burned` for the burned area of FAO's method by item, year and zone group, against the hectares FAOSTAT published |
+| Local path | `02.inputs/faostat/mcd64a1-burned-by-stratum.csv`, committed because a rebuild needs an Earth Engine account; the `burned-area` chunk rebuilds it through `reticulate` only when it is missing |
+| Read by | `burned-area` for the burned area of FAO's method by item, year and zone group, against the hectares FAOSTAT published |
+
+The same chunk reads the collection again for the MODIS Tier 1 line, with the same uncertainty rule and the MCD12Q1 year FAO used, keying each burned pixel to its ecological zone, organic soil, the managed boreal forest and the boreal extent. It ran on 2026-11-09 as 96 direct calls cached under `02.inputs/modis/raw/tiles/`, reading the four boundaries from `02.inputs/ee/raw/ee-*.geojson`, and writes `02.inputs/modis/mcd64a1-keyed-2001-2024.csv`.
 
 ### FAO GAUL country boundary
 
@@ -111,7 +113,7 @@ Each source takes one entry in this form.
 | Link | https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2015_level0 |
 | Licence | FAO, for non-commercial use as the catalogue states |
 | Retrieved | 2026-11-04 inside Earth Engine; nothing is downloaded |
-| Read by | `faostat-burned` as the summing region |
+| Read by | `burned-area` as the summing region |
 
 ### FBP fuel types
 
@@ -123,7 +125,7 @@ Each source takes one entry in this form.
 | Licence | Open Government Licence, Canada |
 | Retrieved | 2026-11-04, 49 MB, with the 2024 metadata PDFs, the CIFFC colour standard and the 2014 metadata beside it |
 | Local path | `02.inputs/nrcan/raw/FBP_FuelTypes_Canada_2026_250m.tiff` |
-| Read by | `national` |
+| Read by | `layers` |
 
 ### Peatland map of Canada
 
@@ -135,7 +137,7 @@ Each source takes one entry in this form.
 | Licence | Open Government Licence, Canada |
 | Retrieved | 2026-11-04, 19 MB |
 | Local path | `02.inputs/nrcan/raw/ClassPeatMap_2020_EPSG_3978.tif` |
-| Read by | `national` |
+| Read by | `layers` |
 
 ### National Burned Area Composite statistics
 
@@ -147,7 +149,7 @@ Each source takes one entry in this form.
 | Licence | Open Government Licence, Canada |
 | Retrieved | 2026-11-04, 4.4 MB |
 | Local path | `02.inputs/nrcan/raw/NBAC_summarystats_1972_to_2025_20260513.xlsx` |
-| Read by | `national` |
+| Read by | `burned-area` |
 
 ### IPCC 2024 expert meeting report
 
@@ -160,3 +162,62 @@ Each source takes one entry in this form.
 | Retrieved | 2026-11-03 |
 | Local path | `04.references/literature/ipcc-2024-em/IPCC-2024-EM-Land-Report.pdf` |
 | Read by | cited as `ipcc2024reconciling` |
+
+### Managed boreal forest
+
+| Field | Entry |
+|---|---|
+| Dataset | World boreal forest and managed boreal forest extent, vector files `Managed_Boreal_Forest.shp.zip` and `Boreal_Forest.shp.zip`, WGS84. The managed forest was "defined as suggested by IPCC (2003)", and the Canadian part of the managed layer was built from a layer named `LULUC_managed_boreal` in the file's processing history |
+| Publisher | Natural Resources Canada, Canadian Forest Service; DataCite record names Dominique Boucher, 2025 |
+| Link | https://doi.org/10.23687/88d70716-2600-4995-8d5f-86f96e383abf and the files https://ftp.maps.canada.ca/pub/nrcan_rncan/Forests_Foret/world_boreal_forest/ |
+| Licence | Open Government Licence, Canada |
+| Retrieved | 2026-11-08, 10.7 MB and 1.2 MB; README and processing metadata read 2026-11-08 |
+| Local path | `02.inputs/nrcan/raw/boreal/` |
+| Read by | `layers`, which downloads both files; `fire-points`, which keeps the wildfires of 1987 to 2024 inside the managed boreal forest, or in a temperate forest zone outside the boreal extent, and caches their sums by year, zone, soil class, fire type and month as `02.inputs/ipcc/fires-managed-1987-2024.csv`; and `burned-area`, which keys the composite, MODIS and Landsat areas to them. The fire points are the Canadian National Fire Database points entry above |
+
+### Canada natural disturbance components
+
+| Field | Entry |
+|---|---|
+| Dataset | Table 6-5, Area of, and Greenhouse Gas Fluxes and Carbon Transfers from, Forest Land Remaining Forest Land, All Inventory Years, National Inventory Report 1990-2024, file `NIR2026_Table 6-5_All_Years_PTs.xlsx`, sheet `Table 6-5 NATIONAL`, kt CO2 eq, printed on page 203 of the report |
+| Publisher | Environment and Climate Change Canada |
+| Link | https://data-donnees.az.ec.gc.ca/data/substances/monitor/canada-s-official-greenhouse-gas-inventory/E-LULUCF/?lang=en, fetched through `https://data-donnees.az.ec.gc.ca/api/file?path=` with the file's path |
+| Licence | Open Government Licence, Canada |
+| Retrieved | 2026-11-08, 103 KB |
+| Local path | `02.inputs/eccc/raw/table-6-5.xlsx` |
+| Read by | `inventory`, which keeps the natural disturbance line, its immediate wildfire, post-wildfire, insect and other rows and the area with natural disturbance impacts, 1990 to 2024, as `02.inputs/eccc/natural-components-2026.csv` |
+
+### National Burned Area Composite perimeters
+
+| Field | Entry |
+|---|---|
+| Dataset | National Burned Area Composite (NBAC), wildfire perimeters by year, 1972 to 2024, version of 2026-05-13, one file per year `NBAC_YYYY_20260513.zip`, fields `BASRC`, `FIREMAPS`, `POLY_HA`, `ADJ_HA`, `ADJ_FLAG` and `PRESCRIBED`, EPSG:3978 |
+| Publisher | Natural Resources Canada, Canadian Forest Service |
+| Link | https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/ and the catalogue record https://cwfis.cfs.nrcan.gc.ca/en/catalogue/results/537a1fd0-698e-4a7b-85a1-e02581ae78b2. Methods Hall et al. (2020), https://doi.org/10.1071/WF19201, Skakun et al. (2021, 2022, 2024) |
+| Licence | Open Government Licence, Canada |
+| Retrieved | 2026-11-08 and 2026-11-09, 53 files |
+| Local path | `02.inputs/nrcan/raw/nbac/` |
+| Read by | `burned-area`, which leaves out prescribed burns, splits each perimeter over a 250 m grid keyed to ecological zone, organic soil, the managed boreal forest and the boreal extent, and caches the hectares by year, key and source as `02.inputs/nbac/nbac-keyed-1972-2024.csv` |
+
+### Landsat surface reflectance
+
+| Field | Entry |
+|---|---|
+| Dataset | Landsat 4, 5, 7, 8 and 9 Collection 2 Level 2 surface reflectance, Tier 1, Earth Engine collections `LANDSAT/LT04/C02/T1_L2`, `LANDSAT/LT05/C02/T1_L2`, `LANDSAT/LE07/C02/T1_L2`, `LANDSAT/LC08/C02/T1_L2` and `LANDSAT/LC09/C02/T1_L2`, red and near infrared bands with the `QA_PIXEL` mask |
+| Publisher | U.S. Geological Survey, through Google Earth Engine |
+| Link | https://doi.org/10.5066/P9IAXOVV and https://doi.org/10.5066/P9OGBGM6 |
+| Licence | U.S. Geological Survey data, no restriction on use |
+| Retrieved | 2026-11-08 to 2026-11-09 inside Earth Engine, project `manuscripts-personal`; nothing is downloaded but each fire's result |
+| Local path | `02.inputs/landsat/raw/landsat-YYYY.json`, one per year, and the seeds `02.inputs/landsat/raw/seeds-1972-2025.csv` |
+| Read by | `burned-area`, which maps each agency fire over 200 ha of 1985 to 2024 after Skakun et al. (2024), https://doi.org/10.1071/WF24138, and caches `02.inputs/landsat/landsat-keyed-1985-2024.csv` |
+
+### Global surface water
+
+| Field | Entry |
+|---|---|
+| Dataset | JRC Global Surface Water Mapping Layers, version 1.4, band `occurrence`, Earth Engine image `JRC/GSW1_4/GlobalSurfaceWater` |
+| Publisher | European Commission Joint Research Centre, Pekel et al. (2016) |
+| Link | https://doi.org/10.1038/nature20584 and https://developers.google.com/earth-engine/datasets/catalog/JRC_GSW1_4_GlobalSurfaceWater |
+| Licence | Copernicus Programme, free of charge and without restriction of use, with acknowledgement that cites the dataset and Pekel et al. (2016), as the Earth Engine catalogue page stated on 2026-11-09 |
+| Retrieved | 2026-11-08 to 2026-11-09 inside Earth Engine; nothing is downloaded |
+| Read by | `burned-area`, which masks pixels of 50 per cent water occurrence or more |
