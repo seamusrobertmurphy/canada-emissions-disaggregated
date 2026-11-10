@@ -782,21 +782,14 @@ u_2023 <- zone_2023 |>
   dplyr::summarise(co2_mt = sum(co2_mt), u = dplyr::first(u_zone), .by = row_2_4) |>
   dplyr::summarise(u = sqrt(sum((u * co2_mt)^2)) / sum(co2_mt)) |>
   dplyr::pull(u)
-fao_2023 <- tibble::tibble(`Ecological zone` = "FAOSTAT, other forest, one coefficient",
-  `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", mean(used$ha[used$item == "Other forest"]) / 1e3),
-  `Burned 2023 (kha)` = sprintf("%.0f", burn_2023$ha / 1e3), `Biomass consumption (t/ha)` = sprintf("%.1f", burn_2023$fuel),
-  `CO2 (Mt)` = sprintf("%.1f", co2_2023), `CH4 (kt)` = sprintf("%.0f", burn_2023$dm * burn_2023$ch4 / 1e6), `N2O (kt)` = sprintf("%.1f", burn_2023$dm * burn_2023$n2o / 1e6),
-  `CO2e (Mt)` = sprintf("%.1f", co2_2023 + (burn_2023$dm * burn_2023$ch4 * 28 + burn_2023$dm * burn_2023$n2o * 265) / 1e9), `Uncertainty (%)` = sprintf("%.0f", 100 * u_forest[1]))
-zones_table <- zone_2023 |>
-  dplyr::inner_join(zone_mean, by = "gez_abbrev") |>
-  dplyr::arrange(-ha) |>
-  dplyr::transmute(`Ecological zone` = gez_name, `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", ha_year / 1e3), `Burned 2023 (kha)` = sprintf("%.0f", ha / 1e3),
-    `Biomass consumption (t/ha)` = sprintf("%.1f", mb_cf), `CO2 (Mt)` = sprintf("%.1f", co2_mt), `CH4 (kt)` = sprintf("%.0f", ch4_kt), `N2O (kt)` = sprintf("%.1f", n2o_kt),
-    `CO2e (Mt)` = sprintf("%.1f", co2e_mt), `Uncertainty (%)` = dplyr::if_else(is.na(u_zone), "", sprintf("%.0f", 100 * u_zone))) |>
-  dplyr::bind_rows(tibble::tibble(`Ecological zone` = "All zones", `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", sum(zone_mean$ha_year) / 1e3),
-    `Burned 2023 (kha)` = sprintf("%.0f", sum(zone_2023$ha) / 1e3), `Biomass consumption (t/ha)` = sprintf("%.1f", sum(zone_2023$dm_mt) * 1e6 / sum(zone_2023$ha)),
-    `CO2 (Mt)` = sprintf("%.1f", sum(zone_2023$co2_mt)), `CH4 (kt)` = sprintf("%.0f", sum(zone_2023$ch4_kt)), `N2O (kt)` = sprintf("%.1f", sum(zone_2023$n2o_kt)),
-    `CO2e (Mt)` = sprintf("%.1f", sum(zone_2023$co2e_mt)), `Uncertainty (%)` = sprintf("%.0f", 100 * u_2023)), fao_2023)
+zone_row <- function(zone, ha_year, ha, fuel, co2, ch4, n2o, co2e, u) tibble::tibble(`Ecological zone` = zone, `Burned 2001 to 2024 (kha a year)` = sprintf("%.0f", ha_year / 1e3),
+  `Burned 2023 (kha)` = sprintf("%.0f", ha / 1e3), `Biomass consumption (t/ha)` = sprintf("%.1f", fuel), `CO2 (Mt)` = sprintf("%.1f", co2), `CH4 (kt)` = sprintf("%.0f", ch4),
+  `N2O (kt)` = sprintf("%.1f", n2o), `CO2e (Mt)` = sprintf("%.1f", co2e), `Uncertainty (%)` = dplyr::if_else(is.na(u), "", sprintf("%.0f", 100 * u)))
+zones_table <- dplyr::bind_rows(
+  with(dplyr::arrange(dplyr::inner_join(zone_2023, zone_mean, by = "gez_abbrev"), -ha), zone_row(gez_name, ha_year, ha, mb_cf, co2_mt, ch4_kt, n2o_kt, co2e_mt, u_zone)),
+  with(zone_2023, zone_row("All zones", sum(zone_mean$ha_year), sum(ha), sum(dm_mt) * 1e6 / sum(ha), sum(co2_mt), sum(ch4_kt), sum(n2o_kt), sum(co2e_mt), u_2023)),
+  with(burn_2023, zone_row("FAOSTAT, other forest, one coefficient", mean(used$ha[used$item == "Other forest"]), ha, fuel, co2_2023, dm * ch4 / 1e6, dm * n2o / 1e6,
+    co2_2023 + (dm * ch4 * 28 + dm * n2o * 265) / 1e9, u_forest[1])))
 boreal_share_2023 <- 100 * sum(zone_2023$ha[zone_2023$gez_abbrev %in% boreal_zones]) / sum(zone_2023$ha)
 
 tier1_strata <- strata |>
@@ -1283,19 +1276,13 @@ soil_cols <- c(Organic = "#7B3294", Sandy = "#F2E394", Wetland = "#2C6E49", Volc
   `High activity clay` = "#D8B365", `Low activity clay` = "#F6E8C3", Other = "#BFBFBF")
 fbp_cols <- setNames(c("#1B7837", "#F4A582", "#D8B365", "#FEE08B", "#C7EAE5", "#D9D9D9"), fbp_labels)
 cfs_peat_cols <- setNames(c("#7B3294", "#C2A5CF", "#2C6E49"), peat_labels)
-p_a <- ggplot2::ggplot() + ggplot2::geom_sf(data = gez, ggplot2::aes(fill = gez_name), colour = NA) + outline_layer +
-  ggplot2::scale_fill_brewer(palette = "Set3") + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) + canada_coord + furniture() +
-  ggplot2::labs(title = "(a) Ecological zones, FAO 2010, the Tier 1 default") + map_theme
-p_b <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = fbp_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = fbp_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 2)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(b) Fire Behaviour Prediction fuel types, 2026") + map_theme
-p_c <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = soil_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = soil_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(c) IPCC default soil classes") + map_theme
-p_d <- ggplot2::ggplot() + tidyterra::geom_spatraster(data = cfs_peat_r, maxcell = 3e5) + outline_layer +
-  ggplot2::scale_fill_manual(values = cfs_peat_cols, na.value = NA, na.translate = FALSE) + ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3)) +
-  canada_coord + furniture() + ggplot2::labs(title = "(d) Peatland map of the Canadian Forest Service") + map_theme
-patchwork::wrap_plots(p_a, p_b, p_c, p_d, ncol = 2)
+panel <- function(layer, scale, ncol, title) ggplot2::ggplot() + layer + outline_layer + scale + ggplot2::guides(fill = ggplot2::guide_legend(ncol = ncol)) + canada_coord + furniture() +
+  ggplot2::labs(title = title) + map_theme
+raster_panel <- function(r, cols, ncol, title) panel(tidyterra::geom_spatraster(data = r, maxcell = 3e5), ggplot2::scale_fill_manual(values = cols, na.value = NA, na.translate = FALSE), ncol, title)
+patchwork::wrap_plots(
+  panel(ggplot2::geom_sf(data = gez, ggplot2::aes(fill = gez_name), colour = NA), ggplot2::scale_fill_brewer(palette = "Set3"), 2, "(a) Ecological zones, FAO 2010, the Tier 1 default"),
+  raster_panel(fbp_r, fbp_cols, 2, "(b) Fire Behaviour Prediction fuel types, 2026"), raster_panel(soil_r, soil_cols, 3, "(c) IPCC default soil classes"),
+  raster_panel(cfs_peat_r, cfs_peat_cols, 3, "(d) Peatland map of the Canadian Forest Service"), ncol = 2)
 ```
 
 Each fire was placed by its reported location in a zone, soil class, land cover class and, inside British Columbia, the province. Each fire's biomass consumption was the IPCC row of its zone and fire type (@tbl-rows). Boreal crown and surface fires took their own rows and other boreal fires the general wildfire row. Temperate fires took the wildfire row of other temperate forests and polar fires the tundra row. Grassland fires of April to June took the early dry season row and later fires the mid or late season row. The IPCC biomass consumption table gave peat a fuel of 41 ± 1.4 tonnes per hectare, but the emission factor table had no peat row [@ipcc2006guidelines, pp. 2.45-2.47]. The 2013 Wetlands Supplement gave peat fuel loads and emission factors for undrained and drained organic soils, in Equation 2.8 and two default tables [@ipcc2014wetlands, pp. 2.37-2.41]. A fire on organic soil therefore had a second term, the undrained peat row of 66 tonnes per hectare with the boreal and temperate emission factors.
